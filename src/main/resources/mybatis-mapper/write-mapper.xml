@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.WriteMapper">
+    <resultMap type="com.app.dto.ExpenditureDto" id="expenditureDto">
+        <result column="expenditure_id" property="expenditureId" />
+        <result column="expenditure_date" property="expenditureDate" />
+        <result column="expenditure_description" property="expenditureDescription" />
+        <result column="cash" property="cash" />
+        <result column="card" property="card" />
+        <result column="account_category_id" property="accountCategoryId" />
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="small_category_id" property="smallCategoryId" />
+        <result column="small_category_name" property="smallCategoryName" />
+        <result column="memo" property="memo" />
+    </resultMap>
+    <resultMap type="com.app.dto.IncomeDto" id="incomeDto">
+        <result column="income_id" property="incomeId" />
+        <result column="income_date" property="incomeDate" />
+        <result column="income_description" property="incomeDescription" />
+        <result column="income_amount" property="incomeAmount" />
+        <result column="account_category_id" property="accountCategoryId" />
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="memo" property="memo" />
+    </resultMap>
+
+    <select id="selectExpenditureList" parameterType="com.app.dto.CommonRequestDto" resultMap="expenditureDto">
+        SELECT e.expenditure_id
+             , e.expenditure_date
+             , e.expenditure_description
+             , e.cash
+             , e.card
+             , e.account_category_id
+             , e.large_category_id
+             , e.small_category_id
+             , s.small_category_name
+             , e.memo
+          FROM expenditure e
+    INNER JOIN small_category s
+            ON e.small_category_id = s.small_category_id
+         WHERE e.expenditure_date BETWEEN #{startDate} AND #{endDate}
+           AND e.user_email=#{email}
+    </select>
+    <select id="selectIncomeList" parameterType="com.app.dto.CommonRequestDto" resultMap="incomeDto">
+        SELECT income_id
+             , income_date
+             , income_description
+             , income_amount
+             , account_category_id
+             , large_category_id
+             , memo
+          FROM income
+         WHERE income_date BETWEEN #{startDate} AND #{endDate}
+           AND user_email=#{email}
+    </select>
+</mapper>
