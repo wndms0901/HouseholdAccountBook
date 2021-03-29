@@ -21,8 +21,12 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
-    // 로그인
-     @PostMapping("login")
+    /**
+     * 로그인
+     * @param userDto
+     * @return ResponseEntity<?>
+     */
+    @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody UserDto userDto) {
          Map<String, Object> resultMap = new HashMap<String, Object>();
              User user = userService.findByEmail(userDto.getEmail());
@@ -47,13 +51,17 @@ public class UserController {
 //        }
 //        return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
                }
+    /**
+     * 회원등록
+     * @param userDto
+     * @return ResponseEntity<?>
+     */
     @PostMapping("register")
     public ResponseEntity<?> register(@RequestBody UserDto userDto) {
         Role role = Role.builder().roleName(RoleName.USER).build();
         User user = User.builder().email(userDto.getEmail()).name(userDto.getName()).password(userDto.getPassword()).build();
         role.setUser(user);
         userService.registerUser(user);
-
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }
