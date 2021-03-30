@@ -9,6 +9,16 @@ import java.util.List;
 
 @Mapper
 public interface WriteMapper {
+    /**
+     * 지출 목록 조회
+     * @param commonRequestDto
+     * @return List<ExpenditureDto>
+     */
     List<ExpenditureDto> selectExpenditureList(CommonRequestDto commonRequestDto);
+    /**
+     * 수입 목록 조회
+     * @param commonRequestDto
+     * @return List<IncomeDto>
+     */
     List<IncomeDto> selectIncomeList(CommonRequestDto commonRequestDto);
 }

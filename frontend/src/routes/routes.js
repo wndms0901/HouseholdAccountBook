@@ -5,6 +5,7 @@ import NotFound from '../pages/NotFoundPage.vue'
 
 // Admin pages
 import Write from 'src/pages/Write/Write.vue'
+import Budget from 'src/pages/Budget/Budget.vue'
 import Overview from 'src/pages/Overview.vue'
 import UserProfile from 'src/pages/UserProfile.vue'
 import TableList from 'src/pages/TableList.vue'
@@ -28,6 +29,11 @@ const routes = [
     component: DashboardLayout,
     redirect: '/mybook/write',
     children: [
+      {
+        path: 'budget',
+        name: 'Budget',
+        component: Budget
+      },
       {
         path: 'write',
         name: 'Write',

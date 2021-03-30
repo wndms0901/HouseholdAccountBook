@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.BudgetMapper">
+    <resultMap type="com.app.dto.BudgetDto" id="budgetDto">
+        <result column="expenditurebudget_id" property="expenditurebudgetId" />
+        <result column="expenditure_budget_amount" property="expenditureBudgetAmount" />
+        <result column="expenditure_budget_date" property="expenditureBudgetDate" />
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="income_budget_id" property="incomeBudgetId" />
+        <result column="income_budget_amount" property="incomeBudgetAmount" />
+        <result column="income_budget_date" property="incomeBudgetDate" />
+    </resultMap>
+
+    <select id="selectIncomeBudgetAmount" parameterType="com.app.dto.BudgetDto" resultType="int">
+        SELECT i.income_budget_amount
+          FROM income_budget i
+         WHERE i.income_budget_date =#{incomeBudgetDate}
+           AND i.user_email=#{userDto.email}
+    </select>
+
+</mapper>
