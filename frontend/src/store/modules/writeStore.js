@@ -1,4 +1,4 @@
-import writeService from '../../service/write_service'
+import WriteService from '../../service/write_service'
 
 const writeStore = {
     namespaced: true,
@@ -9,7 +9,7 @@ const writeStore = {
          * @returns 
          */
         selectExpenditureList({ }, commonRequestDto) {
-            return writeService.selectExpenditureList(commonRequestDto).then(
+            return WriteService.selectExpenditureList(commonRequestDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);
@@ -25,7 +25,7 @@ const writeStore = {
          * @returns 
          */
         saveExpenditureList({ }, ExpenditureSaveDto) {
-            return writeService.saveExpenditureList(ExpenditureSaveDto).then(
+            return WriteService.saveExpenditureList(ExpenditureSaveDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);
@@ -42,7 +42,7 @@ const writeStore = {
          * @returns 
          */
         selectIncomeList({ }, commonRequestDto) {
-            return writeService.selectIncomeList(commonRequestDto).then(
+            return WriteService.selectIncomeList(commonRequestDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);
@@ -58,7 +58,7 @@ const writeStore = {
          * @returns 
          */
         saveIncomeList({ }, IncomeSaveDto) {
-            return writeService.saveIncomeList(IncomeSaveDto).then(
+            return WriteService.saveIncomeList(IncomeSaveDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);

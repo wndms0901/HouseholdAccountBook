@@ -1,0 +1,42 @@
+import BudgetService from '../../service/budget_service'
+
+const budgetStore = {
+    namespaced: true,
+    actions: {
+        /**
+         * 예산 목록 조회
+         * @param {*} BudgetRequestDto
+         * @returns 
+         */
+        selectBudgetList({ }, BudgetRequestDto) {
+            return BudgetService.selectBudgetList(BudgetRequestDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
+         * 지출 목록 저장
+         * @param {*} ExpenditureSaveDto
+         * @returns 
+         */
+        // saveExpenditureList({ }, ExpenditureSaveDto) {
+        //     return writeService.saveExpenditureList(ExpenditureSaveDto).then(
+        //         response => {
+        //             console.log('response', response);
+        //             return Promise.resolve(response);
+        //         },
+        //         error => {
+        //             return Promise.reject(error);
+        //         }
+        //     );
+        // },
+
+    }
+}
+
+export default budgetStore

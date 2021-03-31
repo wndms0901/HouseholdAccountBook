@@ -97,7 +97,7 @@ export default {
   },
   computed: {
     loggedIn() {
-      return this.$store.state.initialState.status.loggedIn;
+      return this.$store.state.userStore.initialState.status.loggedIn;
     },
   },
 
@@ -188,11 +188,12 @@ export default {
           // buttonSize: "md",
           // okVariant: "success",
           okTitle: btnTitle,
-          headerClass: "p-3", //border-bottom-0
+          headerClass: "p-3 border-bottom", //border-bottom-0
           bodyClass: "text-center h3",
-          footerClass: "p-2 position-relative text-center", //border-top-0
-          noCloseOnBackdrop: true,
-          centered: true,
+          footerClass: "p-2 position-relative text-center border-top", //border-top-0
+          // noCloseOnBackdrop: true,
+          // hideBackdrop: true,
+          // centered: true,
         })
         // eslint-disable-next-line no-unused-vars
         .then((value) => {
@@ -214,6 +215,7 @@ export default {
           this.valueCheck.passwordCheck
         )
       ) {
+        console.log("this.user", this.user);
         this.$store
           .dispatch("userStore/register", this.user)
           .then((Response) => {

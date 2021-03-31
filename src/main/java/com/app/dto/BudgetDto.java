@@ -1,21 +1,22 @@
 package com.app.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class BudgetDto {
-    private Long expenditurebudgetId;
-    private int expenditureBudgetAmount;
-    private String expenditureBudgetDate;
-    private Long largeCategoryId;
-    private Long incomeBudgetId;
-    private int incomeBudgetAmount;
-    private String incomeBudgetDate;
-    private UserDto userDto;
+    private String incomeBudgetAmount;
+    private List<BudgetListDto> budgetListDtoList;
+
+    @Builder
+    public BudgetDto(String incomeBudgetAmount, List<BudgetListDto> budgetListDtoList) {
+        this.incomeBudgetAmount = incomeBudgetAmount;
+        this.budgetListDtoList = budgetListDtoList;
+    }
 }

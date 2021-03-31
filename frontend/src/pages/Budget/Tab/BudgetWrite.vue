@@ -5,7 +5,7 @@
       <tr>
         <td rowspan="2">
           <p class="m-0">한달 예산</p>
-          <input type="text" />
+          <input type="text" v-model="incomeBudgetAmount" />
           <!-- <p>한달 예산</p> -->
         </td>
         <td>3개월 간 평균 지출</td>
@@ -28,16 +28,22 @@
       :columnDefs="columnDefs"
       :rowData="rowData"
       rowSelection="multiple"
+      @grid-ready="onGridReady"
     ></grid>
     <div class="right_btn mt-3"><button @click="onSave">저장</button></div>
   </div>
 </template>
 <script>
 export default {
+  props: {
+    user: Object,
+    period: Object,
+  },
   data() {
     return {
       columnDefs: null,
       rowData: [],
+      incomeBudgetAmount: "",
     };
   },
   computed: {},
@@ -52,11 +58,11 @@ export default {
         field: "largeCategoryName",
         //cellEditor: "datePicker",
       },
-      { headerName: "내역", field: "incomeDescription" },
       {
         headerName: "예산",
         field: "expenditureBudgetAmount",
         type: "numericColumn",
+        editable: true,
       },
       {
         headerName: "지출",
@@ -70,7 +76,44 @@ export default {
       },
     ];
   },
-  mounted() {},
-  methods: {},
+  mounted() {
+    this.getBudgetList();
+  },
+  methods: {
+    onGridReady(params) {
+      console.log("params", params);
+      this.gridApi = params.api;
+      this.columnApi = params.columnApi;
+
+      params.api.sizeColumnsToFit();
+    },
+    // 예산 목록 조회
+    getBudgetList() {
+      const params = {
+        categoryType: "EXP",
+        incomeBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
+        expenditureBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
+        email: this.user.userInfo.email,
+      };
+      console.log("params", params);
+      this.$store
+        .dispatch("budgetStore/selectBudgetList", params)
+        .then((res) => {
+          console.log("getBudgetList", res.data);
+          // 한달 예산
+          this.incomeBudgetAmount = res.data.incomeBudgetAmount;
+          // 남은 돈 column setting
+          _.forEach(res.data.budgetListDtoList, function (row, index) {
+            res.data.budgetListDtoList[index].balance =
+              row.expenditureBudgetAmount - row.expenditureAmount;
+          });
+          this.gridApi.setRowData(res.data.budgetListDtoList);
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
+    onSave() {},
+  },
 };
 </script>

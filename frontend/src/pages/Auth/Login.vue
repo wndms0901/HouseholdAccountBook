@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     loggedIn() {
-      return this.$store.state.initialState.status.loggedIn;
+      return this.$store.state.userStore.initialState.status.loggedIn;
     },
   },
   mounted() {

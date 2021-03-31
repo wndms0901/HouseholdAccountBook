@@ -4,21 +4,49 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.app.mapper.BudgetMapper">
-    <resultMap type="com.app.dto.BudgetDto" id="budgetDto">
+    <resultMap type="com.app.dto.BudgetListDto" id="budgetListDto">
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="large_category_name" property="largeCategoryName" />
         <result column="expenditurebudget_id" property="expenditurebudgetId" />
         <result column="expenditure_budget_amount" property="expenditureBudgetAmount" />
         <result column="expenditure_budget_date" property="expenditureBudgetDate" />
-        <result column="large_category_id" property="largeCategoryId" />
-        <result column="income_budget_id" property="incomeBudgetId" />
-        <result column="income_budget_amount" property="incomeBudgetAmount" />
-        <result column="income_budget_date" property="incomeBudgetDate" />
+        <result column="expenditure_amount" property="expenditureAmount" />
     </resultMap>
 
-    <select id="selectIncomeBudgetAmount" parameterType="com.app.dto.BudgetDto" resultType="int">
+    <select id="selectIncomeBudgetAmount" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
         SELECT i.income_budget_amount
           FROM income_budget i
          WHERE i.income_budget_date =#{incomeBudgetDate}
-           AND i.user_email=#{userDto.email}
+           AND i.user_email=#{email}
+    </select>
+    <select id="selectBudgetList" parameterType="com.app.dto.BudgetRequestDto" resultMap="budgetListDto">
+             SELECT lc.large_category_id
+                  , lc.large_category_name
+                  , NVL(eb.expenditure_budget_amount,0) AS expenditure_budget_amount
+                  , NVL(e.expenditure_amount,0) AS expenditure_amount
+               FROM (
+                     SELECT lc.large_category_id
+                          , lc.large_category_name
+                       FROM large_category lc
+                      WHERE lc.category_type=#{categoryType}
+                    ) lc
+    LEFT OUTER JOIN (
+                     SELECT eb.large_category_id
+                          , eb.expenditure_budget_amount
+                       FROM expenditure_budget eb
+                      WHERE eb.user_email=#{email}
+                        AND eb.expenditure_budget_date=#{expenditureBudgetDate}
+                    ) eb
+                 ON lc.large_category_id = eb.large_category_id
+    LEFT OUTER JOIN (
+                     SELECT e.large_category_id ,sum(e.card)+sum(e.cash) AS expenditure_amount
+                       FROM expenditure e
+                      WHERE e.user_email=#{email}
+                        AND left(e.expenditure_date, 6)=#{expenditureBudgetDate}
+                   GROUP BY e.large_category_id
+                    ) e
+                 ON lc.large_category_id = e.large_category_id
+
     </select>
 
 </mapper>

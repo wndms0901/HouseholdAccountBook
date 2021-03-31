@@ -46,6 +46,7 @@ public class User extends BaseTimeEntity {
     public User(String name, String email, String password, String monthStartDate) {
         this.name = name;
         this.email = email;
+        this.password= password;
         this.monthStartDate = monthStartDate;
     }
 

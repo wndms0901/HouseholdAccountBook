@@ -28,7 +28,9 @@
         </div>
         <div class="tabs" style="width: 100%">
           <b-tabs content-class="mt-3">
-            <b-tab title="예산쓰기" active><budgetWrite></budgetWrite></b-tab>
+            <b-tab title="예산쓰기" active
+              ><budgetWrite :user="user" :period="period"></budgetWrite
+            ></b-tab>
           </b-tabs>
         </div>
       </div>
@@ -57,9 +59,7 @@ export default {
   created() {
     this.setPeriod();
   },
-  mounted() {
-    //  this.user = this.$store.state.initialState.user;
-  },
+  mounted() {},
   methods: {
     setPeriod() {
       let today = new Date();

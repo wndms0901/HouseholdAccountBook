@@ -13,10 +13,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService{
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private UserRepository userRepository;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
 
     /**
      * 회원 등록
