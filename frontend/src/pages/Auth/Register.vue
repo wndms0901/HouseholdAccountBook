@@ -206,6 +206,12 @@ export default {
     },
     // 회원가입 버튼 click
     onRegister() {
+      // this.$bvModal
+      //   .msgBoxOk("Action completed", { centered: true })
+      //   .then((value) => {})
+      //   .catch((err) => {
+      //     // An error occurred
+      //   });
       this.validationCheck(this.user);
       if (
         !(

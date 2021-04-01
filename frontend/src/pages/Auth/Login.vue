@@ -166,15 +166,15 @@ li a {
   width: 60px;
   height: 60px;
 }
-/* .container { 
+/* .container {
   position: absolute;
-  width: 400px; 
-  height: 400px; 
-  background-color: gray; 
-  text-align: center; 
-  margin-left: -200px; 
-  margin-top: -200px; 
-  left: 50%; 
-  top: 50%; 
+  width: 400px;
+  height: 400px;
+  background-color: gray;
+  text-align: center;
+  margin-left: -200px;
+  margin-top: -200px;
+  left: 50%;
+  top: 50%;
 } */
 </style>

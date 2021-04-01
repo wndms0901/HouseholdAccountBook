@@ -183,10 +183,11 @@ export default {
         cellEditor: "agSelectCellEditor",
         //cellEditorParams: this.getAccountCategoryList.bind(this),
         cellEditorParams: (params) => {
-          //console.log("확인", params);
-          //console.log("확인", this.accountCategory);
+          console.log("입금통장>", Object.keys(this.accountCategory).sort());
           return {
-            values: Object.keys(this.accountCategory).sort(),
+            values: Object.keys(this.accountCategory).sort(function (a, b) {
+              return a - b;
+            }),
           };
           // values: extractValues(this.accountCategory),
           // values: this.accountCategory,
@@ -209,12 +210,12 @@ export default {
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
           return {
-            values: Object.keys(this.largeCategory).sort(),
+            values: Object.keys(this.largeCategory).sort(function (a, b) {
+              return a - b;
+            }),
           };
           // values: extractValues(this.accountCategory),
           // values: this.accountCategory,
-
-          //       cellRenderer: cellRenderer2(this.accountCategoryList),
         },
         // convert code to value
         valueFormatter: (params) => {
@@ -268,16 +269,9 @@ export default {
           this.accountCategoryType
         )
         .then((res) => {
-          let result = res.data;
-          const val = {
-            accountCategoryId: "",
-            accountCategoryName: "선택없음",
-          };
-          result.unshift(val);
-          console.log("입금통장list", result);
           // {id:name} 형식으로 만들기
           let tmp = {};
-          _.forEach(result, function (obj) {
+          _.forEach(res.data, function (obj) {
             let accountCategoryId = String(obj.accountCategoryId);
             tmp[accountCategoryId] = obj.accountCategoryName;
           });
@@ -293,15 +287,9 @@ export default {
         .dispatch("commonStore/selectLargeCtgryList", this.categoryType)
         .then((res) => {
           console.log("getLargeCategoryList", res.data);
-          let result = res.data;
-          const val = {
-            largeCategoryId: "",
-            largeCategoryName: "미분류",
-          };
-          result.unshift(val);
           // {id:name} 형식으로 만들기
           let tmp = {};
-          _.forEach(result, function (obj) {
+          _.forEach(res.data, function (obj) {
             let largeCategoryId = String(obj.largeCategoryId);
             tmp[largeCategoryId] = obj.largeCategoryName;
           });
@@ -354,8 +342,8 @@ export default {
           incomeDate: incomeDate,
           incomeDescription: "",
           incomeAmount: "0",
-          accountCategoryId: "",
-          largeCategoryId: "",
+          accountCategoryId: 6,
+          largeCategoryId: 20,
           memo: "",
         },
         {
@@ -413,7 +401,6 @@ export default {
       this.gridApi.clearFocusedCell();
       const rowData = _.cloneDeep(this.$refs.incomeGrid.getRowData());
       rowData.pop();
-      const userDto = this.user.userInfo;
       const incomeSaveDto = {
         insertIncomeDtoList: [],
         updateIncomeDtoList: [],
@@ -430,7 +417,7 @@ export default {
           accountCategoryId: row.accountCategoryId,
           largeCategoryId: row.largeCategoryId,
           memo: row.memo,
-          userDto: userDto,
+          userDto: this.user.userInfo,
         };
       });
       incomeSaveDto.insertIncomeDtoList = _.filter(rowData, function (row) {

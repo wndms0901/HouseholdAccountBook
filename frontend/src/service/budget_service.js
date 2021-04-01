@@ -24,18 +24,18 @@ class BudgetService {
             });
     }
     /**
-     * 지출 목록 저장
-     * @param {*} ExpenditureSaveDto
+     * 예산 목록 저장
+     * @param {*} BudgetDto
      * @returns 
      */
-    // saveExpenditureList(ExpenditureSaveDto) {
-    //     return axios
-    //         .post(API_URL + 'expenditure/save', ExpenditureSaveDto)
-    //         .then(response => {
-    //             console.log('response', response);
-    //             return response.data;
-    //         });
-    // }
+    saveBudgetList(BudgetDto) {
+        return axios
+            .post(API_URL + 'save', BudgetDto)
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
 
 
 

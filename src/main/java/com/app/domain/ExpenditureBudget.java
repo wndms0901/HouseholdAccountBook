@@ -33,7 +33,7 @@ public class ExpenditureBudget extends BaseTimeEntity {
 
 
     @Builder
-    public ExpenditureBudget(int budgetAmount, String expenditureBudgetDate, User user, Long largeCategoryId) {
+    public ExpenditureBudget(int expenditureBudgetAmount, String expenditureBudgetDate, User user, Long largeCategoryId) {
         this.expenditureBudgetAmount = expenditureBudgetAmount;
         this.expenditureBudgetDate = expenditureBudgetDate;
         this.user = user;

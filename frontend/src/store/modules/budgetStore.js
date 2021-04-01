@@ -20,21 +20,21 @@ const budgetStore = {
             );
         },
         /**
-         * 지출 목록 저장
+         * 예산 목록 저장
          * @param {*} ExpenditureSaveDto
          * @returns 
          */
-        // saveExpenditureList({ }, ExpenditureSaveDto) {
-        //     return writeService.saveExpenditureList(ExpenditureSaveDto).then(
-        //         response => {
-        //             console.log('response', response);
-        //             return Promise.resolve(response);
-        //         },
-        //         error => {
-        //             return Promise.reject(error);
-        //         }
-        //     );
-        // },
+        saveBudgetList({ }, BudgetDto) {
+            return BudgetService.saveBudgetList(BudgetDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
 
     }
 }

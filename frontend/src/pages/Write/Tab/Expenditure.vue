@@ -190,12 +190,15 @@ export default {
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
           return {
-            values: Object.keys(this.accountCategory).sort(),
+            values: Object.keys(this.accountCategory).sort(function (a, b) {
+              return a - b;
+            }),
           };
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("this.accountCategory,", params.value);
+          console.log("출금통장>", this.accountCategory);
+          console.log("출금통장>>", params.value);
           return this.accountCategory[params.value];
         },
         // // convert value to code
@@ -216,7 +219,8 @@ export default {
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("valueFormatter", this.largeCategory[params.value]);
+          console.log("대분류>", this.largeCategory);
+          console.log("대분류>>", params.value);
           return this.largeCategory[params.value];
         },
         // // convert value to code
@@ -282,15 +286,9 @@ export default {
           this.accountCategoryType
         )
         .then((res) => {
-          let result = res.data;
-          const val = {
-            accountCategoryId: "",
-            accountCategoryName: "선택없음",
-          };
-          result.unshift(val);
           // {id:name} 형식으로 만들기
           let tmp = {};
-          _.forEach(result, function (obj) {
+          _.forEach(res.data, function (obj) {
             let accountCategoryId = String(obj.accountCategoryId);
             tmp[accountCategoryId] = obj.accountCategoryName;
           });
@@ -306,27 +304,13 @@ export default {
         .dispatch("commonStore/selectCategoryList", this.categoryType)
         .then((res) => {
           console.log("getCategoryList", res.data);
-          const largeCategoryDtoList = res.data.largeCategoryDtoList;
-          const smallCategoryDtoList = res.data.smallCategoryDtoList;
-          const largeSelect = {
-            largeCategoryId: "",
-            largeCategoryName: "미분류",
-          };
-          const smallSelect = {
-            smallCategoryId: "",
-            smallCategoryName: "미분류",
-            largeCategoryId: "",
-          };
-          largeCategoryDtoList.unshift(largeSelect);
-          smallCategoryDtoList.unshift(smallSelect);
-
           // {largeCategoryId:largeCategoryName} 형식으로 만들기
           let largeCategoryObj = {};
           let smallCategoryObj = {};
-          _.forEach(largeCategoryDtoList, function (obj) {
+          _.forEach(res.data.largeCategoryDtoList, function (obj) {
             let largeCategoryId = String(obj.largeCategoryId);
             largeCategoryObj[largeCategoryId] = obj.largeCategoryName;
-            const filterList = _.filter(smallCategoryDtoList, {
+            const filterList = _.filter(res.data.smallCategoryDtoList, {
               largeCategoryId: obj.largeCategoryId,
             });
             // {largeCategoryId:[{smallCategoryId:"",smallCategoryName:""}]} 형식으로 만들기
@@ -409,9 +393,9 @@ export default {
           expenditureDescription: "",
           cash: "0",
           card: "0",
-          accountCategoryId: "",
-          largeCategoryId: "",
-          smallCategory: { smallCategoryId: "", smallCategoryName: "미분류" },
+          accountCategoryId: 1,
+          largeCategoryId: 1,
+          smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
           memo: "",
         },
         {
@@ -454,7 +438,7 @@ export default {
             cash: "0",
             card: "0",
             accountCategoryId: "",
-            largeCategoryId: "",
+            largeCategoryId: 1,
             smallCategory: { smallCategoryId: "", smallCategoryName: "미분류" },
             memo: "",
           },
@@ -545,5 +529,4 @@ export default {
   // },
 };
 </script>
-      
-    
+
