@@ -3,19 +3,20 @@
     <div class="container-fluid">
       <div class="row">
         <div id="title" style="width: 100%">
-          <p>쓰기</p>
+          <p>보고서</p>
         </div>
         <div class="date_wrap">
-          <div class="date_picker_box" style="text-align: center">
+          <div class="date_picker_box" style="display: flex">
             <b-button class="prevMonthBtn" @click="onPrevMonth">
               <b-icon-chevron-left
                 variant="dark"
-              ></b-icon-chevron-left> </b-button
+              ></b-icon-chevron-left></b-button
             >&nbsp;
             <datepicker
               :format="'yyyy.MM.dd'"
               v-model="period.from"
               input-class="datepickerInput"
+              minimum-view="month"
               :language="ko"
               @closed="onCloseStartDate"
             ></datepicker>
@@ -26,14 +27,14 @@
               :format="'yyyy.MM.dd'"
               v-model="period.to"
               input-class="datepickerInput"
+              minimum-view="month"
               :disabledDates="{ to: this.period.from }"
               :language="ko"
-            ></datepicker>
-            <span class="calendarIconBox"
+            ></datepicker
+            ><span class="calendarIconBox"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon
             ></span>
-            &nbsp;
-            <b-button class="nextMonthBtn" @click="onNextMonth">
+            &nbsp;<b-button class="nextMonthBtn" @click="onNextMonth">
               <b-icon-chevron-right variant="dark"></b-icon-chevron-right>
             </b-button>
           </div>
@@ -41,13 +42,12 @@
       </div>
       <div class="tabs" style="width: 100%">
         <b-tabs content-class="mt-3">
-          <b-tab title="지출" active
-            ><expenditure :user="user" :period="period"></expenditure
-          ></b-tab>
-          <b-tab title="수입"
-            ><income :user="user" :period="period"></income
-          ></b-tab>
-          <b-tab title="달력"></b-tab>
+          <b-tab title="월보고서" active>
+            <monthReport :user="user" :period="period"></monthReport>
+          </b-tab>
+          <b-tab title="연간보고서">
+            <yearReport :user="user" :period="period"></yearReport>
+          </b-tab>
         </b-tabs>
       </div>
     </div>
@@ -56,11 +56,11 @@
 
 <script>
 import datepicker from "vuejs-datepicker";
-import expenditure from "./Tab/Expenditure.vue";
-import income from "./Tab/Income.vue";
+import monthReport from "./Tab/MonthReport.vue";
+import yearReport from "./Tab/YearReport.vue";
 import { ko } from "vuejs-datepicker/dist/locale";
 export default {
-  components: { datepicker, expenditure, income },
+  components: { datepicker, monthReport, yearReport },
   data() {
     return {
       user: this.$store.state.userStore.initialState.user,

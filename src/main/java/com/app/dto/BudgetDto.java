@@ -14,14 +14,18 @@ import java.util.List;
 @NoArgsConstructor
 public class BudgetDto {
     private String incomeBudgetAmount;
+    private String threeMonthAverageExpenditure;
+    private String lastMonthExpenditure;
     private List<BudgetListDto> budgetListDtoList;
     private String expenditureBudgetDate;
     private String incomeBudgetDate;
     private UserDto userDto;
 
     @Builder
-    public BudgetDto(String incomeBudgetAmount, List<BudgetListDto> budgetListDtoList) {
+    public BudgetDto(String incomeBudgetAmount, String threeMonthAverageExpenditure, String lastMonthExpenditure, List<BudgetListDto> budgetListDtoList) {
         this.incomeBudgetAmount = incomeBudgetAmount;
+        this.threeMonthAverageExpenditure = threeMonthAverageExpenditure;
+        this.lastMonthExpenditure = lastMonthExpenditure;
         this.budgetListDtoList = budgetListDtoList;
     }
 

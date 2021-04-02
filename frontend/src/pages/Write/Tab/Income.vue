@@ -29,7 +29,6 @@
   </div>
 </template>
 <script>
-import Datepicker from "src/components/gridCellRenderer/datepickerCellRenderer.vue";
 const getDatePicker = () => {
   function Datepicker() {}
   Datepicker.prototype.init = function (params) {
@@ -87,7 +86,6 @@ window.lookupValue = function lookupValue(mappings, key) {
 // }
 
 export default {
-  components: { Datepicker },
   props: {
     user: Object,
     period: Object,

@@ -19,6 +19,23 @@
          WHERE i.income_budget_date =#{incomeBudgetDate}
            AND i.user_email=#{email}
     </select>
+    <select id="selectThreeMonthAverageExpenditure" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
+        SELECT ROUND(AVG(e.total_expenditure))
+          FROM (
+                SELECT NVL(sum(e.card),0)+NVL(sum(e.cash),0) AS total_expenditure
+                  FROM expenditure e
+                 WHERE e.user_email=#{email}
+                   AND LEFT(e.expenditure_date, 6) BETWEEN REPLACE(LEFT(DATE_ADD(now(),interval-3 month),8),"-","") AND REPLACE(LEFT(DATE_ADD(now(),interval-1 month),8),"-","")
+              GROUP BY e.user_email, LEFT(e.expenditure_date, 6)
+               ) e
+    </select>
+    <select id="selectLastMonthExpenditure" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
+        SELECT NVL(sum(e.card),0)+NVL(sum(e.cash),0)
+        FROM expenditure e
+        WHERE e.user_email=#{email}
+        AND left(e.expenditure_date, 6) = replace(left(date_add(now(),interval-1 month),8),"-","")
+   GROUP BY e.user_email
+    </select>
     <select id="selectBudgetList" parameterType="com.app.dto.BudgetRequestDto" resultMap="budgetListDto">
              SELECT lc.large_category_id
                   , lc.large_category_name

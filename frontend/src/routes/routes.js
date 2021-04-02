@@ -5,6 +5,7 @@ import NotFound from '../pages/NotFoundPage.vue'
 
 // Admin pages
 import Write from 'src/pages/Write/Write.vue'
+import Report from 'src/pages/Report/Report.vue'
 import Budget from 'src/pages/Budget/Budget.vue'
 import Overview from 'src/pages/Overview.vue'
 import UserProfile from 'src/pages/UserProfile.vue'
@@ -38,6 +39,11 @@ const routes = [
         path: 'write',
         name: 'Write',
         component: Write
+      },
+      {
+        path: 'report',
+        name: 'Report',
+        component: Report
       },
       {
         path: 'Overview',

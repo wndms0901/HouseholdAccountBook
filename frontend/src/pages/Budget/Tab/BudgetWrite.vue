@@ -12,18 +12,21 @@
             :readonly="readonly"
           />
           <button @click="onUpdateIncomeBudget">수정</button>
-          <!-- <p>한달 예산</p> -->
         </td>
         <td>3개월 간 평균 지출</td>
-        <td>1000000원</td>
+        <td style="text-align: right">
+          {{ this.threeMonthAverageExpenditure }}원
+        </td>
       </tr>
       <tr>
         <td>지난달 지출</td>
-        <td>1000000원</td>
+        <td style="text-align: right">{{ this.lastMonthExpenditure }}원</td>
       </tr>
     </table>
     <div id="title">
-      <div id="top_title"><span v-show="showBudget">10000000원 남음</span></div>
+      <div id="top_title">
+        <span v-show="showBudget">{{ this.remainingBudget }}원 남음</span>
+      </div>
       <div id="bottom_title">
         <div id="left_title"><span>카테고리별 예산</span></div>
         <div id="right_title">
@@ -39,7 +42,7 @@
     >
       <grid
         ref="budgetGrid"
-        style="height: 420px; flex: 1 1 auto"
+        style="height: 400px; flex: 1 1 auto"
         class="ag-theme-alpine"
         :gridOptions="topGridOptions"
         :columnDefs="columnDefs"
@@ -79,7 +82,8 @@ export default {
       bottomGridOptions: null,
       modules: AllCommunityModules,
       rowStyle: { fontWeight: "bold" },
-      incomeBudgetAmount: "",
+      incomeBudgetAmount: "-",
+      lastMonthExpenditure: "",
       readonly: true,
     };
   },
@@ -102,18 +106,27 @@ export default {
         return true;
       }
     },
+    remainingBudget() {
+      if (this.incomeBudgetAmount == "-") {
+        return "-";
+      } else {
+        return (
+          this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount
+        );
+      }
+    },
   },
-  watch: {},
+  watch: {
+    incomeBudgetAmount: function () {
+      // 숫자만 입력
+      return (this.incomeBudgetAmount = this.incomeBudgetAmount.replace(
+        /[^0-9]/g,
+        ""
+      ));
+    },
+  },
   created() {},
   beforeMount() {
-    this.bottomData = [
-      {
-        largeCategoryName: "합계",
-        expenditureBudgetAmount: "0",
-        expenditureAmount: "0",
-        balance: "0",
-      },
-    ];
     this.topGridOptions = {
       alignedGrids: [],
       defaultColDef: {
@@ -201,23 +214,57 @@ export default {
           // 한달 예산 readonly
           this.readonly = true;
           console.log("getBudgetList", res.data);
+          // const selectBudgetList = _.cloneDeep(res.data.budgetListDtoList);
           // 미분류 마지막 순서로 변경
-          res.data.budgetListDtoList.push(res.data.budgetListDtoList[0]);
-          res.data.budgetListDtoList.shift();
+          // res.data.budgetListDtoList.shift();
+          // res.data.budgetListDtoList.push(selectBudgetList[0]);
+
           // 한달 예산
           this.incomeBudgetAmount = res.data.incomeBudgetAmount;
+          // 3개월 간 평균 지출
+          this.threeMonthAverageExpenditure =
+            res.data.threeMonthAverageExpenditure == null
+              ? "0"
+              : res.data.threeMonthAverageExpenditure;
+          // 지난달 지출
+          this.lastMonthExpenditure =
+            res.data.lastMonthExpenditure == null
+              ? "0"
+              : res.data.lastMonthExpenditure;
           // 남은 돈 column setting
           _.forEach(res.data.budgetListDtoList, function (row, index) {
             res.data.budgetListDtoList[index].balance =
               row.expenditureBudgetAmount - row.expenditureAmount;
           });
           this.gridApi.setRowData(res.data.budgetListDtoList);
+          this.bottomData = [
+            {
+              largeCategoryName: "합계",
+              expenditureBudgetAmount: _.sumBy(
+                res.data.budgetListDtoList,
+                function (o) {
+                  return o.expenditureBudgetAmount;
+                }
+              ),
+              expenditureAmount: _.sumBy(
+                res.data.budgetListDtoList,
+                function (o) {
+                  return o.expenditureAmount;
+                }
+              ),
+              balance: _.sumBy(res.data.budgetListDtoList, function (o) {
+                return o.balance;
+              }),
+            },
+          ];
+          console.log("this.bottomData", this.bottomData);
         })
         .catch((Error) => {
           console.log(Error);
         });
     },
     onSave() {
+      this.gridApi.clearFocusedCell();
       const budgetDto = {
         incomeBudgetAmount: this.incomeBudgetAmount,
         budgetListDtoList: this.$refs.budgetGrid.getRowData(),
@@ -225,6 +272,7 @@ export default {
         incomeBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
         userDto: this.user.userInfo,
       };
+      console.log("budgetDto>>", budgetDto);
       this.$store
         .dispatch("budgetStore/saveBudgetList", budgetDto)
         .then((res) => {

@@ -17,13 +17,14 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class BudgetServiceImpl implements BudgetService{
+public class BudgetServiceImpl implements BudgetService {
     private final IncomeBudgetRepository incomeBudgetRepository;
     private final ExpenditureBudgetRepository expenditureBudgetRepository;
     private final BudgetMapper budgetMapper;
 
     /**
      * 예산 목록 조회
+     *
      * @param budgetRequestDto
      * @return BudgetDto
      */
@@ -31,50 +32,59 @@ public class BudgetServiceImpl implements BudgetService{
     public BudgetDto selectBudgetList(BudgetRequestDto budgetRequestDto) {
         // 수입 예산 금액 조회
         String incomeBudgetAmount = budgetMapper.selectIncomeBudgetAmount(budgetRequestDto);
-        if(incomeBudgetAmount==null) incomeBudgetAmount = "-";
+        if (incomeBudgetAmount == null) incomeBudgetAmount = "-";
+
+        // 3개월 간 평균 지출 조회
+        String threeMonthAverageExpenditure = budgetMapper.selectThreeMonthAverageExpenditure(budgetRequestDto);
+
+        // 지난달 지출 조회
+        String lastMonthExpenditure = budgetMapper.selectLastMonthExpenditure(budgetRequestDto);
 
         // 카테고리별 예산 목록 조회
         List<BudgetListDto> budgetListDtoList = budgetMapper.selectBudgetList(budgetRequestDto);
         return BudgetDto.builder()
                 .incomeBudgetAmount(incomeBudgetAmount)
+                .threeMonthAverageExpenditure(threeMonthAverageExpenditure)
+                .lastMonthExpenditure(lastMonthExpenditure)
                 .budgetListDtoList(budgetListDtoList)
                 .build();
     }
 
     /**
      * 예산 목록 저장
+     *
      * @param budgetDto
-     * @return void
      */
     @Transactional
     @Override
     public void saveBudgetList(BudgetDto budgetDto) {
         // 수입 예산 조회
         Optional<IncomeBudget> incomeBudget = incomeBudgetRepository.findByUserEmailAndIncomeBudgetDate(budgetDto.getUserDto().getEmail(), budgetDto.getIncomeBudgetDate());
-        if(incomeBudget.isPresent()){
+        if (incomeBudget.isPresent()) {
             // 수입 예산 수정
             incomeBudget.get().update(Integer.parseInt(budgetDto.getIncomeBudgetAmount()));
-        }else if(!"-".equals(budgetDto.getIncomeBudgetAmount())){
+        } else if (!"-".equals(budgetDto.getIncomeBudgetAmount())) {
             // 수입 예산 등록
             incomeBudgetRepository.save(budgetDto.saveIncomeBudget());
         }
 
         // 지출 예산 조회
-        for(BudgetListDto dto : budgetDto.getBudgetListDtoList()){
+        for (BudgetListDto dto : budgetDto.getBudgetListDtoList()) {
             Optional<ExpenditureBudget> expenditureBudget = expenditureBudgetRepository.findByUserEmailAndExpenditureBudgetDateAndLargeCategoryId(
                     budgetDto.getUserDto().getEmail(),
                     budgetDto.getExpenditureBudgetDate(),
                     dto.getLargeCategoryId()
             );
-            if(expenditureBudget.isPresent()){
+            if (expenditureBudget.isPresent()) {
                 // 지출 예산 수정
-                expenditureBudget.get().update(dto.getExpenditureAmount());
-            }else{
-                // 지출 예산 등록
-                dto.setExpenditureBudgetDate(budgetDto.getExpenditureBudgetDate());
-                expenditureBudgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
+                if (dto.getExpenditureBudgetAmount() > 0) {
+                    expenditureBudget.get().update(dto.getExpenditureBudgetAmount());
+                } else {
+                    // 지출 예산 등록
+                    dto.setExpenditureBudgetDate(budgetDto.getExpenditureBudgetDate());
+                    expenditureBudgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
+                }
             }
         }
-
-
-    }}
+    }
+}

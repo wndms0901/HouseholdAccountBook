@@ -102,4 +102,52 @@ export default {
 .ag-cell {
   cursor: pointer;
 }
+.date_wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.date_picker_box {
+  position: relative;
+  display: flex;
+  width: 30%;
+}
+.datepickerInput {
+  width: 160px;
+  border: 1px solid lightgray;
+  text-align: center;
+  font-size: 1.5em;
+  background-color: white;
+  cursor: pointer;
+  display: inline-block;
+}
+.calendarIconBox {
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid lightgray;
+  background-color: white;
+}
+.calendarIcon {
+  width: 24px;
+  height: 24px;
+}
+.prevMonthBtn {
+  width: 40px;
+  height: 40px;
+  padding: 0px;
+  border: 1px solid lightgray;
+  border-radius: 0;
+  background-color: white;
+  display: inline-block;
+}
+.nextMonthBtn {
+  width: 40px;
+  height: 40px;
+  padding: 0px;
+  border: 1px solid lightgray;
+  border-radius: 0;
+  background-color: white;
+  display: inline-block;
+}
 </style>

@@ -5,25 +5,28 @@
         <div id="title" style="width: 100%">
           <p>예산쓰기</p>
         </div>
-        <div
-          style="width: 100%; position: relative; display: flex; height: 88px"
-        >
-          <div id="date_picker_box" style="display: flex">
+        <div class="date_wrap">
+          <div class="date_picker_box" style="display: flex">
             <datepicker
               :format="'yyyy.MM.dd'"
               v-model="period.from"
-              :input-class="$style.datepickerInput"
+              input-class="datepickerInput budgetDateInput"
               :disabled="true"
               :language="ko"
             ></datepicker>
-            <span style="font-size: 2em">-</span>
+            <span class="calendarIconBox"
+              ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
+            >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
             <datepicker
               :format="'yyyy.MM.dd'"
               v-model="period.to"
-              :input-class="$style.datepickerInput"
+              input-class="datepickerInput budgetDateInput"
               :disabled="true"
               :language="ko"
             ></datepicker>
+            <span class="calendarIconBox"
+              ><b-icon class="calendarIcon" icon="calendar3"></b-icon
+            ></span>
           </div>
         </div>
         <div class="tabs" style="width: 100%">
@@ -71,11 +74,8 @@ export default {
   },
 };
 </script>
-<style module>
-.datepickerInput {
-  width: 180px;
-  text-align: center;
-  font-size: 2em;
-  background-color: white;
+<style>
+.budgetDateInput {
+  cursor: default;
 }
 </style>

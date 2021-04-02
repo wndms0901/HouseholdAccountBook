@@ -15,7 +15,6 @@ public interface WriteService {
     /**
      * 지출 목록 저장
      * @param expenditureSaveDto
-     * @return void
      */
     void saveExpenditureList(ExpenditureSaveDto expenditureSaveDto);
 
@@ -28,7 +27,6 @@ public interface WriteService {
     /**
      * 수입 목록 저장
      * @param incomeSaveDto
-     * @return void
      */
     void saveIncomeList(IncomeSaveDto incomeSaveDto);
 }

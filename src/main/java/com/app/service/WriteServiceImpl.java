@@ -2,12 +2,10 @@ package com.app.service;
 
 import com.app.domain.Expenditure;
 import com.app.domain.Income;
-import com.app.domain.LargeCategory;
 import com.app.dto.*;
 import com.app.mapper.WriteMapper;
 import com.app.repository.ExpenditureRepository;
 import com.app.repository.IncomeRepository;
-import com.app.repository.LargeCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +33,6 @@ public class WriteServiceImpl implements WriteService{
     /**
      * 지출 목록 저장
      * @param expenditureSaveDto
-     * @return void
      */
     @Transactional
     @Override
@@ -70,7 +67,6 @@ public class WriteServiceImpl implements WriteService{
     /**
      * 수입 목록 저장
      * @param incomeSaveDto
-     * @return void
      */
     @Transactional
     @Override
