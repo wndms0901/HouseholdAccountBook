@@ -36,6 +36,9 @@ import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
 import "../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css";
 Vue.component('grid', AgGridVue)
 
+// vue-google-charts
+import VueGoogleCharts from 'vue-google-charts'
+
 // lodash
 import 'lodash'
 // vue-moment
@@ -47,6 +50,7 @@ Vue.use(VueRouter)
 Vue.use(LightBootstrap)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 
 // configure router
