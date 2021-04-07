@@ -16,6 +16,24 @@
         <div class="monthReport_left_top">
           <h2>요약</h2>
         </div>
+        <div class="monthReport_left_content">
+          <b-table
+            class="monthReport_left_content_table"
+            responsive
+            :items="tableItems"
+            :fields="tableFields"
+            :tbody-tr-class="rowClass"
+          >
+          </b-table>
+          <b-table
+            class="monthReport_left_content_table"
+            responsive
+            borderless
+            :items="table2Items"
+            :fields="table2Fields"
+          >
+          </b-table>
+        </div>
       </div>
       <div class="monthReport_center">
         <div class="monthReport_center_top">
@@ -86,6 +104,16 @@ export default {
   },
   data() {
     return {
+      tableFields: [
+        { key: "period", label: "" },
+        { key: "total", label: "", class: "text-right" },
+      ],
+      tableItems: [],
+      table2Fields: [
+        { key: "title", label: "", class: "w-25" },
+        { key: "value", label: "", class: "text-right" },
+      ],
+      table2Items: [],
       selected: "income",
       gridOptions: null,
       columnDefs: null,
@@ -112,7 +140,7 @@ export default {
           orientation: "vertical",
         },
       },
-      lineChartData: [],
+      lineChartData: [["Gün", "지출 추이", "지난달 일평균"]],
       lineChartOptions: {
         height: 300,
         chart: {
@@ -126,6 +154,8 @@ export default {
         },
         hAxis: {
           format: "MM/dd",
+          // minValue: new Date(2021, 3, 1),
+          // maxValue: new Date(2021, 3, 31),
         },
       },
     };
@@ -169,55 +199,36 @@ export default {
     this.rowData = [{ incomeDescription: "1", memo: "1" }];
   },
   mounted() {
-    this.getWeekOfMonth();
-    const now = new Date();
-    const val = this.$moment(now);
-    const val2 = this.$moment(now).add(1, "days");
-    const val3 = this.$moment(now).add(2, "days").format("MM.DD");
-    const val4 = this.$moment(now).add(3, "days").format("MM.DD");
-    const val5 = this.$moment(now).add(4, "days").format("MM.DD");
-    const val6 = this.$moment(now).add(5, "days").format("MM.DD");
-    const val7 = this.$moment(now).add(6, "days").format("MM.DD");
-    const val8 = this.$moment(now).add(7, "days").format("MM.DD");
-    const val9 = this.$moment(now).add(8, "days").format("MM.DD");
-    const val10 = this.$moment(now).add(9, "days").format("MM.DD");
-    console.log(typeof val);
-    this.lineChartData = [
-      ["Gün", "지출 추이", "지난달 일평균"],
-      [new Date(2021, 3, 1), 1000, 400],
-      [new Date(2021, 3, 2), 1170, 400],
-      [new Date(2021, 3, 3), 1000, 400],
-      [new Date(2021, 3, 4), 1170, 400],
-      [new Date(2021, 3, 5), 1000, 400],
-      [new Date(2021, 3, 6), 1170, 400],
-      [new Date(2021, 3, 7), 1000, 400],
-      [new Date(2021, 3, 8), 1170, 400],
-      [new Date(2021, 3, 9), 1000, 400],
-      [new Date(2021, 3, 10), 1170, 400],
-      [new Date(2021, 3, 11), 1000, 400],
-      [new Date(2021, 3, 12), 1170, 400],
-      [new Date(2021, 3, 13), 1000, 400],
-      [new Date(2021, 3, 14), 1170, 400],
-      [new Date(2021, 3, 15), 1000, 400],
-      [new Date(2021, 3, 16), 1170, 400],
-      [new Date(2021, 3, 17), 1000, 400],
-      [new Date(2021, 3, 18), 1170, 400],
-      [new Date(2021, 3, 19), 1000, 400],
-      [new Date(2021, 3, 20), 1170, 400],
-      [new Date(2021, 3, 21), 1000, 400],
-      [new Date(2021, 3, 22), 1170, 400],
-      [new Date(2021, 3, 23), 1000, 400],
-      [new Date(2021, 3, 24), 1170, 400],
-      [new Date(2021, 3, 25), 1000, 400],
-      [new Date(2021, 3, 26), 1170, 400],
-      [new Date(2021, 3, 27), 1000, 400],
-      [new Date(2021, 3, 28), 1170, 400],
-      [new Date(2021, 3, 29), 1000, 400],
-      [new Date(2021, 3, 30), 1170, 400],
+    this.tableItems = [
+      { period: "20210401", total: 1000, bottom: false },
+      { period: "20210401", total: 1000, bottom: false },
+      { period: "20210401", total: 1000, bottom: false },
+      { period: "20210401", total: 1000, bottom: false },
+      { period: "20210401", total: 1000, bottom: true },
     ];
+    this.table2Items = [{ title: "총 지출", value: 5000 }];
+    this.getWeekOfMonth();
+    const period_from = _.cloneDeep(this.period.from);
+    const period_to = _.cloneDeep(this.period.to);
+    const diff = this.$moment(period_to).diff(period_from, "days") + 1;
+    for (let i = 0; i < diff; i++) {
+      const dt = this.$moment(period_from).add(i, "days").format("YYYY-MM-DD");
+      const year = Number(dt.substr(0, 4));
+      const month = Number(dt.substr(5, 2));
+      const day = Number(dt.substr(8, 2));
+      console.log("year", year, month, day);
+      const arry = [new Date(year, month - 1, day), 1000, 400];
+      this.lineChartData.push(arry);
+    }
   },
 
   methods: {
+    rowClass(item, type) {
+      if (!item || type !== "row") return;
+      if (item.bottom) {
+        return "border-bottom";
+      }
+    },
     onGridReady(params) {
       console.log("params", params);
       this.gridApi = params.api;
@@ -243,7 +254,6 @@ export default {
         to: endWeekTo.date(),
       };
       weekOfMonthList.push(endObj);
-
       // 첫번째 주 add
       const firstdayofweek = this.$moment(period_from).weekday(0);
       const startWeekFrom = this.$moment(period_from);
@@ -326,7 +336,42 @@ export default {
 }
 .monthReport_left_top > h2 {
   margin: 0;
+  padding-bottom: 10px;
 }
+.monthReport_left_content {
+}
+.monthReport_left_content_table {
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  /* height: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  border: 1px solid black;
+  overflow: auto; */
+}
+/* .monthReport_left_content > table {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 400px;
+  height: 200px;
+  border-collapse: collapse;
+  border: 1px solid blue;
+}
+
+.monthReport_left_content > table td {
+  border: 1px solid #000;
+  border-top: 0;
+  width: 200px;
+}
+.monthReport_left_content > table tbody {
+  display: block;
+  height: 200px;
+  overflow: auto;
+} */
+
 .monthReport_center {
   width: 33%;
   height: 550px;

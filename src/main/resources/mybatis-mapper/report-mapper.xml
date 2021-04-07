@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.ReportMapper">
+    <resultMap type="com.app.dto.MonthReportDto" id="monthReportDto">
+        <result column="total_expenditure" property="totalExpenditure" />
+        <result column="total_income" property="totalIncome" />
+        <result column="daily_average_last_month" property="dailyAverageLastMonth" />
+    </resultMap>
+    <resultMap type="com.app.dto.WeeklyExpenditureDto" id="weeklyExpenditureDto">
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="weekly_expenditure" property="weeklyExpenditure" />
+    </resultMap>
+    <resultMap type="com.app.dto.CategoryStatisticsDto" id="categoryStatisticsDto">
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="large_category_name" property="largeCategoryName" />
+        <result column="category_type" property="categoryType" />
+        <result column="total_category" property="totalCategory" />
+    </resultMap>
+    <resultMap type="com.app.dto.DailyExpenditureDto" id="dailyExpenditureDto">
+        <result column="year" property="year" />
+        <result column="month" property="month" />
+        <result column="day" property="day" />
+        <result column="daily_expenditure" property="dailyExpenditure" />
+
+    </resultMap>
+
+    <select id="selectTotalIncomeExpenditure" parameterType="com.app.dto.ReportRequestDto" resultMap="monthReportDto">
+        SELECT e.total_expenditure
+             , i.total_income
+          FROM (
+                SELECT NVL(SUM(card)+SUM(cash),0) AS total_expenditure
+                     , NVL(user_email,'') AS user_email
+                  FROM expenditure
+                 WHERE user_email=#{email}
+                   AND expenditure_date between #{startDate} AND #{endDate}
+               ) e
+     LEFT JOIN (
+                SELECT NVL(SUM(income_amount),0) AS total_income
+                     , NVL(user_email,'') AS user_email
+                  FROM income
+                 WHERE user_email=#{email}
+                   AND income_date between #{startDate} AND #{endDate}
+               ) i
+            ON e.user_email = i.user_email
+    </select>
+    <select id="selectDailyAverageLastMonth" parameterType="com.app.dto.ReportRequestDto" resultMap="monthReportDto">
+        SELECT FLOOR(e.total_expenditure/e.days) as daily_average_last_month
+          FROM (
+                SELECT NVL(SUM(card)+SUM(cash),0) AS total_expenditure
+                     , TO_DAYS(#{lastMonthEndDate})-TO_DAYS(#{lastMonthStartDate})+1 as days
+                  FROM expenditure
+                 WHERE user_email=#{email}
+                   AND expenditure_date between #{lastMonthStartDate} AND #{lastMonthEndDate}
+               ) e
+    </select>
+    <select id="selectTotalCategoryList" parameterType="com.app.dto.ReportRequestDto" resultMap="categoryStatisticsDto">
+        SELECT lc.large_category_id
+             , lc.large_category_name
+             , lc.category_type
+             , c.total_category
+          FROM large_category lc
+    INNER JOIN (
+                SELECT SUM(card)+SUM(cash) AS total_category
+                     , large_category_id
+                  FROM expenditure
+                 WHERE user_email=#{email}
+                   AND expenditure_date between #{startDate} AND #{endDate}
+              GROUP BY large_category_id
+             UNION ALL
+                SELECT sum(income_amount) AS total_category
+                     , large_category_id
+                  FROM income
+                 WHERE user_email=#{email}
+                   AND income_date between #{startDate} AND #{endDate}
+              GROUP BY large_category_id
+               ) c
+            ON lc.large_category_id = c.large_category_id
+    </select>
+
+</mapper>
