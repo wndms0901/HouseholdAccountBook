@@ -3,11 +3,17 @@
     <div class="monthReport_top">
       <table style="width: 600px">
         <tr>
-          <th rowspan="2"><h1>1.1 - 1.31</h1></th>
-          <td>수입 합계 <span class="text-danger">0</span></td>
+          <th rowspan="2">
+            <h1>{{ startDate }} - {{ endDate }}</h1>
+          </th>
+          <td>
+            수입 합계 <span class="text-danger">{{ totalExpenditure }}</span>
+          </td>
         </tr>
         <tr>
-          <td>지출 합계 <span class="text-primary">0</span></td>
+          <td>
+            지출 합계 <span class="text-primary">{{ totalIncome }}</span>
+          </td>
         </tr>
       </table>
     </div>
@@ -20,17 +26,17 @@
           <b-table
             class="monthReport_left_content_table"
             responsive
-            :items="tableItems"
-            :fields="tableFields"
-            :tbody-tr-class="rowClass"
+            :items="summaryTable.items"
+            :fields="summaryTable.fields"
+            :tbody-tr-class="tableRowClass"
           >
           </b-table>
           <b-table
             class="monthReport_left_content_table"
             responsive
             borderless
-            :items="table2Items"
-            :fields="table2Fields"
+            :items="totalTable.items"
+            :fields="totalTable.fields"
           >
           </b-table>
         </div>
@@ -48,24 +54,15 @@
         <div class="monthReport_center_content">
           <GChart
             type="PieChart"
-            :data="chartData"
-            :options="chartOptions"
-            v-show="showIncome"
+            :data="pieChartData"
+            :options="pieChartOptions"
           />
-          <grid
-            ref="Grid"
-            v-bind:style="styleObject"
-            class="ag-theme-alpine"
-            headerHeight="0"
-            :gridOptions="gridOptions"
-            :columnDefs="columnDefs"
-            :defaultColDef="defaultColDef"
-            :rowData="rowData"
-            :singleClickEdit="false"
-            :suppressRowClickSelection="false"
-            rowSelection="multiple"
-            @grid-ready="onGridReady"
-          ></grid>
+          <b-table
+            class="monthReport_center_content_table"
+            responsive
+            :items="chartTable.items"
+            :fields="chartTable.fields"
+          ></b-table>
         </div>
       </div>
       <div class="monthReport_right">
@@ -81,11 +78,11 @@
           <table>
             <tr>
               <td>총 지출</td>
-              <td style="text-align: right">100000원</td>
+              <td style="text-align: right">{{ totalExpenditure }}원</td>
             </tr>
             <tr>
               <td colspan="2" style="text-align: right">
-                지난달 일평균 13,000원
+                지난달 일평균 {{ dailyAverageLastMonth }}원
               </td>
             </tr>
           </table>
@@ -104,36 +101,40 @@ export default {
   },
   data() {
     return {
-      tableFields: [
-        { key: "period", label: "" },
-        { key: "total", label: "", class: "text-right" },
-      ],
-      tableItems: [],
-      table2Fields: [
-        { key: "title", label: "", class: "w-25" },
-        { key: "value", label: "", class: "text-right" },
-      ],
-      table2Items: [],
-      selected: "income",
-      gridOptions: null,
-      columnDefs: null,
-      defaultColDef: null,
-      styleObject: null,
-      rowData: [],
-      chartData: [
-        ["Category", "Total"],
-        ["2014", 1000],
-        ["2015", 1170],
-        ["2016", 660],
-        ["2017", 1030],
-        ["2018", 103],
-        ["2019", 103],
-      ],
-      chartOptions: {
-        chart: {
-          title: "Company Performance",
-          subtitle: "Sales, Expenses, and Profit: 2014-2017",
-        },
+      totalExpenditure: 0,
+      totalIncome: 0,
+      dailyAverageLastMonth: 0,
+      selected: "expenditure",
+      summaryTable: {
+        fields: [
+          { key: "weekList", label: "", class: "w-50" },
+          { key: "weeklyExpenditure", label: "", class: "text-right" },
+        ],
+        items: [],
+      },
+      totalTable: {
+        fields: [
+          { key: "title", label: "", class: "w-25" },
+          { key: "total", label: "", class: "text-right" },
+        ],
+        items: [],
+      },
+      chartTable: {
+        fields: [
+          { key: "largeCategoryName", label: "", class: "w-25" },
+          { key: "totalCategory", label: "", class: "text-right" },
+        ],
+        items: [],
+      },
+      monthReportData: {},
+      pieChartHeader: ["Category", "Total"],
+      pieChartRows: [],
+      updatePieChartData: [],
+      pieChartOptions: {
+        // chart: {
+        //   title: "Company Performance",
+        //   subtitle: "Sales, Expenses, and Profit: 2014-2017",
+        // },
         legend: {
           position: "bottom",
           alignment: "center",
@@ -161,11 +162,19 @@ export default {
     };
   },
   computed: {
-    showIncome() {
-      return this.selected == "income";
+    startDate() {
+      const periodFrom = this.period.from;
+      const startDate = periodFrom.getMonth() + 1 + "." + periodFrom.getDate();
+      return startDate;
     },
-    showExpenditure() {
-      return this.selected == "expenditure";
+    endDate() {
+      const periodTo = this.period.to;
+      const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
+      //return endDate;
+      return "";
+    },
+    pieChartData() {
+      return [this.pieChartHeader, ...this.updatePieChartData];
     },
   },
   watch: {
@@ -173,69 +182,28 @@ export default {
       deep: true,
       handler(newData) {},
     },
+    selected: {
+      handler(newData) {
+        // 카테고리 통계 차트 data
+        this.setPieChartData(this.pieChartRows);
+        // 카테고리 테이블 data
+        this.setPieChartTableData(this.monthReportData);
+      },
+    },
   },
   created() {},
-  beforeMount() {
-    this.styleObject = {
-      width: "400px",
-      height: "200px",
-      marginTop: "10px",
-      marginLeft: "auto",
-      marginRight: "auto",
-    };
-    this.gridOptions = {
-      //onCellValueChanged: onCellValueChanged,
-      //enableColResize: true,
-      // enableSorting: true,
-      // enableFilter: true,
-      // animateRows: false,
-    };
-
-    this.columnDefs = [
-      { field: "incomeId", hide: true },
-      { headerName: "내역", field: "incomeDescription" },
-      { headerName: "메모", field: "memo" },
-    ];
-    this.rowData = [{ incomeDescription: "1", memo: "1" }];
-  },
+  beforeMount() {},
   mounted() {
-    this.tableItems = [
-      { period: "20210401", total: 1000, bottom: false },
-      { period: "20210401", total: 1000, bottom: false },
-      { period: "20210401", total: 1000, bottom: false },
-      { period: "20210401", total: 1000, bottom: false },
-      { period: "20210401", total: 1000, bottom: true },
-    ];
-    this.table2Items = [{ title: "총 지출", value: 5000 }];
     this.getWeekOfMonth();
-    const period_from = _.cloneDeep(this.period.from);
-    const period_to = _.cloneDeep(this.period.to);
-    const diff = this.$moment(period_to).diff(period_from, "days") + 1;
-    for (let i = 0; i < diff; i++) {
-      const dt = this.$moment(period_from).add(i, "days").format("YYYY-MM-DD");
-      const year = Number(dt.substr(0, 4));
-      const month = Number(dt.substr(5, 2));
-      const day = Number(dt.substr(8, 2));
-      console.log("year", year, month, day);
-      const arry = [new Date(year, month - 1, day), 1000, 400];
-      this.lineChartData.push(arry);
-    }
   },
-
   methods: {
-    rowClass(item, type) {
+    tableRowClass(item, type) {
       if (!item || type !== "row") return;
       if (item.bottom) {
         return "border-bottom";
       }
     },
-    onGridReady(params) {
-      console.log("params", params);
-      this.gridApi = params.api;
-      this.columnApi = params.columnApi;
-
-      params.api.sizeColumnsToFit();
-    },
+    // 주 목록 조회
     getWeekOfMonth() {
       const weekOfMonthList = [];
       const period_from = _.cloneDeep(this.period.from);
@@ -250,8 +218,9 @@ export default {
       const endObj = {
         month: endMonth,
         week: endWeek,
-        from: endWeekFrom.date(),
-        to: endWeekTo.date(),
+        startDate: endWeekFrom.format("YYYYMMDD"),
+        endDate: endWeekTo.format("YYYYMMDD"),
+        email: this.user.userInfo.email,
       };
       weekOfMonthList.push(endObj);
       // 첫번째 주 add
@@ -274,8 +243,9 @@ export default {
         const obj = {
           month: month,
           week: week,
-          from: weekFrom.date(),
-          to: weekTo.date(),
+          startDate: weekFrom.format("YYYYMMDD"),
+          endDate: weekTo.format("YYYYMMDD"),
+          email: this.user.userInfo.email,
         };
         weekOfMonthList.push(obj);
       }
@@ -283,12 +253,14 @@ export default {
       const startObj = {
         month: startMonth,
         week: startWeek,
-        from: startWeekFrom.date(),
-        to: startWeekTo.date(),
+        startDate: startWeekFrom.format("YYYYMMDD"),
+        endDate: startWeekTo.format("YYYYMMDD"),
+        email: this.user.userInfo.email,
       };
       weekOfMonthList.push(startObj);
-      console.log("weekOfMonthList", weekOfMonthList);
+      this.selectMonthReport(weekOfMonthList);
     },
+    // 몇 번째 주인지 계산
     getWeek(from, to) {
       let value = 0;
       const fromMonth = this.$moment(from).month();
@@ -303,6 +275,146 @@ export default {
         this.$moment(from).startOf("month").week() +
         value
       );
+    },
+    // 월 보고서 조회
+    selectMonthReport(weekOfMonthList) {
+      const reportRequestDto = {
+        email: this.user.userInfo.email,
+        startDate: this.$moment(this.period.from).format("YYYYMMDD"),
+        endDate: this.$moment(this.period.to).format("YYYYMMDD"),
+        lastMonthStartDate: this.$moment(this.period.from).format("YYYYMMDD"),
+        lastMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
+        weekDtoList: weekOfMonthList,
+      };
+      console.log("reportRequestDto>>", reportRequestDto);
+      this.$store
+        .dispatch("reportStore/selectMonthReport", reportRequestDto)
+        .then((res) => {
+          console.log("결과>", res.data);
+          // 수입/지출 합계, 지난달 일평균
+          this.totalExpenditure = res.data.totalExpenditure;
+          this.totalIncome = res.data.totalIncome;
+          this.dailyAverageLastMonth = res.data.dailyAverageLastMonth;
+          // 요약 테이블 data
+          _.forEach(res.data.weeklyExpenditureDtoList, function (obj, index) {
+            res.data.weeklyExpenditureDtoList[index].weeklyExpenditure =
+              obj.weeklyExpenditure + "원";
+            res.data.weeklyExpenditureDtoList[index].bottom =
+              res.data.weeklyExpenditureDtoList.length == index + 1;
+          });
+          this.summaryTable.items = res.data.weeklyExpenditureDtoList;
+          // 총 합계 테이블 data
+          this.totalTable.items = [
+            { title: "총 지출", total: res.data.totalExpenditure + "원" },
+          ];
+
+          // 카테고리 통계 차트 data
+          this.setPieChartData(res.data.categoryStatisticsDtoList);
+          // 카테고리 테이블 data
+          const monthReportData = _.cloneDeep(res.data);
+          this.setPieChartTableData(monthReportData);
+
+          // 일별 차트 data
+          const period_from = _.cloneDeep(this.period.from);
+          const period_to = _.cloneDeep(this.period.to);
+          const diff = this.$moment(period_to).diff(period_from, "days") + 1;
+          for (let i = 0; i < diff; i++) {
+            const dt = this.$moment(period_from)
+              .add(i, "days")
+              .format("YYYY-MM-DD");
+            const year = Number(dt.substr(0, 4));
+            const month = Number(dt.substr(5, 2));
+            const day = Number(dt.substr(8, 2));
+            // 해당 일자에 지출 내역이 있는지 확인
+            const filterDailyExpenditure = _.filter(
+              res.data.dailyExpenditureDtoList,
+              {
+                expenditureYear: year,
+                expenditureMonth: month,
+                expenditureDay: day,
+              }
+            );
+            let dailyExpenditure =
+              filterDailyExpenditure.length > 0
+                ? filterDailyExpenditure[0].dailyExpenditure
+                : 0;
+            const arry = [
+              new Date(year, month - 1, day),
+              dailyExpenditure,
+              res.data.dailyAverageLastMonth,
+            ];
+            this.lineChartData.push(arry);
+          }
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
+    // 카테고리 통계 차트 data
+    setPieChartData(pieChartRows) {
+      this.pieChartRows = pieChartRows;
+      let updatePieChartData = [];
+      if (this.selected == "income") {
+        // 수입 radio button
+        const incomeCtgryList = _.filter(this.pieChartRows, {
+          categoryType: "INC",
+        });
+        _.forEach(incomeCtgryList, function (obj, index) {
+          updatePieChartData.push([obj.largeCategoryName, obj.totalCategory]);
+        });
+      } else {
+        // 지출 radio button
+        const expenditureCtgryList = _.filter(this.pieChartRows, {
+          categoryType: "EXP",
+        });
+        _.forEach(expenditureCtgryList, function (obj, index) {
+          updatePieChartData.push([obj.largeCategoryName, obj.totalCategory]);
+        });
+      }
+      this.updatePieChartData = updatePieChartData;
+    },
+    // 카테고리 테이블 data
+    setPieChartTableData(monthReportData) {
+      this.monthReportData = monthReportData;
+      let updatePieChartTableData = [];
+      let total = 0;
+      if (this.selected == "income") {
+        // 수입 radio button
+        total = monthReportData.totalIncome; // 총 수입
+        const incomeCtgryList = _.filter(
+          monthReportData.categoryStatisticsDtoList,
+          {
+            categoryType: "INC",
+          }
+        );
+        _.forEach(incomeCtgryList, function (obj, index) {
+          updatePieChartTableData.push({
+            largeCategoryName: obj.largeCategoryName,
+            totalCategory: obj.totalCategory + "원",
+          });
+        });
+      } else {
+        // 지출 radio button
+        total = monthReportData.totalExpenditure; // 총 지출
+        const expenditureCtgryList = _.filter(
+          monthReportData.categoryStatisticsDtoList,
+          {
+            categoryType: "EXP",
+          }
+        );
+        _.forEach(expenditureCtgryList, function (obj, index) {
+          updatePieChartTableData.push({
+            largeCategoryName: obj.largeCategoryName,
+            totalCategory: obj.totalCategory + "원",
+          });
+        });
+      }
+      // 전체 합계
+      updatePieChartTableData.push({
+        largeCategoryName: "전체",
+        totalCategory: total + "원",
+      });
+      this.chartTable.items = updatePieChartTableData;
     },
   },
 };
@@ -392,7 +504,11 @@ export default {
   text-align: center;
   /* vertical-align: top; */
 }
-
+.monthReport_center_content_table {
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
 .monthReport_right {
   width: 33%;
   height: 550px;

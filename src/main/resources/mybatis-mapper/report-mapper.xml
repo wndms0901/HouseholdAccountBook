@@ -10,8 +10,7 @@
         <result column="daily_average_last_month" property="dailyAverageLastMonth" />
     </resultMap>
     <resultMap type="com.app.dto.WeeklyExpenditureDto" id="weeklyExpenditureDto">
-        <result column="start_date" property="startDate" />
-        <result column="end_date" property="endDate" />
+        <result column="week_list" property="weekList" />
         <result column="weekly_expenditure" property="weeklyExpenditure" />
     </resultMap>
     <resultMap type="com.app.dto.CategoryStatisticsDto" id="categoryStatisticsDto">
@@ -21,9 +20,9 @@
         <result column="total_category" property="totalCategory" />
     </resultMap>
     <resultMap type="com.app.dto.DailyExpenditureDto" id="dailyExpenditureDto">
-        <result column="year" property="year" />
-        <result column="month" property="month" />
-        <result column="day" property="day" />
+        <result column="expenditure_year" property="expenditureYear" />
+        <result column="expenditure_month" property="expenditureMonth" />
+        <result column="expenditure_day" property="expenditureDay" />
         <result column="daily_expenditure" property="dailyExpenditure" />
 
     </resultMap>
@@ -33,14 +32,14 @@
              , i.total_income
           FROM (
                 SELECT NVL(SUM(card)+SUM(cash),0) AS total_expenditure
-                     , NVL(user_email,'') AS user_email
+                     , NVL(user_email,#{email}) AS user_email
                   FROM expenditure
                  WHERE user_email=#{email}
                    AND expenditure_date between #{startDate} AND #{endDate}
                ) e
      LEFT JOIN (
                 SELECT NVL(SUM(income_amount),0) AS total_income
-                     , NVL(user_email,'') AS user_email
+                     , NVL(user_email,#{email}) AS user_email
                   FROM income
                  WHERE user_email=#{email}
                    AND income_date between #{startDate} AND #{endDate}
@@ -56,6 +55,20 @@
                  WHERE user_email=#{email}
                    AND expenditure_date between #{lastMonthStartDate} AND #{lastMonthEndDate}
                ) e
+    </select>
+    <select id="selectWeeklyExpenditureList" parameterType="com.app.dto.ReportRequestDto" resultMap="weeklyExpenditureDto">
+        <foreach collection="weekDtoList" index="index" item="item" separator="union all">
+            SELECT CONCAT(#{item.month} ,'월 ' ,#{item.week} ,'주 ('
+                         ,SUBSTRING(#{item.startDate},5,2) ,'.' ,SUBSTRING(#{item.startDate},7,2) ,'-'
+                         ,SUBSTRING(#{item.endDate},5,2) ,'.' ,SUBSTRING(#{item.endDate},7,2) ,')'
+                         ) AS week_list
+                 , NVL(sum(e.card)+sum(e.cash),0) AS weekly_expenditure
+              FROM expenditure e
+             WHERE e.user_email=#{item.email}
+               AND e.expenditure_date between #{item.startDate} AND #{item.endDate}
+        </foreach>
+
+<!--        ORDER BY e.expenditure_date-->
     </select>
     <select id="selectTotalCategoryList" parameterType="com.app.dto.ReportRequestDto" resultMap="categoryStatisticsDto">
         SELECT lc.large_category_id
@@ -80,5 +93,14 @@
                ) c
             ON lc.large_category_id = c.large_category_id
     </select>
-
+    <select id="selectDailyExpenditureDtoList" parameterType="com.app.dto.ReportRequestDto" resultMap="dailyExpenditureDto">
+        SELECT (e.card+e.cash) AS daily_expenditure
+             , SUBSTRING(expenditure_date,1,4) AS expenditure_year
+             , SUBSTRING(expenditure_date,5,2) AS expenditure_month
+             , SUBSTRING(expenditure_date,7,2) AS expenditure_day
+          FROM expenditure e
+         WHERE e.user_email=#{email}
+           AND e.expenditure_date between #{startDate} AND #{endDate}
+      ORDER BY e.expenditure_date
+    </select>
 </mapper>

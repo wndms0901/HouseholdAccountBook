@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class WeeklyExpenditureDto {
-    private String startDate;
-    private String endDate;
+    private String weekList;
     private int weeklyExpenditure;
 }
