@@ -238,7 +238,7 @@ export default {
 
     this.isRowSelectable = (rowNode) => {
       console.log("rowNode", rowNode);
-      return rowNode.data.incomeDate == "" ? false : true;
+      return rowNode.data.incomeDate === "" ? false : true;
     };
 
     // this.frameworkComponents = {
@@ -364,7 +364,7 @@ export default {
       });
     },
     onRowClick(event) {
-      if (event.data.incomeDate == "") {
+      if (event.data.incomeDate === "") {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.incomeGrid.getRowData();
         const today = new Date();

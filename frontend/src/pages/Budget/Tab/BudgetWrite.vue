@@ -90,7 +90,7 @@ export default {
   computed: {
     // readonly: {
     //   get() {
-    //     if (this.incomeBudgetAmount == "-") {
+    //     if (this.incomeBudgetAmount === "-") {
     //       return true;
     //     } else {
     //       return false;
@@ -100,14 +100,14 @@ export default {
     // },
 
     showBudget() {
-      if (this.incomeBudgetAmount == "-") {
+      if (this.incomeBudgetAmount === "-") {
         return false;
       } else {
         return true;
       }
     },
     remainingBudget() {
-      if (this.incomeBudgetAmount == "-") {
+      if (this.incomeBudgetAmount === "-") {
         return "-";
       } else {
         return (
@@ -194,7 +194,7 @@ export default {
     },
     onUpdateIncomeBudget() {
       this.readonly = false;
-      if (this.incomeBudgetAmount == "-") {
+      if (this.incomeBudgetAmount === "-") {
         this.incomeBudgetAmount = "";
       }
       this.$refs.incomeBudgetAmount.focus();
@@ -223,12 +223,12 @@ export default {
           this.incomeBudgetAmount = res.data.incomeBudgetAmount;
           // 3개월 간 평균 지출
           this.threeMonthAverageExpenditure =
-            res.data.threeMonthAverageExpenditure == null
+            res.data.threeMonthAverageExpenditure === null
               ? "0"
               : res.data.threeMonthAverageExpenditure;
           // 지난달 지출
           this.lastMonthExpenditure =
-            res.data.lastMonthExpenditure == null
+            res.data.lastMonthExpenditure === null
               ? "0"
               : res.data.lastMonthExpenditure;
           // 남은 돈 column setting

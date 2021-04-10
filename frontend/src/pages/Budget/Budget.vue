@@ -14,7 +14,7 @@
               :disabled="true"
               :language="ko"
             ></datepicker>
-            <span class="calendarIconBox"
+            <span class="calendarIconBox budgetCalendarIconBox"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
             >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
             <datepicker
@@ -24,7 +24,7 @@
               :disabled="true"
               :language="ko"
             ></datepicker>
-            <span class="calendarIconBox"
+            <span class="calendarIconBox budgetCalendarIconBox"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon
             ></span>
           </div>
@@ -76,6 +76,9 @@ export default {
 </script>
 <style>
 .budgetDateInput {
+  cursor: default;
+}
+.budgetCalendarIconBox {
   cursor: default;
 }
 </style>

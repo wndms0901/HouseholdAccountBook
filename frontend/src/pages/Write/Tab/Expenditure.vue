@@ -293,7 +293,7 @@ export default {
 
     this.isRowSelectable = (rowNode) => {
       console.log("rowNode", rowNode);
-      return rowNode.data.expenditureDate == "" ? false : true;
+      return rowNode.data.expenditureDate === "" ? false : true;
     };
 
     // this.frameworkComponents = {
@@ -396,10 +396,10 @@ export default {
             );
             // accountCategoryId
             res.data[index].accountCategoryId =
-              row.accountCategoryId == null ? "" : row.accountCategoryId;
+              row.accountCategoryId === null ? "" : row.accountCategoryId;
             // largeCategoryId
             res.data[index].largeCategoryId =
-              row.largeCategoryId == null ? "" : row.largeCategoryId;
+              row.largeCategoryId === null ? "" : row.largeCategoryId;
             // smallCategory setting
             res.data[index].smallCategory = {
               smallCategoryId: row.smallCategoryId,
@@ -457,7 +457,7 @@ export default {
     },
     // Row 추가
     onRowClick(event) {
-      if (event.data.expenditureDate == "") {
+      if (event.data.expenditureDate === "") {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.expenditureGrid.getRowData();
         const today = new Date();

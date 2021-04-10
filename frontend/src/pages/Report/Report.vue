@@ -20,7 +20,11 @@
               :language="ko"
               @closed="onCloseStartDate"
             ></datepicker>
-            <span class="calendarIconBox"
+            <span
+              class="calendarIconBox"
+              @click="onClickPeriodFromCalendar"
+              @blur="onBlurCalendar"
+              tabindex="0"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
             >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
             <datepicker
@@ -31,7 +35,11 @@
               :disabledDates="{ to: this.period.from }"
               :language="ko"
             ></datepicker
-            ><span class="calendarIconBox"
+            ><span
+              class="calendarIconBox"
+              @click="onClickPeriodToCalendar"
+              @blur="onBlurCalendar"
+              tabindex="0"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon
             ></span>
             &nbsp;<b-button class="nextMonthBtn" @click="onNextMonth">
@@ -99,6 +107,7 @@ export default {
   methods: {
     setPeriod() {
       const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      //const monthStartDate = 13;
       let today = new Date();
       let startDate = new Date(
         today.getFullYear(),
@@ -113,30 +122,69 @@ export default {
       this.period.from = startDate;
       this.period.to = endDate;
     },
+    onClickPeriodFromCalendar() {
+      this.$refs.periodTo.close();
+      this.$refs.periodFrom.showCalendar();
+    },
+    onClickPeriodToCalendar() {
+      this.$refs.periodFrom.close();
+      this.$refs.periodTo.showCalendar();
+    },
+    onBlurCalendar() {
+      this.$refs.periodFrom.close();
+      this.$refs.periodTo.close();
+    },
     onCloseStartDate() {
-      this.period.to = this.$moment(this.period.from)
+      const periodTo = this.$moment(this.period.from)
         .add(1, "months")
-        .subtract(1, "days")
-        .format("YYYY-MM-DD");
-      console.log(typeof new Date());
-      console.log("this.period.from", typeof this.period.from);
-      console.log("this.period.to", typeof this.period.to);
+        .subtract(1, "days")._d;
+      this.period.to = periodTo;
     },
     onPrevMonth() {
-      this.period.from = new Date(
-        this.$moment(this.period.from).subtract(1, "months").format()
-      );
-      this.period.to = new Date(
-        this.$moment(this.period.to).subtract(1, "months").format()
-      );
+      const periodFrom = _.cloneDeep(this.period.from);
+      const lastDay = this.$moment(periodFrom).endOf("month")._d;
+      // 말일 체크
+      if (periodFrom.getDate() === lastDay.getDate()) {
+        this.period.from = this.$moment(this.period.from)
+          .subtract(1, "months")
+          .endOf("month")._d;
+      } else {
+        this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
+      }
+      // period.to setting
+      this.period.to = this.$moment(this.period.from)
+        .add(1, "months")
+        .subtract(1, "days")._d;
+
+      // this.period.from = new Date(
+      //   this.$moment(this.period.from).subtract(1, "months").format()
+      // );
+      // this.period.to = new Date(
+      //   this.$moment(this.period.to).subtract(1, "months").format()
+      // );
     },
     onNextMonth() {
-      this.period.from = new Date(
-        this.$moment(this.period.from).add(1, "months").format()
-      );
-      this.period.to = new Date(
-        this.$moment(this.period.to).add(1, "months").format()
-      );
+      const periodFrom = _.cloneDeep(this.period.from);
+      const lastDay = this.$moment(periodFrom).endOf("month")._d;
+      // 말일 체크
+      if (periodFrom.getDate() === lastDay.getDate()) {
+        this.period.from = this.$moment(this.period.from)
+          .add(1, "months")
+          .endOf("month")._d;
+      } else {
+        this.period.from = this.$moment(periodFrom).add(1, "months")._d;
+      }
+      // period.to setting
+      this.period.to = this.$moment(this.period.from)
+        .add(1, "months")
+        .subtract(1, "days")._d;
+
+      // this.period.from = new Date(
+      //   this.$moment(this.period.from).add(1, "months").format()
+      // );
+      // this.period.to = new Date(
+      //   this.$moment(this.period.to).add(1, "months").format()
+      // );
     },
   },
 };

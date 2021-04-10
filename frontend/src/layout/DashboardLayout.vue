@@ -127,6 +127,8 @@ export default {
   padding: 6px;
   border: 1px solid lightgray;
   background-color: white;
+  outline: none;
+  cursor: pointer;
 }
 .calendarIcon {
   width: 24px;

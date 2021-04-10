@@ -121,7 +121,7 @@ export default {
       },
       chartTable: {
         fields: [
-          { key: "largeCategoryName", label: "", class: "w-25" },
+          { key: "largeCategoryName", label: "", class: "text-left w-50" },
           { key: "totalCategory", label: "", class: "text-right" },
         ],
         items: [],
@@ -141,7 +141,8 @@ export default {
           orientation: "vertical",
         },
       },
-      lineChartData: [["Gün", "지출 추이", "지난달 일평균"]],
+      lineChartHeader: ["지출일자", "지출 추이", "지난달 일평균"],
+      updateLineChartData: [],
       lineChartOptions: {
         height: 300,
         chart: {
@@ -158,6 +159,12 @@ export default {
           // minValue: new Date(2021, 3, 1),
           // maxValue: new Date(2021, 3, 31),
         },
+        vAxis: {
+          format: "#,###",
+          // viewWindow: {
+          //   min: -0,
+          // },
+        },
       },
     };
   },
@@ -170,17 +177,21 @@ export default {
     endDate() {
       const periodTo = this.period.to;
       const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
-      //return endDate;
-      return "";
+      return endDate;
     },
     pieChartData() {
       return [this.pieChartHeader, ...this.updatePieChartData];
+    },
+    lineChartData() {
+      return [this.lineChartHeader, ...this.updateLineChartData];
     },
   },
   watch: {
     period: {
       deep: true,
-      handler(newData) {},
+      handler(newData) {
+        this.getWeekOfMonth();
+      },
     },
     selected: {
       handler(newData) {
@@ -210,11 +221,12 @@ export default {
       const period_to = _.cloneDeep(this.period.to);
 
       // 마지막 주
-      const endWeekFrom = this.$moment(period_to).weekday(0);
+      const endWeekFrom = this.$moment(period_to).isoWeekday(1);
       const endWeekTo = this.$moment(period_to);
-      const endMonth = endWeekFrom.month() + 1;
+      // 마지막 주의 목요일
+      const endWeekThu = this.$moment(period_to).isoWeekday(4)._d;
+      const endMonth = endWeekThu.getMonth() + 1;
       const endWeek = this.getWeek(endWeekFrom, endWeekTo);
-
       const endObj = {
         month: endMonth,
         week: endWeek,
@@ -224,11 +236,13 @@ export default {
       };
       weekOfMonthList.push(endObj);
       // 첫번째 주 add
-      const firstdayofweek = this.$moment(period_from).weekday(0);
+      const firstDayOfWeek = this.$moment(period_from).isoWeekday(1);
       const startWeekFrom = this.$moment(period_from);
-      const startWeekTo = this.$moment(period_from).weekday(6);
-      const startMonth = firstdayofweek.month() + 1;
-      const startWeek = this.getWeek(firstdayofweek, startWeekTo);
+      const startWeekTo = this.$moment(period_from).isoWeekday(7);
+      // 첫번째 주의 목요일
+      const startWeekThu = this.$moment(period_from).isoWeekday(4)._d;
+      const startMonth = startWeekThu.getMonth() + 1;
+      const startWeek = this.getWeek(firstDayOfWeek, startWeekTo);
 
       // week add
       const startDate = _.cloneDeep(startWeekTo).add(1, "days");
@@ -262,19 +276,43 @@ export default {
     },
     // 몇 번째 주인지 계산
     getWeek(from, to) {
-      let value = 0;
-      const fromMonth = this.$moment(from).month();
-      const toMonth = this.$moment(to).month();
-      if (fromMonth != toMonth) {
-        value = 1;
-      } else {
-        value = 0;
-      }
-      return (
-        this.$moment(from).week() -
-        this.$moment(from).startOf("month").week() +
-        value
+      console.log(">>", from._d);
+      console.log(
+        "this.$moment(from).isoWeek() -",
+        this.$moment(from).isoWeek()
       );
+      console.log(
+        "this.$moment(from).startOf('month').isoWeek() -",
+        this.$moment(from).startOf("month").isoWeek()
+      );
+      // console.log(
+      //   "this.$moment(from).startOf('month').isoWeek() -",
+      //   this.$moment(from).startOf("month").isoWeek()
+      // );
+      const isoWeek = this.$moment(from).isoWeek();
+      const monthIsoWeek = this.$moment(from).startOf("month").isoWeek();
+      return isoWeek - monthIsoWeek + 1;
+      // return isoWeek - monthIsoWeek < 1 ? isoWeek : isoWeek - monthIsoWeek + 1;
+
+      // let value = 0;
+      // const fromMonth = this.$moment(from).month();
+      // const toMonth = this.$moment(to).month();
+      // if (fromMonth !== toMonth) {
+      //   value = 1;
+      // } else {
+      //   value = 0;
+      // }
+      // console.log("this.$moment(from).isoWeek()", this.$moment(from).isoWeek());
+      // console.log(
+      //   'this.$moment(from).startOf("month").isoWeek()',
+      //   this.$moment(from).startOf("month").isoWeek()
+      // );
+      // return (
+      //   this.$moment(from).isoWeek() -
+      //   this.$moment(from).startOf("month").isoWeek() +
+      //   value
+
+      // );
     },
     // 월 보고서 조회
     selectMonthReport(weekOfMonthList) {
@@ -300,7 +338,7 @@ export default {
             res.data.weeklyExpenditureDtoList[index].weeklyExpenditure =
               obj.weeklyExpenditure + "원";
             res.data.weeklyExpenditureDtoList[index].bottom =
-              res.data.weeklyExpenditureDtoList.length == index + 1;
+              res.data.weeklyExpenditureDtoList.length === index + 1;
           });
           this.summaryTable.items = res.data.weeklyExpenditureDtoList;
           // 총 합계 테이블 data
@@ -318,6 +356,7 @@ export default {
           const period_from = _.cloneDeep(this.period.from);
           const period_to = _.cloneDeep(this.period.to);
           const diff = this.$moment(period_to).diff(period_from, "days") + 1;
+          let updateLineChartData = [];
           for (let i = 0; i < diff; i++) {
             const dt = this.$moment(period_from)
               .add(i, "days")
@@ -343,8 +382,9 @@ export default {
               dailyExpenditure,
               res.data.dailyAverageLastMonth,
             ];
-            this.lineChartData.push(arry);
+            updateLineChartData.push(arry);
           }
+          this.updateLineChartData = updateLineChartData;
         })
         .catch((Error) => {
           console.log(Error);
@@ -354,7 +394,7 @@ export default {
     setPieChartData(pieChartRows) {
       this.pieChartRows = pieChartRows;
       let updatePieChartData = [];
-      if (this.selected == "income") {
+      if (this.selected === "income") {
         // 수입 radio button
         const incomeCtgryList = _.filter(this.pieChartRows, {
           categoryType: "INC",
@@ -378,7 +418,7 @@ export default {
       this.monthReportData = monthReportData;
       let updatePieChartTableData = [];
       let total = 0;
-      if (this.selected == "income") {
+      if (this.selected === "income") {
         // 수입 radio button
         total = monthReportData.totalIncome; // 총 수입
         const incomeCtgryList = _.filter(
