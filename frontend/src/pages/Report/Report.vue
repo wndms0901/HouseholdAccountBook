@@ -13,6 +13,7 @@
               ></b-icon-chevron-left></b-button
             >&nbsp;
             <datepicker
+              ref="periodFrom"
               :format="'yyyy.MM.dd'"
               v-model="period.from"
               input-class="datepickerInput"
@@ -30,16 +31,12 @@
             <datepicker
               :format="'yyyy.MM.dd'"
               v-model="period.to"
-              input-class="datepickerInput"
+              input-class="datepickerInput_disabled"
               minimum-view="month"
-              :disabledDates="{ to: this.period.from }"
               :language="ko"
+              disabled
             ></datepicker
-            ><span
-              class="calendarIconBox"
-              @click="onClickPeriodToCalendar"
-              @blur="onBlurCalendar"
-              tabindex="0"
+            ><span class="calendarIconBox_disabled"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon
             ></span>
             &nbsp;<b-button class="nextMonthBtn" @click="onNextMonth">
@@ -49,8 +46,8 @@
         </div>
       </div>
       <div class="tabs" style="width: 100%">
-        <b-tabs content-class="mt-3">
-          <b-tab title="월보고서" active>
+        <b-tabs v-model="tabIndex" content-class="mt-3">
+          <b-tab title="월보고서">
             <monthReport :user="user" :period="period"></monthReport>
           </b-tab>
           <b-tab title="연간보고서">
@@ -77,6 +74,7 @@ export default {
         from: "",
         to: "",
       },
+      tabIndex: 0,
     };
   },
   computed: {
@@ -97,6 +95,13 @@ export default {
     //   return period;
     // },
   },
+  watch: {
+    tabIndex: {
+      handler(newData) {
+        this.setPeriod();
+      },
+    },
+  },
   beforeCreate() {},
   created() {
     this.setPeriod();
@@ -105,34 +110,41 @@ export default {
     //  this.user = this.$store.state.initialState.user;
   },
   methods: {
+    // 조회 기간 setting
     setPeriod() {
       const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      //const monthStartDate = 13;
+      // const monthStartDate = 13;
       let today = new Date();
       let startDate = new Date(
         today.getFullYear(),
         today.getMonth(),
         monthStartDate
       );
-      let endDate = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        monthStartDate - 1
-      );
+      let endDate = null;
+
+      if (this.tabIndex === 0) {
+        // 월보고서(월 단위)
+        endDate = new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          monthStartDate - 1
+        );
+      } else {
+        // 연간보고서(연 단위)
+        endDate = new Date(
+          today.getFullYear() + 1,
+          today.getMonth(),
+          monthStartDate - 1
+        );
+      }
       this.period.from = startDate;
       this.period.to = endDate;
     },
     onClickPeriodFromCalendar() {
-      this.$refs.periodTo.close();
       this.$refs.periodFrom.showCalendar();
-    },
-    onClickPeriodToCalendar() {
-      this.$refs.periodFrom.close();
-      this.$refs.periodTo.showCalendar();
     },
     onBlurCalendar() {
       this.$refs.periodFrom.close();
-      this.$refs.periodTo.close();
     },
     onCloseStartDate() {
       const periodTo = this.$moment(this.period.from)
@@ -152,16 +164,17 @@ export default {
         this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
       }
       // period.to setting
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "months")
-        .subtract(1, "days")._d;
-
-      // this.period.from = new Date(
-      //   this.$moment(this.period.from).subtract(1, "months").format()
-      // );
-      // this.period.to = new Date(
-      //   this.$moment(this.period.to).subtract(1, "months").format()
-      // );
+      if (this.tabIndex === 0) {
+        // 월보고서(월 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "months")
+          .subtract(1, "days")._d;
+      } else {
+        // 연간보고서(연 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
+      }
     },
     onNextMonth() {
       const periodFrom = _.cloneDeep(this.period.from);
@@ -175,16 +188,17 @@ export default {
         this.period.from = this.$moment(periodFrom).add(1, "months")._d;
       }
       // period.to setting
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "months")
-        .subtract(1, "days")._d;
-
-      // this.period.from = new Date(
-      //   this.$moment(this.period.from).add(1, "months").format()
-      // );
-      // this.period.to = new Date(
-      //   this.$moment(this.period.to).add(1, "months").format()
-      // );
+      if (this.tabIndex === 0) {
+        // 월보고서(월 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "months")
+          .subtract(1, "days")._d;
+      } else {
+        // 연간보고서(연 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
+      }
     },
   },
 };

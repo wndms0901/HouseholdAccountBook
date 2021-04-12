@@ -121,6 +121,15 @@ export default {
   cursor: pointer;
   display: inline-block;
 }
+.datepickerInput_disabled {
+  width: 160px;
+  border: 1px solid lightgray;
+  text-align: center;
+  font-size: 1.5em;
+  color: black;
+  background-color: white;
+  display: inline-block;
+}
 .calendarIconBox {
   width: 40px;
   height: 40px;
@@ -129,6 +138,13 @@ export default {
   background-color: white;
   outline: none;
   cursor: pointer;
+}
+.calendarIconBox_disabled {
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid lightgray;
+  background-color: white;
 }
 .calendarIcon {
   width: 24px;

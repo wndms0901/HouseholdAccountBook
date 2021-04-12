@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="monthReport_top">
-      <table style="width: 600px">
+      <table style="width: 700px">
         <tr>
           <th rowspan="2">
             <h1>{{ startDate }} - {{ endDate }}</h1>
@@ -190,7 +190,13 @@ export default {
     period: {
       deep: true,
       handler(newData) {
-        this.getWeekOfMonth();
+        const periodFrom = this.$moment(newData.from);
+        const periodTo = this.$moment(newData.to);
+        const diff = periodTo.diff(periodFrom, "months");
+        // 월보고서 기간이 변경되었을때만 재조회
+        if (diff === 0) {
+          this.getWeekOfMonth();
+        }
       },
     },
     selected: {
@@ -220,13 +226,35 @@ export default {
       const period_from = _.cloneDeep(this.period.from);
       const period_to = _.cloneDeep(this.period.to);
 
+      // 첫번째 주
+      const startWeekMon = this.$moment(period_from).isoWeekday(1);
+      const startWeekFrom = this.$moment(period_from);
+      const startWeekTo = this.$moment(period_from).isoWeekday(7);
+      // 첫번째 주의 목요일
+      const startWeekThu = this.$moment(period_from).isoWeekday(4)._d;
+      const startMonth = startWeekThu.getMonth() + 1;
+      const startWeek = this.getWeek(
+        startWeekMon._d,
+        startWeekTo._d,
+        startMonth,
+        startWeekTo._d,
+        startMonth
+      );
+
       // 마지막 주
       const endWeekFrom = this.$moment(period_to).isoWeekday(1);
       const endWeekTo = this.$moment(period_to);
+      const endWeekSun = this.$moment(period_to).isoWeekday(7);
       // 마지막 주의 목요일
       const endWeekThu = this.$moment(period_to).isoWeekday(4)._d;
       const endMonth = endWeekThu.getMonth() + 1;
-      const endWeek = this.getWeek(endWeekFrom, endWeekTo);
+      const endWeek = this.getWeek(
+        endWeekFrom._d,
+        endWeekSun._d,
+        endMonth,
+        startWeekTo._d,
+        startMonth
+      );
       const endObj = {
         month: endMonth,
         week: endWeek,
@@ -235,14 +263,6 @@ export default {
         email: this.user.userInfo.email,
       };
       weekOfMonthList.push(endObj);
-      // 첫번째 주 add
-      const firstDayOfWeek = this.$moment(period_from).isoWeekday(1);
-      const startWeekFrom = this.$moment(period_from);
-      const startWeekTo = this.$moment(period_from).isoWeekday(7);
-      // 첫번째 주의 목요일
-      const startWeekThu = this.$moment(period_from).isoWeekday(4)._d;
-      const startMonth = startWeekThu.getMonth() + 1;
-      const startWeek = this.getWeek(firstDayOfWeek, startWeekTo);
 
       // week add
       const startDate = _.cloneDeep(startWeekTo).add(1, "days");
@@ -253,7 +273,13 @@ export default {
         const weekTo = _.cloneDeep(endDate).subtract(i * 7, "days");
         const weekFrom = _.cloneDeep(weekTo).subtract(6, "days");
         const month = weekFrom.month() + 1;
-        const week = this.getWeek(weekFrom, weekTo);
+        const week = this.getWeek(
+          weekFrom._d,
+          weekTo._d,
+          month,
+          startWeekTo._d,
+          startMonth
+        );
         const obj = {
           month: month,
           week: week,
@@ -263,7 +289,6 @@ export default {
         };
         weekOfMonthList.push(obj);
       }
-
       const startObj = {
         month: startMonth,
         week: startWeek,
@@ -275,44 +300,60 @@ export default {
       this.selectMonthReport(weekOfMonthList);
     },
     // 몇 번째 주인지 계산
-    getWeek(from, to) {
-      console.log(">>", from._d);
-      console.log(
-        "this.$moment(from).isoWeek() -",
-        this.$moment(from).isoWeek()
-      );
-      console.log(
-        "this.$moment(from).startOf('month').isoWeek() -",
-        this.$moment(from).startOf("month").isoWeek()
-      );
-      // console.log(
-      //   "this.$moment(from).startOf('month').isoWeek() -",
-      //   this.$moment(from).startOf("month").isoWeek()
-      // );
+    getWeek(from, to, month, startWeekTo, startMonth) {
+      let result = 0;
       const isoWeek = this.$moment(from).isoWeek();
       const monthIsoWeek = this.$moment(from).startOf("month").isoWeek();
-      return isoWeek - monthIsoWeek + 1;
-      // return isoWeek - monthIsoWeek < 1 ? isoWeek : isoWeek - monthIsoWeek + 1;
 
-      // let value = 0;
-      // const fromMonth = this.$moment(from).month();
-      // const toMonth = this.$moment(to).month();
-      // if (fromMonth !== toMonth) {
-      //   value = 1;
-      // } else {
-      //   value = 0;
-      // }
-      // console.log("this.$moment(from).isoWeek()", this.$moment(from).isoWeek());
-      // console.log(
-      //   'this.$moment(from).startOf("month").isoWeek()',
-      //   this.$moment(from).startOf("month").isoWeek()
-      // );
-      // return (
-      //   this.$moment(from).isoWeek() -
-      //   this.$moment(from).startOf("month").isoWeek() +
-      //   value
+      if (from.getMonth() !== to.getMonth()) {
+        // 한주의 시작일과 마지막일의 월이 다른 경우
 
-      // );
+        // month값이 마지막일의 월과 같으면 첫째주,
+        if (to.getMonth() + 1 === month) {
+          return 1;
+        } else if (from.getMonth() + 1 === month) {
+          // month값이 시작일의 월과 같으면 시작일 월의 마지막 주
+
+          if (to === startWeekTo) {
+            // startWeek 계산
+            // 전 달의 1일
+            const firstDayLastMonth = this.$moment(from).startOf("month")._d;
+            // 전 달 1일이 포함된 주의 목요일
+            const firstDayLastMonthThu = this.$moment(
+              firstDayLastMonth
+            ).isoWeekday(4)._d;
+            // 전달 첫번째 주가 전전달의 마지막 주일때
+            if (
+              firstDayLastMonth.getMonth() !== firstDayLastMonthThu.getMonth()
+            ) {
+              result =
+                isoWeek - monthIsoWeek > 0 ? isoWeek - monthIsoWeek : isoWeek;
+            } else {
+              result = isoWeek - monthIsoWeek + 1;
+            }
+          } else {
+            // endWeek 계산
+            // 첫번째 주가 전 달의 마지막 주일때
+            if (startWeekTo.getMonth() + 1 !== startMonth) {
+              result =
+                isoWeek - monthIsoWeek > 0 ? isoWeek - monthIsoWeek : isoWeek;
+            } else {
+              result = isoWeek - monthIsoWeek + 1;
+            }
+          }
+        }
+      } else {
+        // 한주의 시작일과 마지막일의 월이 같은 경우
+
+        // 첫번째 주가 전 달의 마지막 주일때
+        if (startWeekTo.getMonth() + 1 !== startMonth) {
+          result =
+            isoWeek - monthIsoWeek > 0 ? isoWeek - monthIsoWeek : isoWeek;
+        } else {
+          result = isoWeek - monthIsoWeek + 1;
+        }
+      }
+      return result;
     },
     // 월 보고서 조회
     selectMonthReport(weekOfMonthList) {
