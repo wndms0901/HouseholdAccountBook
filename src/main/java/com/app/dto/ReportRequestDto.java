@@ -15,5 +15,5 @@ public class ReportRequestDto {
     private String endDate;
     private String lastMonthStartDate;
     private String lastMonthEndDate;
-    private List<WeekDto> weekDtoList;
+    private List<PeriodDto> periodDtoList;
 }

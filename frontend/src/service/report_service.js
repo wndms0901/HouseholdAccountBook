@@ -16,6 +16,19 @@ class ReportService {
                 return response.data;
             });
     }
+    /**
+     * 연간보고서 조회
+     * @param {*} ReportRequestDto
+     * @returns 
+     */
+    selectYearReport(ReportRequestDto) {
+        return axios
+            .post(API_URL + 'year', ReportRequestDto)
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
 
 }
 

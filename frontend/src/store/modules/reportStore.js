@@ -19,6 +19,22 @@ const reportStore = {
                 }
             );
         },
+        /**
+         * 연간보고서 조회
+         * @param {*} ReportRequestDto
+         * @returns 
+         */
+        selectYearReport({ }, ReportRequestDto) {
+            return ReportService.selectYearReport(ReportRequestDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
     }
 }
 

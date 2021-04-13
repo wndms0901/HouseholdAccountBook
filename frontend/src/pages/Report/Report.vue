@@ -147,9 +147,18 @@ export default {
       this.$refs.periodFrom.close();
     },
     onCloseStartDate() {
-      const periodTo = this.$moment(this.period.from)
-        .add(1, "months")
-        .subtract(1, "days")._d;
+      let periodTo = "";
+      if (this.tabIndex === 0) {
+        // 월보고서(월 단위)
+        periodTo = this.$moment(this.period.from)
+          .add(1, "months")
+          .subtract(1, "days")._d;
+      } else {
+        // 연간보고서(연 단위)
+        periodTo = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
+      }
       this.period.to = periodTo;
     },
     onPrevMonth() {

@@ -24,7 +24,11 @@
         <result column="expenditure_month" property="expenditureMonth" />
         <result column="expenditure_day" property="expenditureDay" />
         <result column="daily_expenditure" property="dailyExpenditure" />
-
+    </resultMap>
+    <resultMap type="com.app.dto.MonthIncomeExpenditureDto" id="monthIncomeExpenditureDto">
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="large_category_name" property="largeCategoryName" />
+        <result column="total" property="total" />
     </resultMap>
 
     <select id="selectTotalIncomeExpenditure" parameterType="com.app.dto.ReportRequestDto" resultMap="monthReportDto">
@@ -57,7 +61,7 @@
                ) e
     </select>
     <select id="selectWeeklyExpenditureList" parameterType="com.app.dto.ReportRequestDto" resultMap="weeklyExpenditureDto">
-        <foreach collection="weekDtoList" index="index" item="item" separator="union all">
+        <foreach collection="periodDtoList" index="index" item="item" separator="union all">
             SELECT CONCAT(#{item.month} ,'월 ' ,#{item.week} ,'주 ('
                          ,SUBSTRING(#{item.startDate},5,2) ,'.' ,SUBSTRING(#{item.startDate},7,2) ,'-'
                          ,SUBSTRING(#{item.endDate},5,2) ,'.' ,SUBSTRING(#{item.endDate},7,2) ,')'
@@ -93,7 +97,7 @@
                ) c
             ON lc.large_category_id = c.large_category_id
     </select>
-    <select id="selectDailyExpenditureDtoList" parameterType="com.app.dto.ReportRequestDto" resultMap="dailyExpenditureDto">
+    <select id="selectDailyExpenditureList" parameterType="com.app.dto.ReportRequestDto" resultMap="dailyExpenditureDto">
         SELECT (e.card+e.cash) AS daily_expenditure
              , SUBSTRING(expenditure_date,1,4) AS expenditure_year
              , SUBSTRING(expenditure_date,5,2) AS expenditure_month
@@ -102,5 +106,81 @@
          WHERE e.user_email=#{email}
            AND e.expenditure_date between #{startDate} AND #{endDate}
       ORDER BY e.expenditure_date
+    </select>
+
+    <select id="selectMonthIncomeExpenditureList" parameterType="com.app.dto.PeriodDto" resultMap="monthIncomeExpenditureDto">
+        SELECT a.large_category_id
+             , a.large_category_name
+             , a.total
+          FROM (
+                SELECT 0 AS large_category_id
+                     , '수입 합계' AS large_category_name
+                     , NVL(SUM(t.total), 0) AS total
+                  FROM (
+                        SELECT i.large_category_id
+                             , SUM(i.income_amount) AS total
+                          FROM income i
+                         WHERE i.user_email=#{email}
+                           AND i.income_date between #{startDate} and #{endDate}
+                      GROUP BY i.large_category_id
+                       ) t
+             UNION ALL
+                SELECT lc.large_category_id
+                     , lc.large_category_name
+                     , NVL(i.total,0) AS total
+                  FROM (
+                        SELECT lc.large_category_id
+                             , lc.large_category_name
+                          FROM large_category lc
+                         WHERE lc.category_type = 'INC'
+                       ) lc
+             LEFT JOIN (
+                        SELECT i.large_category_id
+                             , SUM(i.income_amount) AS total
+                          FROM income i
+                         WHERE i.user_email=#{email}
+                           AND i.income_date between #{startDate} and #{endDate}
+                      GROUP BY i.large_category_id
+                       ) i
+                    ON lc.large_category_id = i.large_category_id
+              ORDER BY FIELD(large_category_id,'20'), large_category_id
+               ) a
+     UNION ALL
+        SELECT b.large_category_id
+             , b.large_category_name
+             , b.total
+          FROM (
+                SELECT 0 AS large_category_id
+                     , '지출 합계' AS large_category_name
+                     , NVL(SUM(t.total) ,0) AS total
+                  FROM (
+                        SELECT e.large_category_id
+                             , SUM(e.card)+SUM(e.cash) AS total
+                          FROM expenditure e
+                         WHERE e.user_email=#{email}
+                           AND e.expenditure_date between #{startDate} and #{endDate}
+                      GROUP BY e.large_category_id
+                       ) t
+             UNION ALL
+                SELECT lc.large_category_id
+                     , lc.large_category_name
+                     , NVL(e.total ,0) AS total
+                  FROM (
+                        SELECT lc.large_category_id
+                             , lc.large_category_name
+                          FROM large_category lc
+                         WHERE lc.category_type = 'EXP'
+                       ) lc
+             LEFT JOIN (
+                        SELECT e.large_category_id
+                             , SUM(e.card)+SUM(e.cash) AS total
+                          FROM expenditure e
+                         WHERE e.user_email=#{email}
+                           AND e.expenditure_date between #{startDate} and #{endDate}
+                      GROUP BY e.large_category_id
+                       ) e
+                    ON lc.large_category_id = e.large_category_id
+              ORDER BY FIELD(large_category_id,'1'), large_category_id
+               ) b
     </select>
 </mapper>

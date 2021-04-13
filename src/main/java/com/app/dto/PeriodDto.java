@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class WeekDto {
+public class PeriodDto {
     private String month;
     private String week;
     private String startDate;

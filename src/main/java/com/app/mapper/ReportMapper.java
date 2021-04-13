@@ -36,5 +36,11 @@ public interface ReportMapper {
      * @param reportRequestDto
      * @return List<DailyExpenditureDto>
      */
-    List<DailyExpenditureDto> selectDailyExpenditureDtoList(ReportRequestDto reportRequestDto);
+    List<DailyExpenditureDto> selectDailyExpenditureList(ReportRequestDto reportRequestDto);
+    /**
+     * 월별 수입/지출 목록 조회
+     * @param periodDto
+     * @return List<DailyExpenditureDto>
+     */
+    List<MonthIncomeExpenditureDto> selectMonthIncomeExpenditureList(PeriodDto periodDto);
 }

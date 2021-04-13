@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="monthReport_top">
-      <table style="width: 700px">
+      <table>
         <tr>
           <th rowspan="2">
             <h1>{{ startDate }} - {{ endDate }}</h1>
@@ -363,7 +363,7 @@ export default {
         endDate: this.$moment(this.period.to).format("YYYYMMDD"),
         lastMonthStartDate: this.$moment(this.period.from).format("YYYYMMDD"),
         lastMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
-        weekDtoList: weekOfMonthList,
+        periodDtoList: weekOfMonthList,
       };
       console.log("reportRequestDto>>", reportRequestDto);
       this.$store
@@ -500,11 +500,14 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style>
 .monthReport_top {
   border: 1px solid lightgray;
   border-radius: 5px;
   background-color: white;
+}
+.monthReport_top > table {
+  width: 700px;
 }
 .monthReport_top > table tr th {
   width: 50%;
