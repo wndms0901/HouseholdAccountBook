@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class MonthIncomeExpenditureDto {
-    private int largeCategoryId;
+    private String largeCategoryId;
     private String largeCategoryName;
     private int total;
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class YearReportDto {
-    private int largeCategoryId;
+    private String largeCategoryId;
     private String largeCategoryName;
     private int firstMonth;
     private int secondMonth;
@@ -26,7 +26,7 @@ public class YearReportDto {
     private int total;
 
     @Builder
-    public YearReportDto(int largeCategoryId, String largeCategoryName, int firstMonth, int secondMonth, int thirdMonth, int fourthMonth, int fifthMonth, int sixthMonth, int seventhMonth, int eighthMonth, int ninthMonth, int tenthMonth, int eleventhMonth, int twelfthMonth) {
+    public YearReportDto(String largeCategoryId, String largeCategoryName, int firstMonth, int secondMonth, int thirdMonth, int fourthMonth, int fifthMonth, int sixthMonth, int seventhMonth, int eighthMonth, int ninthMonth, int tenthMonth, int eleventhMonth, int twelfthMonth) {
         this.largeCategoryId = largeCategoryId;
         this.largeCategoryName = largeCategoryName;
         this.firstMonth = firstMonth;

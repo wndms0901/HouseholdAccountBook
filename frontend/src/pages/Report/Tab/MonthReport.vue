@@ -7,12 +7,12 @@
             <h1>{{ startDate }} - {{ endDate }}</h1>
           </th>
           <td>
-            수입 합계 <span class="text-danger">{{ totalExpenditure }}</span>
+            수입 합계 <span class="text-danger">{{ totalIncome }}</span>
           </td>
         </tr>
         <tr>
           <td>
-            지출 합계 <span class="text-primary">{{ totalIncome }}</span>
+            지출 합계 <span class="text-primary">{{ totalExpenditure }}</span>
           </td>
         </tr>
       </table>
@@ -98,6 +98,7 @@ export default {
   props: {
     user: Object,
     period: Object,
+    tabIndex: Number,
   },
   data() {
     return {
@@ -211,7 +212,9 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.getWeekOfMonth();
+    if (this.tabIndex === 0) {
+      this.getWeekOfMonth();
+    }
   },
   methods: {
     tableRowClass(item, type) {

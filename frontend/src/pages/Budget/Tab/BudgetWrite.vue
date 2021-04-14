@@ -4,7 +4,7 @@
       <!-- table-borderless -->
       <tr>
         <td rowspan="2">
-          <p class="m-0">한달 예산</p>
+          <p class="m-0">한달 수입 예산</p>
           <input
             ref="incomeBudgetAmount"
             type="text"
@@ -72,6 +72,7 @@ export default {
   props: {
     user: Object,
     period: Object,
+    tabIndex: Number,
   },
   data() {
     return {
@@ -83,7 +84,8 @@ export default {
       modules: AllCommunityModules,
       rowStyle: { fontWeight: "bold" },
       incomeBudgetAmount: "-",
-      lastMonthExpenditure: "",
+      threeMonthAverageExpenditure: 0,
+      lastMonthExpenditure: 0,
       readonly: true,
     };
   },
@@ -179,7 +181,9 @@ export default {
     ];
   },
   mounted() {
-    this.getBudgetList();
+    if (this.tabIndex === 0) {
+      this.getBudgetList();
+    }
   },
   methods: {
     onGridReady(params) {
@@ -201,10 +205,15 @@ export default {
     },
     // 예산 목록 조회
     getBudgetList() {
+      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      const budgetDate =
+        monthStartDate > 15
+          ? this.$moment(this.period.to).format("YYYYMM")
+          : this.$moment(this.period.from).format("YYYYMM");
       const params = {
         categoryType: "EXP",
-        incomeBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
-        expenditureBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
+        incomeBudgetDate: budgetDate,
+        expenditureBudgetDate: budgetDate,
         email: this.user.userInfo.email,
       };
       console.log("params", params);
@@ -265,11 +274,17 @@ export default {
     },
     onSave() {
       this.gridApi.clearFocusedCell();
+      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      const budgetDate =
+        monthStartDate > 15
+          ? this.$moment(this.period.to).format("YYYYMM")
+          : this.$moment(this.period.from).format("YYYYMM");
+
       const budgetDto = {
         incomeBudgetAmount: this.incomeBudgetAmount,
         budgetListDtoList: this.$refs.budgetGrid.getRowData(),
-        expenditureBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
-        incomeBudgetDate: this.$moment(this.period.from).format("YYYYMM"),
+        expenditureBudgetDate: budgetDate,
+        incomeBudgetDate: budgetDate,
         userDto: this.user.userInfo,
       };
       console.log("budgetDto>>", budgetDto);

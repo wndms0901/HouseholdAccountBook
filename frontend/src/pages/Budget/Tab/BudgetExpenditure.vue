@@ -1,39 +1,18 @@
 <template>
   <div>
-    <div class="monthReport_top">
-      <table style="width: 700px">
-        <tr>
-          <th rowspan="2">
-            <h1>{{ startDate }} - {{ endDate }}</h1>
-          </th>
-          <td>
-            연간 수입 <span class="text-danger">{{ totalIncome }}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            지출 합계 <span class="text-primary">{{ totalExpenditure }}</span>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <!-- <div class="monthReport_centent"> -->
-    <div>
-      <h4>연간 보고서 현황</h4>
-      <grid
-        ref="yearReportGrid"
-        style="height: 580px"
-        class="ag-theme-alpine"
-        :gridOptions="gridOptions"
-        :columnDefs="columnDefs"
-        :defaultColDef="defaultColDef"
-        :getRowStyle="getRowStyle"
-        :rowData="rowData"
-        rowSelection="multiple"
-        @grid-ready="onGridReady"
-      >
-      </grid>
-    </div>
+    <h4>예산 대비 지출</h4>
+    <grid
+      ref="budgetExpndGrid"
+      style="height: 580px"
+      class="ag-theme-alpine"
+      :gridOptions="gridOptions"
+      :columnDefs="columnDefs"
+      :defaultColDef="defaultColDef"
+      :rowData="rowData"
+      rowSelection="multiple"
+      @grid-ready="onGridReady"
+    >
+    </grid>
   </div>
 </template>
 <script>
@@ -45,26 +24,11 @@ export default {
   },
   data() {
     return {
-      totalExpenditure: 0,
-      totalIncome: 0,
       gridOptions: null,
       columnDefs: null,
       defaultColDef: null,
-      getRowStyle: null,
       rowData: [],
     };
-  },
-  computed: {
-    startDate() {
-      const periodFrom = this.period.from;
-      const startDate = periodFrom.getMonth() + 1 + "." + periodFrom.getDate();
-      return startDate;
-    },
-    endDate() {
-      const periodTo = this.period.to;
-      const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
-      return endDate;
-    },
   },
   watch: {
     period: {
@@ -73,14 +37,13 @@ export default {
         const periodFrom = this.$moment(newData.from);
         const periodTo = this.$moment(newData.to);
         const diff = periodTo.diff(periodFrom, "months");
-        // 연간보고서 기간이 변경되었을때만 재조회
+        // 예산 대비 지출 기간이 변경되었을때만 재조회
         if (diff > 0) {
           this.getMonthOfYear();
         }
       },
     },
   },
-  created() {},
   beforeMount() {
     this.gridOptions = {};
     this.defaultColDef = {};
@@ -102,21 +65,9 @@ export default {
       { headerName: "", field: "tenthMonth", type: "numericColumn" },
       { headerName: "", field: "eleventhMonth", type: "numericColumn" },
       { headerName: "", field: "twelfthMonth", type: "numericColumn" },
-      { headerName: "합계", field: "total", type: "numericColumn" },
     ];
-    this.getRowStyle = function (params) {
-      if (params.data.largeCategoryId === "") {
-        return { backgroundColor: "lightcoral" };
-      } else if (params.data.largeCategoryId === "0") {
-        return { backgroundColor: "skyblue" };
-      }
-    };
   },
-  mounted() {
-    if (this.tabIndex === 1) {
-      this.getMonthOfYear();
-    }
-  },
+  mounted() {},
   methods: {
     onGridReady(params) {
       this.gridApi = params.api;
@@ -127,7 +78,8 @@ export default {
     getMonthOfYear() {
       const monthOfYearList = [];
       const period_from = _.cloneDeep(this.period.from);
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      //const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      const monthStartDate = 16;
       for (let i = 0; i < 12; i++) {
         const startDate = this.$moment(period_from).add(i, "months");
         const endDate = this.$moment(period_from)
@@ -148,12 +100,13 @@ export default {
           endDate: endDate.format("YYYYMMDD"),
           email: this.user.userInfo.email,
         };
+        console.log("obj", obj);
         monthOfYearList.push(obj);
       }
       // column headers name setting
       this.setHeaderNames(monthOfYearList);
-      // 연간보고서 조회
-      this.selectYearReport(monthOfYearList);
+      // 예산 대비 지출 목록 조회
+      this.selectBudgetExpenditureList(monthOfYearList);
     },
     // column headers name setting
     setHeaderNames(monthOfYearList) {
@@ -170,37 +123,8 @@ export default {
 
       this.gridApi.setColumnDefs(columnDefs);
     },
-    // 연간보고서 조회
-    selectYearReport(monthOfYearList) {
-      const reportRequestDto = {
-        periodDtoList: monthOfYearList,
-      };
-      this.$store
-        .dispatch("reportStore/selectYearReport", reportRequestDto)
-        .then((res) => {
-          console.log("결과>", res.data);
-          const totalIncome = _.filter(res.data, {
-            largeCategoryId: "",
-          });
-          const totalExpenditure = _.filter(res.data, {
-            largeCategoryId: "0",
-          });
-          // 연간 수입
-          this.totalIncome = totalIncome[0].total;
-          // 지출 합계
-          this.totalExpenditure = totalExpenditure[0].total;
-          // 연간 수입/지출 목록
-          this.gridApi.setRowData(res.data);
-        })
-        .catch((Error) => {
-          console.log(Error);
-        });
-    },
+    // 예산 대비 지출 목록 조회
+    selectBudgetExpenditureList(monthOfYearList) {},
   },
 };
 </script>
-<style scoped>
-.monthReport_centent > h4 {
-  margin-top: 0;
-}
-</style>

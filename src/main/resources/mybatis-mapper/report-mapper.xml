@@ -113,7 +113,7 @@
              , a.large_category_name
              , a.total
           FROM (
-                SELECT 0 AS large_category_id
+                SELECT '' AS large_category_id
                      , '수입 합계' AS large_category_name
                      , NVL(SUM(t.total), 0) AS total
                   FROM (

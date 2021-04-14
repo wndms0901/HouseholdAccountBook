@@ -65,18 +65,6 @@ public class ReportServiceImpl implements ReportService{
             // 월별 수입/지출 목록 조회
             List<MonthIncomeExpenditureDto> monthIncomeExpenditureDto =  reportMapper.selectMonthIncomeExpenditureList(periodDtoList.get(i));
             monthIncomeExpenditureList.add(monthIncomeExpenditureDto);
-//                for(int j=0; j < monthIncomeExpenditureDto.size(); j++){
-//                    if(i==0){
-//                        // 카테고리 목록 add
-//                        yearReportDtoList.add(YearReportDto.builder().category(monthIncomeExpenditureDto.get(j).getLargeCategoryName()).build());
-//                        // 첫번째 달 수입/지출 add
-//                        yearReportDtoList.get(j).setFifthMonth(monthIncomeExpenditureDto.get(j).getTotal());
-//                    }else{
-//                        // 월별 수입/지출 add
-//                            YearReportDto yearReportDto = yearReportDtoList.get(j);
-//
-//                    }
-//                }
             }
         for(int i=0; i < monthIncomeExpenditureList.get(0).size(); i++){
             YearReportDto yearReportDto = YearReportDto.builder()

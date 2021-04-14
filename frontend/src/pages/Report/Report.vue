@@ -48,10 +48,18 @@
       <div class="tabs" style="width: 100%">
         <b-tabs v-model="tabIndex" content-class="mt-3">
           <b-tab title="월보고서">
-            <monthReport :user="user" :period="period"></monthReport>
+            <monthReport
+              :user="user"
+              :period="period"
+              :tabIndex="tabIndex"
+            ></monthReport>
           </b-tab>
           <b-tab title="연간보고서">
-            <yearReport :user="user" :period="period"></yearReport>
+            <yearReport
+              :user="user"
+              :period="period"
+              :tabIndex="tabIndex"
+            ></yearReport>
           </b-tab>
         </b-tabs>
       </div>
@@ -112,30 +120,24 @@ export default {
   methods: {
     // 조회 기간 setting
     setPeriod() {
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      // const monthStartDate = 13;
-      let today = new Date();
-      let startDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        monthStartDate
-      );
+      let startDate = null;
       let endDate = null;
-
+      let today = new Date();
+      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
       if (this.tabIndex === 0) {
         // 월보고서(월 단위)
-        endDate = new Date(
-          today.getFullYear(),
-          today.getMonth() + 1,
-          monthStartDate - 1
-        );
-      } else {
+        const month =
+          monthStartDate > 15 ? today.getMonth() - 1 : today.getMonth();
+        startDate = new Date(today.getFullYear(), month, monthStartDate);
+        endDate = new Date(today.getFullYear(), month + 1, monthStartDate - 1);
+      } else if (this.tabIndex === 1) {
         // 연간보고서(연 단위)
-        endDate = new Date(
-          today.getFullYear() + 1,
-          today.getMonth(),
-          monthStartDate - 1
-        );
+        const year =
+          monthStartDate > 15 ? today.getFullYear() - 1 : today.getFullYear();
+        const month = monthStartDate > 15 ? 11 : 0;
+        startDate = new Date(year, month, monthStartDate);
+        endDate = this.$moment(startDate).add(1, "years").subtract(1, "days")
+          ._d;
       }
       this.period.from = startDate;
       this.period.to = endDate;
