@@ -11,6 +11,7 @@
         <result column="expenditure_budget_amount" property="expenditureBudgetAmount" />
         <result column="expenditure_budget_date" property="expenditureBudgetDate" />
         <result column="expenditure_amount" property="expenditureAmount" />
+        <result column="total" property="total" />
     </resultMap>
 
     <select id="selectIncomeBudgetAmount" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
@@ -63,7 +64,63 @@
                    GROUP BY e.large_category_id
                     ) e
                  ON lc.large_category_id = e.large_category_id
-
     </select>
-
+    <select id="selectMonthBudgetExpenditureList" parameterType="com.app.dto.BudgetRequestDto" resultMap="budgetListDto">
+        SELECT a.large_category_id
+             , a.large_category_name
+             , a.total
+          FROM (
+                SELECT et.large_category_id
+                     , '합계' AS large_category_name
+                     , ebt.total - et.total as total
+                  FROM (
+                        SELECT 0 AS large_category_id
+                             , NVL(SUM(t.total),0) AS total
+                          FROM (
+                                SELECT e.large_category_id
+                                     , SUM(e.card)+SUM(e.cash) AS total
+                                  FROM expenditure e
+                                 WHERE e.user_email=#{email}
+                                   AND e.expenditure_date BETWEEN #{startDate} AND #{endDate}
+                              GROUP BY e.large_category_id
+                               ) t
+                       ) et
+    INNER JOIN (
+                SELECT 0 AS large_category_id
+                     , NVL(SUM(eb.expenditure_budget_amount),0) AS total
+                  FROM expenditure_budget eb
+                 WHERE eb.user_email=#{email}
+                   AND eb.expenditure_budget_date = CONCAT(#{year},#{month})
+               ) ebt
+            ON et.large_category_id = ebt.large_category_id
+     UNION ALL
+        SELECT lc.large_category_id
+             , lc.large_category_name
+             , NVL(eb.expenditure_budget_amount,0) - NVL(e.total,0) AS total
+          FROM (
+                SELECT lc.large_category_id
+                     , lc.large_category_name
+                  FROM large_category lc
+                 WHERE lc.category_type = 'EXP'
+               ) lc
+     LEFT JOIN (
+                SELECT e.large_category_id
+                     , SUM(e.card)+SUM(e.cash) AS total
+                  FROM expenditure e
+                 WHERE e.user_email=#{email}
+                   AND e.expenditure_date BETWEEN #{startDate} AND #{endDate}
+              GROUP BY e.large_category_id
+               ) e
+            ON lc.large_category_id = e.large_category_id
+     LEFT JOIN (
+                SELECT eb.large_category_id
+                     , eb.expenditure_budget_amount
+                  FROM expenditure_budget eb
+                 WHERE eb.user_email=#{email}
+                   AND eb.expenditure_budget_date = CONCAT(#{year},#{month})
+               ) eb
+            ON lc.large_category_id = eb.large_category_id
+      ORDER BY FIELD(large_category_id,1), large_category_id
+               ) a
+    </select>
 </mapper>

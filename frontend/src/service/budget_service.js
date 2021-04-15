@@ -10,14 +10,7 @@ class BudgetService {
      */
     selectBudgetList(BudgetRequestDto) {
         return axios
-            .get(API_URL + 'list', {
-                params: {
-                    categoryType: BudgetRequestDto.categoryType,
-                    incomeBudgetDate: BudgetRequestDto.incomeBudgetDate,
-                    expenditureBudgetDate: BudgetRequestDto.expenditureBudgetDate,
-                    email: BudgetRequestDto.email,
-                }
-            })
+            .post(API_URL + 'list', BudgetRequestDto)
             .then(response => {
                 console.log('response', response);
                 return response.data;
@@ -36,7 +29,19 @@ class BudgetService {
                 return response.data;
             });
     }
-
+    /**
+     * 예산 대비 지출 목록 조회
+     * @param {*} BudgetRequestDto
+     * @returns 
+     */
+    selectBudgetExpenditureList(BudgetRequestDto) {
+        return axios
+            .post(API_URL + 'expenditure/list', BudgetRequestDto)
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
 
 
 }

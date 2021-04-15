@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PeriodDto {
+    private String year;
     private String month;
     private String week;
     private String startDate;

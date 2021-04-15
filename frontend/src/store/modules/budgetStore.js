@@ -35,6 +35,22 @@ const budgetStore = {
                 }
             );
         },
+        /**
+         * 예산 대비 지출 목록 조회
+         * @param {*} BudgetRequestDto
+         * @returns 
+         */
+        selectBudgetExpenditureList({ }, BudgetRequestDto) {
+            return BudgetService.selectBudgetExpenditureList(BudgetRequestDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
 
     }
 }

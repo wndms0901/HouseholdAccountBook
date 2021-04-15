@@ -136,8 +136,9 @@ export default {
     setPeriod() {
       let startDate = null;
       let endDate = null;
+      // let today = new Date();
+      // const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
       let today = new Date(2021, 0, 1);
-      //const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
       const monthStartDate = 16;
       if (this.tabIndex === 0) {
         // 예산쓰기(월 단위)

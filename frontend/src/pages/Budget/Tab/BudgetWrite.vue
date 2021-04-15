@@ -1,35 +1,53 @@
 <template>
-  <div class="table-responsive">
-    <table class="table" style="width: 600px">
-      <!-- table-borderless -->
-      <tr>
-        <td rowspan="2">
-          <p class="m-0">한달 수입 예산</p>
-          <input
-            ref="incomeBudgetAmount"
-            type="text"
-            v-model="incomeBudgetAmount"
-            :readonly="readonly"
-          />
-          <button @click="onUpdateIncomeBudget">수정</button>
-        </td>
-        <td>3개월 간 평균 지출</td>
-        <td style="text-align: right">
-          {{ this.threeMonthAverageExpenditure }}원
-        </td>
-      </tr>
-      <tr>
-        <td>지난달 지출</td>
-        <td style="text-align: right">{{ this.lastMonthExpenditure }}원</td>
-      </tr>
-    </table>
-    <div id="title">
-      <div id="top_title">
+  <div>
+    <div class="budgetWrite_top">
+      <table>
+        <tr>
+          <td style="width: 175px">
+            <span style="font-size: 1.5em">04월 수입 예산</span>
+          </td>
+          <td style="width: 25%"></td>
+          <td>3개월 간 평균 지출</td>
+          <td style="text-align: right">
+            {{ this.threeMonthAverageExpenditure }}원
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right">
+            <span style="font-size: 1.5em" v-show="showSpan"
+              >{{ incomeBudgetAmount }}원</span
+            >
+            <input
+              ref="incomeBudgetAmount"
+              type="text"
+              v-model="incomeBudgetAmount"
+              v-show="showInput"
+            />
+          </td>
+          <td>
+            <b-button
+              @mousedown="onClickUpdateIncomeBudget"
+              @mouseup="onFocusIncomeBudget"
+              >수정</b-button
+            >
+            <!-- <button style="vertical-align: top" @click="onUpdateIncomeBudget">
+              수정
+            </button> -->
+          </td>
+          <td>지난달 지출</td>
+          <td style="text-align: right">{{ this.lastMonthExpenditure }}원</td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <div class="grid_top_title">
         <span v-show="showBudget">{{ this.remainingBudget }}원 남음</span>
       </div>
-      <div id="bottom_title">
-        <div id="left_title"><span>카테고리별 예산</span></div>
-        <div id="right_title">
+      <div>
+        <div class="grid_left_title">
+          <span>카테고리별 예산</span>
+        </div>
+        <div class="grid_right_title">
           <span v-show="showBudget"
             >전체 예산 {{ this.incomeBudgetAmount }}원</span
           >
@@ -42,18 +60,17 @@
     >
       <grid
         ref="budgetGrid"
-        style="height: 400px; flex: 1 1 auto"
+        style="height: 420px; flex: 1 1 auto"
         class="ag-theme-alpine"
         :gridOptions="topGridOptions"
         :columnDefs="columnDefs"
         :rowData="rowData"
         rowSelection="multiple"
         :modules="modules"
-        @first-data-rendered="onFirstDataRendered"
         @grid-ready="onGridReady"
       ></grid>
       <grid
-        style="height: 60px; flex: none"
+        style="height: 50px; flex: none"
         :gridOptions="bottomGridOptions"
         :headerHeight="0"
         :columnDefs="columnDefs"
@@ -86,7 +103,8 @@ export default {
       incomeBudgetAmount: "-",
       threeMonthAverageExpenditure: 0,
       lastMonthExpenditure: 0,
-      readonly: true,
+      showSpan: true,
+      showInput: false,
     };
   },
   computed: {
@@ -119,13 +137,26 @@ export default {
     },
   },
   watch: {
-    incomeBudgetAmount: function () {
+    incomeBudgetAmount() {
       // 숫자만 입력
-      return (this.incomeBudgetAmount = this.incomeBudgetAmount.replace(
-        /[^0-9]/g,
-        ""
-      ));
+      this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/[^0-9]/g, "");
+      // 한자릿수 0만 입력
+      if (parseInt(this.incomeBudgetAmount) === 0) {
+        this.incomeBudgetAmount = "0";
+      }
+      // 문자열의 맨 앞 0 제거
+      if (this.incomeBudgetAmount.length > 1) {
+        this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/(^0+)/, "");
+      }
+      return this.incomeBudgetAmount;
     },
+    // incomeBudgetAmount: function () {
+    //   // 숫자만 입력
+    //   return (this.incomeBudgetAmount = this.incomeBudgetAmount.replace(
+    //     /[^0-9]/g,
+    //     ""
+    //   ));
+    // },
   },
   created() {},
   beforeMount() {
@@ -175,7 +206,7 @@ export default {
       },
       {
         headerName: "남은 돈",
-        field: "balance",
+        field: "total",
         type: "numericColumn",
       },
     ];
@@ -193,14 +224,14 @@ export default {
 
       params.api.sizeColumnsToFit();
     },
-    onFirstDataRendered() {
-      // this.columnApi.autoSizeAllColumns();
-    },
-    onUpdateIncomeBudget() {
-      this.readonly = false;
+    onClickUpdateIncomeBudget() {
       if (this.incomeBudgetAmount === "-") {
         this.incomeBudgetAmount = "";
       }
+      this.showSpan = false;
+      this.showInput = true;
+    },
+    onFocusIncomeBudget() {
       this.$refs.incomeBudgetAmount.focus();
     },
     // 예산 목록 조회
@@ -210,18 +241,16 @@ export default {
         monthStartDate > 15
           ? this.$moment(this.period.to).format("YYYYMM")
           : this.$moment(this.period.from).format("YYYYMM");
-      const params = {
+      const budgetRequestDto = {
         categoryType: "EXP",
         incomeBudgetDate: budgetDate,
         expenditureBudgetDate: budgetDate,
         email: this.user.userInfo.email,
       };
-      console.log("params", params);
       this.$store
-        .dispatch("budgetStore/selectBudgetList", params)
+        .dispatch("budgetStore/selectBudgetList", budgetRequestDto)
         .then((res) => {
           // 한달 예산 readonly
-          this.readonly = true;
           console.log("getBudgetList", res.data);
           // const selectBudgetList = _.cloneDeep(res.data.budgetListDtoList);
           // 미분류 마지막 순서로 변경
@@ -242,7 +271,7 @@ export default {
               : res.data.lastMonthExpenditure;
           // 남은 돈 column setting
           _.forEach(res.data.budgetListDtoList, function (row, index) {
-            res.data.budgetListDtoList[index].balance =
+            res.data.budgetListDtoList[index].total =
               row.expenditureBudgetAmount - row.expenditureAmount;
           });
           this.gridApi.setRowData(res.data.budgetListDtoList);
@@ -261,8 +290,8 @@ export default {
                   return o.expenditureAmount;
                 }
               ),
-              balance: _.sumBy(res.data.budgetListDtoList, function (o) {
-                return o.balance;
+              total: _.sumBy(res.data.budgetListDtoList, function (o) {
+                return o.total;
               }),
             },
           ];
@@ -301,18 +330,44 @@ export default {
 };
 </script>
 <style scoped>
-#top_title {
+.budgetWrite_top {
+  height: 100px;
+  margin-bottom: 20px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  background-color: white;
+}
+.budgetWrite_top > table {
+  width: 600px;
+  border-collapse: collapse;
+}
+.budgetWrite_top > table tr td {
+  /* border: 1px solid lightgrey; */
+  padding: 6px 0px 5px 12px;
+}
+.budgetWrite_top > table tr td input[type="text"] {
+  width: 160px;
+}
+.budgetWrite_top button {
+  width: 55px;
+  height: 30px;
+  padding: 0;
+}
+.grid_top_title {
   text-align: right;
 }
-
-#left_title {
+.grid_left_title {
   display: inline-block;
   width: 20%;
+  margin-bottom: 5px;
   text-align: left;
+  font-size: 22px;
 }
-#right_title {
+.grid_right_title {
   display: inline-block;
   width: 80%;
   text-align: right;
+  vertical-align: top;
+  color: gray;
 }
 </style>

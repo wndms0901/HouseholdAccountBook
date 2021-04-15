@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,12 +15,6 @@ public class BudgetRequestDto {
     private String categoryType;
     private String expenditureBudgetDate;
     private String incomeBudgetDate;
+    private List<PeriodDto> periodDtoList;
 
-    @Builder
-    public BudgetRequestDto(String email, String categoryType, String expenditureBudgetDate, String incomeBudgetDate) {
-        this.email = email;
-        this.categoryType = categoryType;
-        this.expenditureBudgetDate = expenditureBudgetDate;
-        this.incomeBudgetDate = incomeBudgetDate;
-    }
 }

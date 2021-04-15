@@ -1,6 +1,26 @@
 <template>
   <div>
-    <h4>예산 대비 지출</h4>
+    <div class="title_box">
+      <h4>예산 대비 지출</h4>
+    </div>
+    <div class="icon_box">
+      <span
+        ><b-icon
+          icon="circle-fill"
+          font-scale="0.5"
+          style="color: #608cef"
+        ></b-icon
+      ></span>
+      <span>남은돈</span>&nbsp;
+      <span
+        ><b-icon
+          icon="circle-fill"
+          font-scale="0.5"
+          style="color: #ff5658"
+        ></b-icon
+      ></span>
+      <span>예산초과</span>
+    </div>
     <grid
       ref="budgetExpndGrid"
       style="height: 580px"
@@ -46,14 +66,30 @@ export default {
   },
   beforeMount() {
     this.gridOptions = {};
-    this.defaultColDef = {};
+    this.defaultColDef = {
+      cellStyle: (params) => {
+        if (params.data.largeCategoryId === 0) {
+          // 합계 row
+          if (params.value > 0) {
+            return { color: "#608cef", fontWeight: "500" };
+          } else if (params.value < 0) {
+            return { color: "#ff5658", fontWeight: "500" };
+          }
+        }
+        return null;
+      },
+    };
     this.columnDefs = [
       { field: "largeCategoryId", hide: true },
       {
         headerName: "기간",
         field: "largeCategoryName",
       },
-      { headerName: "", field: "firstMonth", type: "numericColumn" },
+      {
+        headerName: "",
+        field: "firstMonth",
+        type: "numericColumn",
+      },
       { headerName: "", field: "secondMonth", type: "numericColumn" },
       { headerName: "", field: "thirdMonth", type: "numericColumn" },
       { headerName: "", field: "fourthMonth", type: "numericColumn" },
@@ -72,7 +108,6 @@ export default {
     onGridReady(params) {
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
-      params.api.sizeColumnsToFit();
     },
     // 월 목록 조회
     getMonthOfYear() {
@@ -100,9 +135,9 @@ export default {
           endDate: endDate.format("YYYYMMDD"),
           email: this.user.userInfo.email,
         };
-        console.log("obj", obj);
         monthOfYearList.push(obj);
       }
+      console.log("monthOfYearList>>", monthOfYearList);
       // column headers name setting
       this.setHeaderNames(monthOfYearList);
       // 예산 대비 지출 목록 조회
@@ -122,9 +157,35 @@ export default {
       });
 
       this.gridApi.setColumnDefs(columnDefs);
+      this.gridApi.sizeColumnsToFit();
     },
     // 예산 대비 지출 목록 조회
-    selectBudgetExpenditureList(monthOfYearList) {},
+    selectBudgetExpenditureList(monthOfYearList) {
+      const budgetRequestDto = {
+        periodDtoList: monthOfYearList,
+      };
+      this.$store
+        .dispatch("budgetStore/selectBudgetExpenditureList", budgetRequestDto)
+        .then((res) => {
+          console.log("결과>", res.data);
+          this.gridApi.setRowData(res.data);
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
   },
 };
 </script>
+<style scoped>
+.title_box > h4 {
+  margin-bottom: 0;
+}
+.icon_box {
+  text-align: right;
+  margin-bottom: 5px;
+}
+.icon_box > span {
+  margin-left: 5px;
+}
+</style>
