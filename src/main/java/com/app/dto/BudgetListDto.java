@@ -11,7 +11,7 @@ import lombok.Setter;
 public class BudgetListDto {
     private Long largeCategoryId;
     private String largeCategoryName;
-    private Long expenditurebudgetId;
+    //private Long expenditurebudgetId;
     private int expenditureBudgetAmount;
     private String expenditureBudgetDate;
     private int expenditureAmount;

@@ -35,15 +35,15 @@
         SELECT e.total_expenditure
              , i.total_income
           FROM (
-                SELECT NVL(SUM(card)+SUM(cash),0) AS total_expenditure
-                     , NVL(user_email,#{email}) AS user_email
+                SELECT IFNULL(SUM(card)+SUM(cash),0) AS total_expenditure
+                     , IFNULL(user_email,#{email}) AS user_email
                   FROM expenditure
                  WHERE user_email=#{email}
                    AND expenditure_date between #{startDate} AND #{endDate}
                ) e
      LEFT JOIN (
-                SELECT NVL(SUM(income_amount),0) AS total_income
-                     , NVL(user_email,#{email}) AS user_email
+                SELECT IFNULL(SUM(income_amount),0) AS total_income
+                     , IFNULL(user_email,#{email}) AS user_email
                   FROM income
                  WHERE user_email=#{email}
                    AND income_date between #{startDate} AND #{endDate}
@@ -53,7 +53,7 @@
     <select id="selectDailyAverageLastMonth" parameterType="com.app.dto.ReportRequestDto" resultMap="monthReportDto">
         SELECT FLOOR(e.total_expenditure/e.days) as daily_average_last_month
           FROM (
-                SELECT NVL(SUM(card)+SUM(cash),0) AS total_expenditure
+                SELECT IFNULL(SUM(card)+SUM(cash),0) AS total_expenditure
                      , TO_DAYS(#{lastMonthEndDate})-TO_DAYS(#{lastMonthStartDate})+1 as days
                   FROM expenditure
                  WHERE user_email=#{email}
@@ -66,7 +66,7 @@
                          ,SUBSTRING(#{item.startDate},5,2) ,'.' ,SUBSTRING(#{item.startDate},7,2) ,'-'
                          ,SUBSTRING(#{item.endDate},5,2) ,'.' ,SUBSTRING(#{item.endDate},7,2) ,')'
                          ) AS week_list
-                 , NVL(sum(e.card)+sum(e.cash),0) AS weekly_expenditure
+                 , IFNULL(sum(e.card)+sum(e.cash),0) AS weekly_expenditure
               FROM expenditure e
              WHERE e.user_email=#{item.email}
                AND e.expenditure_date between #{item.startDate} AND #{item.endDate}
@@ -115,7 +115,7 @@
           FROM (
                 SELECT '' AS large_category_id
                      , '수입 합계' AS large_category_name
-                     , NVL(SUM(t.total), 0) AS total
+                     , IFNULL(SUM(t.total), 0) AS total
                   FROM (
                         SELECT i.large_category_id
                              , SUM(i.income_amount) AS total
@@ -127,7 +127,7 @@
              UNION ALL
                 SELECT lc.large_category_id
                      , lc.large_category_name
-                     , NVL(i.total,0) AS total
+                     , IFNULL(i.total,0) AS total
                   FROM (
                         SELECT lc.large_category_id
                              , lc.large_category_name
@@ -152,7 +152,7 @@
           FROM (
                 SELECT 0 AS large_category_id
                      , '지출 합계' AS large_category_name
-                     , NVL(SUM(t.total) ,0) AS total
+                     , IFNULL(SUM(t.total) ,0) AS total
                   FROM (
                         SELECT e.large_category_id
                              , SUM(e.card)+SUM(e.cash) AS total
@@ -164,7 +164,7 @@
              UNION ALL
                 SELECT lc.large_category_id
                      , lc.large_category_name
-                     , NVL(e.total ,0) AS total
+                     , IFNULL(e.total ,0) AS total
                   FROM (
                         SELECT lc.large_category_id
                              , lc.large_category_name

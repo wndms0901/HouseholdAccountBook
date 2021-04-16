@@ -4,7 +4,7 @@
       <table>
         <tr>
           <td style="width: 175px">
-            <span style="font-size: 1.5em">04월 수입 예산</span>
+            <span style="font-size: 1.5em">{{ this.month }}월 수입 예산</span>
           </td>
           <td style="width: 25%"></td>
           <td>3개월 간 평균 지출</td>
@@ -39,21 +39,22 @@
         </tr>
       </table>
     </div>
-    <div>
+    <div class="grid_left_title">
+      <span>카테고리별 예산</span>
+    </div>
+    <!-- <div>
       <div class="grid_top_title">
-        <span v-show="showBudget">{{ this.remainingBudget }}원 남음</span>
+        <span>{{ this.totalBudget }}</span>
       </div>
       <div>
         <div class="grid_left_title">
           <span>카테고리별 예산</span>
         </div>
         <div class="grid_right_title">
-          <span v-show="showBudget"
-            >전체 예산 {{ this.incomeBudgetAmount }}원</span
-          >
+          <span>전체 예산 {{ this.incomeBudget }}원</span>
         </div>
       </div>
-    </div>
+    </div> -->
     <div
       style="height: 100%; display: flex; flex-direction: column"
       class="ag-theme-alpine"
@@ -100,7 +101,8 @@ export default {
       bottomGridOptions: null,
       modules: AllCommunityModules,
       rowStyle: { fontWeight: "bold" },
-      incomeBudgetAmount: "-",
+      incomeBudgetAmount: "0",
+      incomeBudget: 0,
       threeMonthAverageExpenditure: 0,
       lastMonthExpenditure: 0,
       showSpan: true,
@@ -108,6 +110,12 @@ export default {
     };
   },
   computed: {
+    month() {
+      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      return monthStartDate > 15
+        ? this.$moment(this.period.to).format("MM")
+        : this.$moment(this.period.from).format("MM");
+    },
     // readonly: {
     //   get() {
     //     if (this.incomeBudgetAmount === "-") {
@@ -119,21 +127,37 @@ export default {
     //   set() {},
     // },
 
-    showBudget() {
-      if (this.incomeBudgetAmount === "-") {
-        return false;
-      } else {
-        return true;
+    // showBudget() {
+    //   if (this.incomeBudgetAmount === "0") {
+    //     return false;
+    //   } else {
+    //     return true;
+    //   }
+    // },
+    totalBudget() {
+      if (this.bottomData) {
+        const value =
+          this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount;
+        console.log("typeof value", typeof value);
+        if (value < 0) {
+          return Math.abs(value) + "원 초과";
+        } else {
+          return value + "원 남음";
+        }
       }
-    },
-    remainingBudget() {
-      if (this.incomeBudgetAmount === "-") {
-        return "-";
-      } else {
-        return (
-          this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount
-        );
-      }
+
+      // const value =
+      //   this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount;
+      // if (value < 0) {
+      //   value *= -1;
+      //   return value + "원 초과";
+      // } else {
+      //   return value + "원 남음";
+      // }
+      //return value;
+      // return (
+      //   this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount
+      // );
     },
   },
   watch: {
@@ -141,7 +165,10 @@ export default {
       // 숫자만 입력
       this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/[^0-9]/g, "");
       // 한자릿수 0만 입력
-      if (parseInt(this.incomeBudgetAmount) === 0) {
+      if (
+        parseInt(this.incomeBudgetAmount) === 0 ||
+        this.incomeBudgetAmount === ""
+      ) {
         this.incomeBudgetAmount = "0";
       }
       // 문자열의 맨 앞 0 제거
@@ -191,7 +218,6 @@ export default {
       {
         headerName: "분류",
         field: "largeCategoryName",
-        //cellEditor: "datePicker",
       },
       {
         headerName: "예산",
@@ -241,61 +267,53 @@ export default {
         monthStartDate > 15
           ? this.$moment(this.period.to).format("YYYYMM")
           : this.$moment(this.period.from).format("YYYYMM");
+      // 3개월 전 시작일
+      const threeMonthStartDate = this.$moment(this.period.from).subtract(
+        3,
+        "months"
+      );
+      // 지난달 시작일
+      const lastMonthStartDate = this.$moment(this.period.from).subtract(
+        1,
+        "months"
+      );
+
       const budgetRequestDto = {
-        categoryType: "EXP",
-        incomeBudgetDate: budgetDate,
-        expenditureBudgetDate: budgetDate,
+        budgetDate: budgetDate,
+        thisMonthStartDate: this.$moment(this.period.from).format("YYYYMM"),
+        thisMonthEndDate: this.$moment(this.period.to).format("YYYYMM"),
+        threeMonthStartDate: threeMonthStartDate.format("YYYYMMDD"),
+        threeMonthEndDate: this.$moment(threeMonthStartDate._d)
+          .add(3, "months")
+          .subtract(1, "days")
+          .format("YYYYMMDD"),
+        lastMonthStartDate: lastMonthStartDate.format("YYYYMMDD"),
+        lastMonthEndDate: this.$moment(lastMonthStartDate._d)
+          .add(1, "months")
+          .subtract(1, "days")
+          .format("YYYYMMDD"),
         email: this.user.userInfo.email,
       };
       this.$store
         .dispatch("budgetStore/selectBudgetList", budgetRequestDto)
         .then((res) => {
-          // 한달 예산 readonly
-          console.log("getBudgetList", res.data);
-          // const selectBudgetList = _.cloneDeep(res.data.budgetListDtoList);
-          // 미분류 마지막 순서로 변경
-          // res.data.budgetListDtoList.shift();
-          // res.data.budgetListDtoList.push(selectBudgetList[0]);
-
-          // 한달 예산
+          console.log("결과>", res.data);
+          // 한달 수입 예산
           this.incomeBudgetAmount = res.data.incomeBudgetAmount;
+          this.incomeBudget = res.data.incomeBudgetAmount;
           // 3개월 간 평균 지출
           this.threeMonthAverageExpenditure =
-            res.data.threeMonthAverageExpenditure === null
-              ? "0"
-              : res.data.threeMonthAverageExpenditure;
-          // 지난달 지출
-          this.lastMonthExpenditure =
-            res.data.lastMonthExpenditure === null
-              ? "0"
-              : res.data.lastMonthExpenditure;
-          // 남은 돈 column setting
-          _.forEach(res.data.budgetListDtoList, function (row, index) {
-            res.data.budgetListDtoList[index].total =
-              row.expenditureBudgetAmount - row.expenditureAmount;
-          });
+            res.data.threeMonthAverageExpenditure;
+          // // 지난달 지출
+          this.lastMonthExpenditure = res.data.lastMonthExpenditure;
+
+          const bottomData = [];
+          const bottomRow = res.data.budgetListDtoList.pop();
+          // 카테고리별 예산 grid
           this.gridApi.setRowData(res.data.budgetListDtoList);
-          this.bottomData = [
-            {
-              largeCategoryName: "합계",
-              expenditureBudgetAmount: _.sumBy(
-                res.data.budgetListDtoList,
-                function (o) {
-                  return o.expenditureBudgetAmount;
-                }
-              ),
-              expenditureAmount: _.sumBy(
-                res.data.budgetListDtoList,
-                function (o) {
-                  return o.expenditureAmount;
-                }
-              ),
-              total: _.sumBy(res.data.budgetListDtoList, function (o) {
-                return o.total;
-              }),
-            },
-          ];
-          console.log("this.bottomData", this.bottomData);
+          // 합계 grid
+          bottomData.push(bottomRow);
+          this.bottomData = bottomData;
         })
         .catch((Error) => {
           console.log(Error);
@@ -367,7 +385,6 @@ export default {
   display: inline-block;
   width: 80%;
   text-align: right;
-  vertical-align: top;
   color: gray;
 }
 </style>

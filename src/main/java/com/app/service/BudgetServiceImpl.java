@@ -30,7 +30,7 @@ public class BudgetServiceImpl implements BudgetService {
     public BudgetDto selectBudgetList(BudgetRequestDto budgetRequestDto) {
         // 수입 예산 금액 조회
         String incomeBudgetAmount = budgetMapper.selectIncomeBudgetAmount(budgetRequestDto);
-        if (incomeBudgetAmount == null) incomeBudgetAmount = "-";
+        if (incomeBudgetAmount == null) incomeBudgetAmount = "0";
 
         // 3개월 간 평균 지출 조회
         String threeMonthAverageExpenditure = budgetMapper.selectThreeMonthAverageExpenditure(budgetRequestDto);
