@@ -3,81 +3,44 @@
     <div class="budgetWrite_top">
       <table>
         <tr>
-          <td style="width: 175px">
-            <span style="font-size: 1.5em">{{ this.month }}월 수입 예산</span>
+          <th rowspan="2">{{ startDate }} - {{ endDate }}</th>
+          <td>수입</td>
+          <td style="text-align: right; width: 15%">
+            {{ this.totalIncome }}원
           </td>
-          <td style="width: 25%"></td>
-          <td>3개월 간 평균 지출</td>
-          <td style="text-align: right">
+          <td class="pl-5">3개월 간 평균 지출</td>
+          <td style="text-align: right; width: 15%">
             {{ this.threeMonthAverageExpenditure }}원
           </td>
         </tr>
         <tr>
-          <td style="text-align: right">
-            <span style="font-size: 1.5em" v-show="showSpan"
-              >{{ incomeBudgetAmount }}원</span
-            >
-            <input
-              ref="incomeBudgetAmount"
-              type="text"
-              v-model="incomeBudgetAmount"
-              v-show="showInput"
-            />
-          </td>
-          <td>
-            <b-button
-              @mousedown="onClickUpdateIncomeBudget"
-              @mouseup="onFocusIncomeBudget"
-              >수정</b-button
-            >
-            <!-- <button style="vertical-align: top" @click="onUpdateIncomeBudget">
-              수정
-            </button> -->
-          </td>
-          <td>지난달 지출</td>
+          <td>예산 설정 가능 금액</td>
+          <td style="text-align: right">{{ this.totalBudget }}원</td>
+          <td class="pl-5">지난달 지출</td>
           <td style="text-align: right">{{ this.lastMonthExpenditure }}원</td>
         </tr>
       </table>
     </div>
-    <div class="grid_left_title">
+    <div class="grid_title">
       <span>카테고리별 예산</span>
     </div>
-    <!-- <div>
-      <div class="grid_top_title">
-        <span>{{ this.totalBudget }}</span>
-      </div>
-      <div>
-        <div class="grid_left_title">
-          <span>카테고리별 예산</span>
-        </div>
-        <div class="grid_right_title">
-          <span>전체 예산 {{ this.incomeBudget }}원</span>
-        </div>
-      </div>
-    </div> -->
     <div
       style="height: 100%; display: flex; flex-direction: column"
       class="ag-theme-alpine"
     >
       <grid
         ref="budgetGrid"
-        style="height: 420px; flex: 1 1 auto"
+        style="height: 420px"
         class="ag-theme-alpine"
-        :gridOptions="topGridOptions"
+        :defaultColDef="defaultColDef"
+        :gridOptions="gridOptions"
         :columnDefs="columnDefs"
         :rowData="rowData"
-        rowSelection="multiple"
+        :pinnedBottomRowData="pinnedBottomRowData"
+        :singleClickEdit="true"
+        :getRowStyle="getRowStyle"
         :modules="modules"
         @grid-ready="onGridReady"
-      ></grid>
-      <grid
-        style="height: 50px; flex: none"
-        :gridOptions="bottomGridOptions"
-        :headerHeight="0"
-        :columnDefs="columnDefs"
-        :rowData="bottomData"
-        :modules="modules"
-        :rowStyle="rowStyle"
       ></grid>
     </div>
     <div class="right_btn mt-3"><button @click="onSave">저장</button></div>
@@ -94,124 +57,91 @@ export default {
   },
   data() {
     return {
+      defaultColDef: null,
       columnDefs: null,
       rowData: [],
-      topGridOptions: null,
-      bottomData: null,
-      bottomGridOptions: null,
+      gridOptions: null,
+      pinnedBottomRowData: null,
       modules: AllCommunityModules,
-      rowStyle: { fontWeight: "bold" },
-      incomeBudgetAmount: "0",
-      incomeBudget: 0,
+      getRowStyle: null,
+      totalIncome: 0,
+      totalBudget: 0,
       threeMonthAverageExpenditure: 0,
       lastMonthExpenditure: 0,
-      showSpan: true,
-      showInput: false,
     };
   },
   computed: {
-    month() {
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      return monthStartDate > 15
-        ? this.$moment(this.period.to).format("MM")
-        : this.$moment(this.period.from).format("MM");
+    startDate() {
+      const periodFrom = this.period.from;
+      let month = periodFrom.getMonth() + 1;
+      month = month / 10 >= 1 ? month : "0" + month;
+      let day = periodFrom.getDate();
+      day = day / 10 >= 1 ? day : "0" + day;
+      return month + "." + day;
     },
-    // readonly: {
-    //   get() {
-    //     if (this.incomeBudgetAmount === "-") {
-    //       return true;
-    //     } else {
-    //       return false;
-    //     }
-    //   },
-    //   set() {},
-    // },
-
-    // showBudget() {
-    //   if (this.incomeBudgetAmount === "0") {
-    //     return false;
-    //   } else {
-    //     return true;
-    //   }
-    // },
-    totalBudget() {
-      if (this.bottomData) {
-        const value =
-          this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount;
-        console.log("typeof value", typeof value);
-        if (value < 0) {
-          return Math.abs(value) + "원 초과";
-        } else {
-          return value + "원 남음";
-        }
-      }
-
-      // const value =
-      //   this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount;
-      // if (value < 0) {
-      //   value *= -1;
-      //   return value + "원 초과";
-      // } else {
-      //   return value + "원 남음";
-      // }
-      //return value;
-      // return (
-      //   this.incomeBudgetAmount - this.bottomData[0].expenditureBudgetAmount
-      // );
+    endDate() {
+      const periodTo = this.period.to;
+      const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
+      return endDate;
     },
   },
   watch: {
-    incomeBudgetAmount() {
-      // 숫자만 입력
-      this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/[^0-9]/g, "");
-      // 한자릿수 0만 입력
-      if (
-        parseInt(this.incomeBudgetAmount) === 0 ||
-        this.incomeBudgetAmount === ""
-      ) {
-        this.incomeBudgetAmount = "0";
-      }
-      // 문자열의 맨 앞 0 제거
-      if (this.incomeBudgetAmount.length > 1) {
-        this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/(^0+)/, "");
-      }
-      return this.incomeBudgetAmount;
+    rowData: {
+      deep: true,
+      handler(newData) {
+        // 합계 row
+        // 예산 금액 숫자로 변환
+        const expenditureBudgetAmount = _.reduce(
+          this.rowData,
+          function (sum, obj) {
+            return sum + parseInt(obj.expenditureBudgetAmount);
+          },
+          0
+        );
+        const obj = [
+          {
+            largeCategoryName: "합계",
+            expenditureBudgetAmount: expenditureBudgetAmount,
+            expenditureAmount: _.sumBy(this.rowData, "expenditureAmount"),
+            total: _.sumBy(this.rowData, "total"),
+          },
+        ];
+        this.pinnedBottomRowData = obj;
+        this.gridApi.setPinnedBottomRowData(obj);
+      },
     },
-    // incomeBudgetAmount: function () {
+    pinnedBottomRowData: {
+      deep: true,
+      handler(newData) {
+        this.totalBudget =
+          this.totalIncome - newData[0].expenditureBudgetAmount;
+      },
+    },
+    // incomeBudgetAmount() {
     //   // 숫자만 입력
-    //   return (this.incomeBudgetAmount = this.incomeBudgetAmount.replace(
-    //     /[^0-9]/g,
-    //     ""
-    //   ));
+    //   this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/[^0-9]/g, "");
+    //   // 한자릿수 0만 입력
+    //   if (
+    //     parseInt(this.incomeBudgetAmount) === 0 ||
+    //     this.incomeBudgetAmount === ""
+    //   ) {
+    //     this.incomeBudgetAmount = "0";
+    //   }
+    //   // 문자열의 맨 앞 0 제거
+    //   if (this.incomeBudgetAmount.length > 1) {
+    //     this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/(^0+)/, "");
+    //   }
+    //   return this.incomeBudgetAmount;
     // },
   },
   created() {},
   beforeMount() {
-    this.topGridOptions = {
-      alignedGrids: [],
-      defaultColDef: {
-        // editable: true,
-        sortable: true,
-        resizable: true,
-        filter: true,
-        flex: 1,
-        minWidth: 100,
-      },
-      suppressHorizontalScroll: true,
+    this.gridOptions = {};
+    this.defaultColDef = {
+      sortable: true,
+      // resizable: true,
+      filter: true,
     };
-    this.bottomGridOptions = {
-      alignedGrids: [],
-      defaultColDef: {
-        editable: true,
-        sortable: true,
-        resizable: true,
-        filter: true,
-        flex: 1,
-        minWidth: 100,
-      },
-    };
-    this.topGridOptions.alignedGrids.push(this.bottomGridOptions);
-    this.bottomGridOptions.alignedGrids.push(this.topGridOptions);
     // grid columns
     this.columnDefs = [
       { field: "largeCategoryId", hide: true },
@@ -223,7 +153,18 @@ export default {
         headerName: "예산",
         field: "expenditureBudgetAmount",
         type: "numericColumn",
-        editable: true,
+        valueFormatter: (params) => {
+          if (params.data.largeCategoryId === 1) {
+            return "-";
+          }
+        },
+        editable: (params) => {
+          if (params.node.rowPinned || params.data.largeCategoryId === 1) {
+            return false;
+          } else {
+            return true;
+          }
+        },
       },
       {
         headerName: "지출",
@@ -236,6 +177,11 @@ export default {
         type: "numericColumn",
       },
     ];
+    this.getRowStyle = (params) => {
+      if (params.node.rowPinned) {
+        return { "font-weight": "bold" };
+      }
+    };
   },
   mounted() {
     if (this.tabIndex === 0) {
@@ -244,21 +190,10 @@ export default {
   },
   methods: {
     onGridReady(params) {
-      console.log("params", params);
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
 
       params.api.sizeColumnsToFit();
-    },
-    onClickUpdateIncomeBudget() {
-      if (this.incomeBudgetAmount === "-") {
-        this.incomeBudgetAmount = "";
-      }
-      this.showSpan = false;
-      this.showInput = true;
-    },
-    onFocusIncomeBudget() {
-      this.$refs.incomeBudgetAmount.focus();
     },
     // 예산 목록 조회
     getBudgetList() {
@@ -298,51 +233,44 @@ export default {
         .dispatch("budgetStore/selectBudgetList", budgetRequestDto)
         .then((res) => {
           console.log("결과>", res.data);
-          // 한달 수입 예산
-          this.incomeBudgetAmount = res.data.incomeBudgetAmount;
-          this.incomeBudget = res.data.incomeBudgetAmount;
+          // 이번달 수입 합계
+          this.totalIncome = res.data.totalIncome;
           // 3개월 간 평균 지출
           this.threeMonthAverageExpenditure =
             res.data.threeMonthAverageExpenditure;
           // // 지난달 지출
           this.lastMonthExpenditure = res.data.lastMonthExpenditure;
-
-          const bottomData = [];
-          const bottomRow = res.data.budgetListDtoList.pop();
           // 카테고리별 예산 grid
+          this.rowData = res.data.budgetListDtoList;
           this.gridApi.setRowData(res.data.budgetListDtoList);
-          // 합계 grid
-          bottomData.push(bottomRow);
-          this.bottomData = bottomData;
         })
         .catch((Error) => {
           console.log(Error);
         });
     },
     onSave() {
-      this.gridApi.clearFocusedCell();
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      const budgetDate =
-        monthStartDate > 15
-          ? this.$moment(this.period.to).format("YYYYMM")
-          : this.$moment(this.period.from).format("YYYYMM");
-
-      const budgetDto = {
-        incomeBudgetAmount: this.incomeBudgetAmount,
-        budgetListDtoList: this.$refs.budgetGrid.getRowData(),
-        expenditureBudgetDate: budgetDate,
-        incomeBudgetDate: budgetDate,
-        userDto: this.user.userInfo,
-      };
-      console.log("budgetDto>>", budgetDto);
-      this.$store
-        .dispatch("budgetStore/saveBudgetList", budgetDto)
-        .then((res) => {
-          this.getBudgetList();
-        })
-        .catch((Error) => {
-          console.log(Error);
-        });
+      // this.gridApi.clearFocusedCell();
+      // const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      // const budgetDate =
+      //   monthStartDate > 15
+      //     ? this.$moment(this.period.to).format("YYYYMM")
+      //     : this.$moment(this.period.from).format("YYYYMM");
+      // const budgetDto = {
+      //   incomeBudgetAmount: this.incomeBudgetAmount,
+      //   budgetListDtoList: this.$refs.budgetGrid.getRowData(),
+      //   expenditureBudgetDate: budgetDate,
+      //   incomeBudgetDate: budgetDate,
+      //   userDto: this.user.userInfo,
+      // };
+      // console.log("budgetDto>>", budgetDto);
+      // this.$store
+      //   .dispatch("budgetStore/saveBudgetList", budgetDto)
+      //   .then((res) => {
+      //     this.getBudgetList();
+      //   })
+      //   .catch((Error) => {
+      //     console.log(Error);
+      //   });
     },
   },
 };
@@ -351,17 +279,30 @@ export default {
 .budgetWrite_top {
   height: 100px;
   margin-bottom: 20px;
+
   border: 1px solid lightgray;
   border-radius: 5px;
   background-color: white;
 }
 .budgetWrite_top > table {
-  width: 600px;
+  width: 900px;
+  margin-top: 10px;
   border-collapse: collapse;
 }
-.budgetWrite_top > table tr td {
+.budgetWrite_top > table tr th {
   /* border: 1px solid lightgrey; */
-  padding: 6px 0px 5px 12px;
+  /* width: 30%; */
+  padding-left: 20px;
+  /* text-align: center; */
+  font-size: 36px;
+  /* font-weight: bold;
+  font-weight: 550; */
+  color: #424242;
+  /* padding: 6px 0px 5px 12px; */
+}
+.budgetWrite_top > table tr td {
+  border: 1px solid lightgrey;
+  padding: 8px 0px 8px 12px;
 }
 .budgetWrite_top > table tr td input[type="text"] {
   width: 160px;
@@ -374,12 +315,13 @@ export default {
 .grid_top_title {
   text-align: right;
 }
-.grid_left_title {
-  display: inline-block;
-  width: 20%;
+.grid_title {
+  /* display: inline-block; */
+  /* width: 20%; */
   margin-bottom: 5px;
   text-align: left;
-  font-size: 22px;
+  font-size: 18px;
+  font-weight: 600;
 }
 .grid_right_title {
   display: inline-block;

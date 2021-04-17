@@ -9,11 +9,11 @@ import java.util.List;
 @Mapper
 public interface BudgetMapper {
     /**
-     * 수입 예산 금액 조회
+     * 수입 합계 조회
      * @param budgetRequestDto
      * @return String
      */
-    String selectIncomeBudgetAmount(BudgetRequestDto budgetRequestDto);
+    String selectTotalIncome(BudgetRequestDto budgetRequestDto);
 
     /**
      * 3개월 간 평균 지출 조회

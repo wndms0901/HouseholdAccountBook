@@ -28,9 +28,8 @@ public class BudgetServiceImpl implements BudgetService {
      */
     @Override
     public BudgetDto selectBudgetList(BudgetRequestDto budgetRequestDto) {
-        // 수입 예산 금액 조회
-        String incomeBudgetAmount = budgetMapper.selectIncomeBudgetAmount(budgetRequestDto);
-        if (incomeBudgetAmount == null) incomeBudgetAmount = "0";
+        // 수입 합계 조회
+        String totalIncome = budgetMapper.selectTotalIncome(budgetRequestDto);
 
         // 3개월 간 평균 지출 조회
         String threeMonthAverageExpenditure = budgetMapper.selectThreeMonthAverageExpenditure(budgetRequestDto);
@@ -41,7 +40,7 @@ public class BudgetServiceImpl implements BudgetService {
         // 카테고리별 예산 목록 조회
         List<BudgetListDto> budgetListDtoList = budgetMapper.selectBudgetList(budgetRequestDto);
         return BudgetDto.builder()
-                .incomeBudgetAmount(incomeBudgetAmount)
+                .totalIncome(totalIncome)
                 .threeMonthAverageExpenditure(threeMonthAverageExpenditure)
                 .lastMonthExpenditure(lastMonthExpenditure)
                 .budgetListDtoList(budgetListDtoList)
@@ -56,14 +55,14 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public void saveBudgetList(BudgetDto budgetDto) {
         // 수입 예산 조회
-        Optional<IncomeBudget> incomeBudget = incomeBudgetRepository.findByUserEmailAndIncomeBudgetDate(budgetDto.getUserDto().getEmail(), budgetDto.getIncomeBudgetDate());
-        if (incomeBudget.isPresent()) {
-            // 수입 예산 수정
-            incomeBudget.get().update(Integer.parseInt(budgetDto.getIncomeBudgetAmount()));
-        } else if (!"-".equals(budgetDto.getIncomeBudgetAmount())) {
-            // 수입 예산 등록
-            incomeBudgetRepository.save(budgetDto.saveIncomeBudget());
-        }
+//        Optional<IncomeBudget> incomeBudget = incomeBudgetRepository.findByUserEmailAndIncomeBudgetDate(budgetDto.getUserDto().getEmail(), budgetDto.getIncomeBudgetDate());
+//        if (incomeBudget.isPresent()) {
+//            // 수입 예산 수정
+//            incomeBudget.get().update(Integer.parseInt(budgetDto.getIncomeBudgetAmount()));
+//        } else if (!"-".equals(budgetDto.getIncomeBudgetAmount())) {
+//            // 수입 예산 등록
+//            incomeBudgetRepository.save(budgetDto.saveIncomeBudget());
+//        }
 
         // 지출 예산 조회
         for (BudgetListDto dto : budgetDto.getBudgetListDtoList()) {
@@ -74,8 +73,8 @@ public class BudgetServiceImpl implements BudgetService {
             );
             if (expenditureBudget.isPresent()) {
                 // 지출 예산 수정
-                if (dto.getExpenditureBudgetAmount() > 0) {
-                    expenditureBudget.get().update(dto.getExpenditureBudgetAmount());
+                if (Integer.parseInt(dto.getExpenditureBudgetAmount()) > 0) {
+                    expenditureBudget.get().update(Integer.parseInt(dto.getExpenditureBudgetAmount()));
                 } else {
                     // 지출 예산 등록
                     dto.setExpenditureBudgetDate(budgetDto.getExpenditureBudgetDate());

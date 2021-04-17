@@ -13,11 +13,11 @@
         <result column="total" property="total" />
     </resultMap>
 
-    <select id="selectIncomeBudgetAmount" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
-        SELECT i.income_budget_amount
-          FROM income_budget i
-         WHERE i.income_budget_date=#{budgetDate}
-           AND i.user_email=#{email}
+    <select id="selectTotalIncome" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
+        SELECT IFNULL(SUM(i.income_amount),0)
+          FROM income i
+         WHERE i.user_email=#{email}
+           AND i.income_date between #{thisMonthStartDate} AND #{thisMonthEndDate}
     </select>
     <select id="selectThreeMonthAverageExpenditure" parameterType="com.app.dto.BudgetRequestDto" resultType="String">
         SELECT ROUND((IFNULL(SUM(e.card),0)+IFNULL(SUM(e.cash),0))/3)
@@ -32,55 +32,41 @@
            AND e.expenditure_date BETWEEN #{lastMonthStartDate} AND #{lastMonthEndDate}
     </select>
     <select id="selectBudgetList" parameterType="com.app.dto.BudgetRequestDto" resultMap="budgetListDto">
-        SELECT IFNULL(c.large_category_id,0) AS large_category_id
-             , IF(c.large_category_id IS NULL,'합계',c.large_category_name) AS large_category_name
-             , c.expenditure_budget_amount
-             , c.expenditure_amount
-             , c.total
+        SELECT a.large_category_id
+             , a.large_category_name
+             , a.expenditure_budget_amount
+             , a.expenditure_amount
+             , (a.expenditure_budget_amount-a.expenditure_amount) AS total
           FROM (
-                SELECT b.large_category_id
-                     , b.large_category_name
-                     , SUM(b.expenditure_budget_amount) AS expenditure_budget_amount
-                     , SUM(b.expenditure_amount) AS expenditure_amount
-                     , SUM(b.total) AS total
+                SELECT lc.large_category_id
+                     , lc.large_category_name
+                     , IFNULL(eb.expenditure_budget_amount,0) AS expenditure_budget_amount
+                     , IFNULL(e.expenditure_amount,0) AS expenditure_amount
                   FROM (
-                        SELECT a.large_category_id
-                             , a.large_category_name
-                             , a.expenditure_budget_amount
-                             , a.expenditure_amount
-                             , (a.expenditure_budget_amount-a.expenditure_amount) AS total
-                          FROM (
-                                SELECT lc.large_category_id
-                                     , lc.large_category_name
-                                     , IFNULL(eb.expenditure_budget_amount,0) AS expenditure_budget_amount
-                                     , IFNULL(e.expenditure_amount,0) AS expenditure_amount
-                                  FROM (
-                                        SELECT lc.large_category_id
-                                             , lc.large_category_name
-                                          FROM large_category lc
-                                         WHERE lc.category_type='EXP'
-                                       ) lc
-                             LEFT JOIN (
-                                        SELECT eb.large_category_id
-                                             , eb.expenditure_budget_amount
-                                          FROM expenditure_budget eb
-                                         WHERE eb.user_email=#{email}
-                                           AND eb.expenditure_budget_date=#{budgetDate}
-                                       ) eb
-                                    ON lc.large_category_id = eb.large_category_id
-                             LEFT JOIN (
-                                        SELECT e.large_category_id
-                                             , IFNULL(SUM(e.card),0)+IFNULL(SUM(e.cash),0) AS expenditure_amount
-                                          FROM expenditure e
-                                         WHERE e.user_email=#{email}
-                                           AND e.expenditure_date BETWEEN #{thisMonthStartDate} AND #{thisMonthEndDate}
-                                      GROUP BY e.large_category_id
-                                       ) e
-                                    ON lc.large_category_id = e.large_category_id
-                               ) a
-                       ) b
-              GROUP BY b.large_category_id WITH ROLLUP
-               ) c
+                        SELECT lc.large_category_id
+                             , lc.large_category_name
+                          FROM large_category lc
+                         WHERE lc.category_type='EXP'
+                       ) lc
+             LEFT JOIN (
+                        SELECT eb.large_category_id
+                             , eb.expenditure_budget_amount
+                          FROM expenditure_budget eb
+                         WHERE user_email=#{email}
+                           AND eb.expenditure_budget_date=#{budgetDate}
+                       ) eb
+                    ON lc.large_category_id = eb.large_category_id
+             LEFT JOIN (
+                        SELECT e.large_category_id
+                             , IFNULL(SUM(e.card),0)+IFNULL(SUM(e.cash),0) AS expenditure_amount
+                          FROM expenditure e
+                         WHERE user_email=#{email}
+                           AND e.expenditure_date BETWEEN #{thisMonthStartDate} AND #{thisMonthEndDate}
+                      GROUP BY e.large_category_id
+                       ) e
+                    ON lc.large_category_id = e.large_category_id
+               ) a
+      ORDER BY FIELD(a.large_category_id,1), a.large_category_id
     </select>
     <select id="selectMonthBudgetExpenditureList" parameterType="com.app.dto.PeriodDto" resultMap="budgetListDto">
         SELECT a.large_category_id

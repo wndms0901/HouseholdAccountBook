@@ -13,7 +13,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class BudgetDto {
-    private String incomeBudgetAmount;
+    private String totalIncome;
+    //private String incomeBudgetAmount;
     private String threeMonthAverageExpenditure;
     private String lastMonthExpenditure;
     private List<BudgetListDto> budgetListDtoList;
@@ -22,8 +23,8 @@ public class BudgetDto {
     private UserDto userDto;
 
     @Builder
-    public BudgetDto(String incomeBudgetAmount, String threeMonthAverageExpenditure, String lastMonthExpenditure, List<BudgetListDto> budgetListDtoList) {
-        this.incomeBudgetAmount = incomeBudgetAmount;
+    public BudgetDto(String totalIncome, String threeMonthAverageExpenditure, String lastMonthExpenditure, List<BudgetListDto> budgetListDtoList) {
+        this.totalIncome = totalIncome;
         this.threeMonthAverageExpenditure = threeMonthAverageExpenditure;
         this.lastMonthExpenditure = lastMonthExpenditure;
         this.budgetListDtoList = budgetListDtoList;
@@ -31,7 +32,7 @@ public class BudgetDto {
 
     public IncomeBudget saveIncomeBudget(){
         return IncomeBudget.builder()
-                .incomeBudgetAmount(Integer.parseInt(incomeBudgetAmount))
+               // .incomeBudgetAmount(Integer.parseInt(incomeBudgetAmount))
                 .incomeBudgetDate(incomeBudgetDate)
                 .user(userDto.toEntity())
                 .build();
