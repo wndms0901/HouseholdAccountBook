@@ -4,52 +4,60 @@
       <table>
         <tr>
           <th rowspan="2">{{ startDate }} - {{ endDate }}</th>
-          <td>수입</td>
-          <td style="text-align: right; width: 15%">
-            {{ this.totalIncome }}원
+          <td>이달의 수입</td>
+          <td class="td_text_rigth">
+            <span>{{ this.totalIncome }}</span
+            >원
           </td>
-          <td class="pl-5">3개월 간 평균 지출</td>
-          <td style="text-align: right; width: 15%">
+          <td>3개월 간 평균 지출</td>
+          <td class="td_text_rigth">
             {{ this.threeMonthAverageExpenditure }}원
           </td>
         </tr>
         <tr>
           <td>예산 설정 가능 금액</td>
-          <td style="text-align: right">{{ this.totalBudget }}원</td>
-          <td class="pl-5">지난달 지출</td>
-          <td style="text-align: right">{{ this.lastMonthExpenditure }}원</td>
+          <td class="td_text_rigth">
+            <span :style="styleObject">{{ this.totalBudget }}</span
+            >원
+          </td>
+          <td>지난달 지출</td>
+          <td class="td_text_rigth">{{ this.lastMonthExpenditure }}원</td>
         </tr>
       </table>
     </div>
     <div class="grid_title">
       <span>카테고리별 예산</span>
     </div>
-    <div
+    <!-- <div
       style="height: 100%; display: flex; flex-direction: column"
       class="ag-theme-alpine"
-    >
-      <grid
-        ref="budgetGrid"
-        style="height: 420px"
-        class="ag-theme-alpine"
-        :defaultColDef="defaultColDef"
-        :gridOptions="gridOptions"
-        :columnDefs="columnDefs"
-        :rowData="rowData"
-        :pinnedBottomRowData="pinnedBottomRowData"
-        :singleClickEdit="true"
-        :getRowStyle="getRowStyle"
-        :modules="modules"
-        @grid-ready="onGridReady"
-      ></grid>
+    > -->
+    <grid
+      ref="budgetGrid"
+      style="height: 420px"
+      class="ag-theme-alpine"
+      :defaultColDef="defaultColDef"
+      :gridOptions="gridOptions"
+      :columnDefs="columnDefs"
+      :rowData="rowData"
+      :pinnedBottomRowData="pinnedBottomRowData"
+      :singleClickEdit="true"
+      :getRowStyle="getRowStyle"
+      :modules="modules"
+      :frameworkComponents="frameworkComponents"
+      @grid-ready="onGridReady"
+    ></grid>
+    <!-- </div> -->
+    <div class="right_btn mt-3">
+      <button class="saveBtn" @click="onSave">저장</button>
     </div>
-    <div class="right_btn mt-3"><button @click="onSave">저장</button></div>
   </div>
 </template>
 <script>
 import { AllCommunityModules } from "@ag-grid-community/all-modules";
+import BudgetCellRenderer from "../CellRenderer/BudgetCellRenderer";
 export default {
-  components: { AllCommunityModules },
+  components: { AllCommunityModules, BudgetCellRenderer },
   props: {
     user: Object,
     period: Object,
@@ -63,6 +71,7 @@ export default {
       gridOptions: null,
       pinnedBottomRowData: null,
       modules: AllCommunityModules,
+      frameworkComponents: null,
       getRowStyle: null,
       totalIncome: 0,
       totalBudget: 0,
@@ -83,6 +92,19 @@ export default {
       const periodTo = this.period.to;
       const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
       return endDate;
+    },
+    budgetDate() {
+      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      return monthStartDate > 15
+        ? this.$moment(this.period.to).format("YYYYMM")
+        : this.$moment(this.period.from).format("YYYYMM");
+    },
+    styleObject() {
+      if (this.totalBudget < 0) {
+        return {
+          color: "#ff5658",
+        };
+      }
     },
   },
   watch: {
@@ -138,9 +160,9 @@ export default {
   beforeMount() {
     this.gridOptions = {};
     this.defaultColDef = {
-      sortable: true,
+      // sortable: true,
       // resizable: true,
-      filter: true,
+      // filter: true,
     };
     // grid columns
     this.columnDefs = [
@@ -152,12 +174,13 @@ export default {
       {
         headerName: "예산",
         field: "expenditureBudgetAmount",
+        cellRenderer: "BudgetCellRenderer",
         type: "numericColumn",
-        valueFormatter: (params) => {
-          if (params.data.largeCategoryId === 1) {
-            return "-";
-          }
-        },
+        // valueFormatter: (params) => {
+        //   if (params.data.largeCategoryId === 1) {
+        //     return "-";
+        //   }
+        // },
         editable: (params) => {
           if (params.node.rowPinned || params.data.largeCategoryId === 1) {
             return false;
@@ -165,18 +188,37 @@ export default {
             return true;
           }
         },
+        // cellStyle: (params) => {
+        //   return { backgroundColor: "#F8FFFA" };
+        //   // if (params.node.rowPinned) {
+        //   //   return { color: "#1fab89" };
+        //   // }
+        // },
       },
       {
         headerName: "지출",
         field: "expenditureAmount",
         type: "numericColumn",
+        cellStyle: (params) => {
+          if (params.node.rowPinned) {
+            return { color: "#1fab89" };
+          }
+        },
       },
       {
         headerName: "남은 돈",
         field: "total",
         type: "numericColumn",
+        cellStyle: (params) => {
+          if (params.value < 0) {
+            return { color: "#ff5658" };
+          }
+        },
       },
     ];
+    this.frameworkComponents = {
+      BudgetCellRenderer: BudgetCellRenderer,
+    };
     this.getRowStyle = (params) => {
       if (params.node.rowPinned) {
         return { "font-weight": "bold" };
@@ -197,11 +239,6 @@ export default {
     },
     // 예산 목록 조회
     getBudgetList() {
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      const budgetDate =
-        monthStartDate > 15
-          ? this.$moment(this.period.to).format("YYYYMM")
-          : this.$moment(this.period.from).format("YYYYMM");
       // 3개월 전 시작일
       const threeMonthStartDate = this.$moment(this.period.from).subtract(
         3,
@@ -214,9 +251,9 @@ export default {
       );
 
       const budgetRequestDto = {
-        budgetDate: budgetDate,
-        thisMonthStartDate: this.$moment(this.period.from).format("YYYYMM"),
-        thisMonthEndDate: this.$moment(this.period.to).format("YYYYMM"),
+        budgetDate: this.budgetDate,
+        thisMonthStartDate: this.$moment(this.period.from).format("YYYYMMDD"),
+        thisMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
         threeMonthStartDate: threeMonthStartDate.format("YYYYMMDD"),
         threeMonthEndDate: this.$moment(threeMonthStartDate._d)
           .add(3, "months")
@@ -229,6 +266,7 @@ export default {
           .format("YYYYMMDD"),
         email: this.user.userInfo.email,
       };
+      console.log("budgetRequestDto", budgetRequestDto);
       this.$store
         .dispatch("budgetStore/selectBudgetList", budgetRequestDto)
         .then((res) => {
@@ -249,28 +287,22 @@ export default {
         });
     },
     onSave() {
-      // this.gridApi.clearFocusedCell();
-      // const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      // const budgetDate =
-      //   monthStartDate > 15
-      //     ? this.$moment(this.period.to).format("YYYYMM")
-      //     : this.$moment(this.period.from).format("YYYYMM");
-      // const budgetDto = {
-      //   incomeBudgetAmount: this.incomeBudgetAmount,
-      //   budgetListDtoList: this.$refs.budgetGrid.getRowData(),
-      //   expenditureBudgetDate: budgetDate,
-      //   incomeBudgetDate: budgetDate,
-      //   userDto: this.user.userInfo,
-      // };
-      // console.log("budgetDto>>", budgetDto);
-      // this.$store
-      //   .dispatch("budgetStore/saveBudgetList", budgetDto)
-      //   .then((res) => {
-      //     this.getBudgetList();
-      //   })
-      //   .catch((Error) => {
-      //     console.log(Error);
-      //   });
+      this.gridApi.clearFocusedCell();
+      const budgetListDtoList = this.$refs.budgetGrid.getRowData();
+      budgetListDtoList.pop();
+      const budgetDto = {
+        budgetListDtoList: budgetListDtoList,
+        budgetDate: this.budgetDate,
+        userDto: this.user.userInfo,
+      };
+      this.$store
+        .dispatch("budgetStore/saveBudgetList", budgetDto)
+        .then((res) => {
+          this.getBudgetList();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
     },
   },
 };
@@ -278,7 +310,7 @@ export default {
 <style scoped>
 .budgetWrite_top {
   height: 100px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 
   border: 1px solid lightgray;
   border-radius: 5px;
@@ -289,9 +321,12 @@ export default {
   margin-top: 10px;
   border-collapse: collapse;
 }
+.budgetWrite_top > table tr:first-child span {
+  color: #608cef;
+}
 .budgetWrite_top > table tr th {
   /* border: 1px solid lightgrey; */
-  /* width: 30%; */
+  width: 28%;
   padding-left: 20px;
   /* text-align: center; */
   font-size: 36px;
@@ -301,18 +336,18 @@ export default {
   /* padding: 6px 0px 5px 12px; */
 }
 .budgetWrite_top > table tr td {
-  border: 1px solid lightgrey;
+  /* border: 1px solid lightgrey; */
   padding: 8px 0px 8px 12px;
 }
-.budgetWrite_top > table tr td input[type="text"] {
-  width: 160px;
+.budgetWrite_top > table tr td:first-of-type {
+  width: 18%;
 }
-.budgetWrite_top button {
-  width: 55px;
-  height: 30px;
-  padding: 0;
+.budgetWrite_top > table tr td:nth-of-type(3) {
+  width: 23%;
+  padding-left: 65px;
 }
-.grid_top_title {
+.td_text_rigth {
+  width: 14%;
   text-align: right;
 }
 .grid_title {
@@ -322,11 +357,5 @@ export default {
   text-align: left;
   font-size: 18px;
   font-weight: 600;
-}
-.grid_right_title {
-  display: inline-block;
-  width: 80%;
-  text-align: right;
-  color: gray;
 }
 </style>

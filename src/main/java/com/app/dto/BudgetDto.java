@@ -18,8 +18,8 @@ public class BudgetDto {
     private String threeMonthAverageExpenditure;
     private String lastMonthExpenditure;
     private List<BudgetListDto> budgetListDtoList;
-    private String expenditureBudgetDate;
-    private String incomeBudgetDate;
+    private String budgetDate;
+    // private String incomeBudgetDate;
     private UserDto userDto;
 
     @Builder
@@ -30,13 +30,13 @@ public class BudgetDto {
         this.budgetListDtoList = budgetListDtoList;
     }
 
-    public IncomeBudget saveIncomeBudget(){
-        return IncomeBudget.builder()
-               // .incomeBudgetAmount(Integer.parseInt(incomeBudgetAmount))
-                .incomeBudgetDate(incomeBudgetDate)
-                .user(userDto.toEntity())
-                .build();
-    }
+//    public IncomeBudget saveIncomeBudget(){
+//        return IncomeBudget.builder()
+//               // .incomeBudgetAmount(Integer.parseInt(incomeBudgetAmount))
+//                .incomeBudgetDate(incomeBudgetDate)
+//                .user(userDto.toEntity())
+//                .build();
+//    }
 
 
 }

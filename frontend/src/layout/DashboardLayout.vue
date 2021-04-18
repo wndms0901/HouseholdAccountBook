@@ -100,7 +100,7 @@ export default {
 </script>
 <style>
 .ag-cell {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 .date_wrap {
   width: 100%;
@@ -168,5 +168,17 @@ export default {
   border-radius: 0;
   background-color: white;
   display: inline-block;
+}
+.saveBtn {
+  padding: 8px 25px;
+  border: none;
+  border-radius: 3px;
+  background-color: #1953d7;
+  color: white;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>

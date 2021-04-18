@@ -68,18 +68,17 @@ public class BudgetServiceImpl implements BudgetService {
         for (BudgetListDto dto : budgetDto.getBudgetListDtoList()) {
             Optional<ExpenditureBudget> expenditureBudget = expenditureBudgetRepository.findByUserEmailAndExpenditureBudgetDateAndLargeCategoryId(
                     budgetDto.getUserDto().getEmail(),
-                    budgetDto.getExpenditureBudgetDate(),
+                    budgetDto.getBudgetDate(),
                     dto.getLargeCategoryId()
             );
             if (expenditureBudget.isPresent()) {
                 // 지출 예산 수정
-                if (Integer.parseInt(dto.getExpenditureBudgetAmount()) > 0) {
-                    expenditureBudget.get().update(Integer.parseInt(dto.getExpenditureBudgetAmount()));
-                } else {
-                    // 지출 예산 등록
-                    dto.setExpenditureBudgetDate(budgetDto.getExpenditureBudgetDate());
-                    expenditureBudgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
-                }
+                expenditureBudget.get().update(Integer.parseInt(dto.getExpenditureBudgetAmount()));
+            } else{
+                // 지출 예산 등록
+                dto.setExpenditureBudgetDate(budgetDto.getBudgetDate());
+                expenditureBudgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
+
             }
         }
     }
