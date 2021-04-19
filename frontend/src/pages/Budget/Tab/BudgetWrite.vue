@@ -34,7 +34,7 @@
     > -->
     <grid
       ref="budgetGrid"
-      style="height: 420px"
+      style="height: 450px"
       class="ag-theme-alpine"
       :defaultColDef="defaultColDef"
       :gridOptions="gridOptions"
@@ -55,9 +55,9 @@
 </template>
 <script>
 import { AllCommunityModules } from "@ag-grid-community/all-modules";
-import BudgetCellRenderer from "../CellRenderer/BudgetCellRenderer";
+import BudgetCellEditor from "../CellEditor/BudgetCellEditor";
 export default {
-  components: { AllCommunityModules, BudgetCellRenderer },
+  components: { AllCommunityModules, BudgetCellEditor },
   props: {
     user: Object,
     period: Object,
@@ -90,8 +90,11 @@ export default {
     },
     endDate() {
       const periodTo = this.period.to;
-      const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
-      return endDate;
+      let month = periodTo.getMonth() + 1;
+      month = month / 10 >= 1 ? month : "0" + month;
+      let day = periodTo.getDate();
+      day = day / 10 >= 1 ? day : "0" + day;
+      return month + "." + day;
     },
     budgetDate() {
       const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
@@ -174,13 +177,14 @@ export default {
       {
         headerName: "예산",
         field: "expenditureBudgetAmount",
-        cellRenderer: "BudgetCellRenderer",
+        cellEditor: "BudgetCellEditor",
         type: "numericColumn",
-        // valueFormatter: (params) => {
-        //   if (params.data.largeCategoryId === 1) {
-        //     return "-";
-        //   }
-        // },
+        valueFormatter: (params) => {
+          if (params.data.largeCategoryId === 1) {
+            return "-";
+          }
+          return params.value;
+        },
         editable: (params) => {
           if (params.node.rowPinned || params.data.largeCategoryId === 1) {
             return false;
@@ -188,12 +192,21 @@ export default {
             return true;
           }
         },
-        // cellStyle: (params) => {
-        //   return { backgroundColor: "#F8FFFA" };
-        //   // if (params.node.rowPinned) {
-        //   //   return { color: "#1fab89" };
-        //   // }
-        // },
+        cellStyle: (params) => {
+          if (params.node.rowPinned || params.data.largeCategoryId === 1) {
+            return {
+              backgroundColor: "rgba(33, 150, 243, 0.1)",
+            };
+          } else {
+            return {
+              backgroundColor: "rgba(33, 150, 243, 0.1)",
+              cursor: "pointer",
+            };
+          }
+          // if (params.node.rowPinned) {
+          //   return { color: "#1fab89" };
+          // }
+        },
       },
       {
         headerName: "지출",
@@ -217,7 +230,7 @@ export default {
       },
     ];
     this.frameworkComponents = {
-      BudgetCellRenderer: BudgetCellRenderer,
+      BudgetCellEditor: BudgetCellEditor,
     };
     this.getRowStyle = (params) => {
       if (params.node.rowPinned) {
@@ -311,13 +324,12 @@ export default {
 .budgetWrite_top {
   height: 100px;
   margin-bottom: 30px;
-
   border: 1px solid lightgray;
   border-radius: 5px;
   background-color: white;
 }
 .budgetWrite_top > table {
-  width: 900px;
+  width: inherit;
   margin-top: 10px;
   border-collapse: collapse;
 }
@@ -326,36 +338,23 @@ export default {
 }
 .budgetWrite_top > table tr th {
   /* border: 1px solid lightgrey; */
-  width: 28%;
   padding-left: 20px;
-  /* text-align: center; */
-  font-size: 36px;
-  /* font-weight: bold;
-  font-weight: 550; */
+  padding-right: 20px;
+  font-size: 38px;
   color: #424242;
-  /* padding: 6px 0px 5px 12px; */
 }
 .budgetWrite_top > table tr td {
   /* border: 1px solid lightgrey; */
   padding: 8px 0px 8px 12px;
+  color: #424242;
+  font-weight: bold;
 }
-.budgetWrite_top > table tr td:first-of-type {
-  width: 18%;
-}
+
 .budgetWrite_top > table tr td:nth-of-type(3) {
-  width: 23%;
-  padding-left: 65px;
+  padding-left: 40px;
 }
 .td_text_rigth {
-  width: 14%;
+  width: 135px;
   text-align: right;
-}
-.grid_title {
-  /* display: inline-block; */
-  /* width: 20%; */
-  margin-bottom: 5px;
-  text-align: left;
-  font-size: 18px;
-  font-weight: 600;
 }
 </style>

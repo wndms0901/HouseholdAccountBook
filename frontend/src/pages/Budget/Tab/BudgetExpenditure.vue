@@ -1,35 +1,37 @@
 <template>
   <div>
-    <div class="title_box">
-      <h4>예산 대비 지출</h4>
-    </div>
-    <div class="icon_box">
-      <span
-        ><b-icon
-          icon="circle-fill"
-          font-scale="0.5"
-          style="color: #608cef"
-        ></b-icon
-      ></span>
-      <span>남은돈</span>&nbsp;
-      <span
-        ><b-icon
-          icon="circle-fill"
-          font-scale="0.5"
-          style="color: #ff5658"
-        ></b-icon
-      ></span>
-      <span>예산초과</span>
+    <div class="budgetExpenditure_top">
+      <div class="grid_title">
+        <span>예산 대비 지출</span>
+      </div>
+      <div class="icon_box">
+        <span
+          ><b-icon
+            icon="circle-fill"
+            font-scale="0.5"
+            style="color: #608cef"
+          ></b-icon
+        ></span>
+        <span>남은돈</span>&nbsp;
+        <span
+          ><b-icon
+            icon="circle-fill"
+            font-scale="0.5"
+            style="color: #ff5658"
+          ></b-icon
+        ></span>
+        <span>예산초과</span>
+      </div>
     </div>
     <grid
       ref="budgetExpndGrid"
-      style="height: 580px"
+      style="height: 610px"
       class="ag-theme-alpine"
       :gridOptions="gridOptions"
       :columnDefs="columnDefs"
       :defaultColDef="defaultColDef"
       :rowData="rowData"
-      rowSelection="multiple"
+      :getRowStyle="getRowStyle"
       @grid-ready="onGridReady"
     >
     </grid>
@@ -47,6 +49,7 @@ export default {
       gridOptions: null,
       columnDefs: null,
       defaultColDef: null,
+      getRowStyle: null,
       rowData: [],
     };
   },
@@ -71,9 +74,9 @@ export default {
         if (params.data.largeCategoryId === 0) {
           // 합계 row
           if (params.value > 0) {
-            return { color: "#608cef", fontWeight: "500" };
+            return { color: "#608cef" };
           } else if (params.value < 0) {
-            return { color: "#ff5658", fontWeight: "500" };
+            return { color: "#ff5658" };
           }
         }
         return null;
@@ -102,6 +105,14 @@ export default {
       { headerName: "", field: "eleventhMonth", type: "numericColumn" },
       { headerName: "", field: "twelfthMonth", type: "numericColumn" },
     ];
+    this.getRowStyle = function (params) {
+      if (params.data.largeCategoryId === 0) {
+        return {
+          backgroundColor: "rgba(33, 150, 243, 0.1)",
+          fontWeight: "bold",
+        };
+      }
+    };
   },
   mounted() {},
   methods: {
@@ -157,7 +168,6 @@ export default {
       });
 
       this.gridApi.setColumnDefs(columnDefs);
-      this.gridApi.sizeColumnsToFit();
     },
     // 예산 대비 지출 목록 조회
     selectBudgetExpenditureList(monthOfYearList) {
@@ -169,6 +179,7 @@ export default {
         .then((res) => {
           console.log("결과>", res.data);
           this.gridApi.setRowData(res.data);
+          this.gridApi.sizeColumnsToFit();
         })
         .catch((Error) => {
           console.log(Error);
@@ -178,12 +189,12 @@ export default {
 };
 </script>
 <style scoped>
-.title_box > h4 {
-  margin-bottom: 0;
+.budgetExpenditure_top {
+  display: flex;
+  margin-top: 30px;
 }
 .icon_box {
-  text-align: right;
-  margin-bottom: 5px;
+  margin-left: auto;
 }
 .icon_box > span {
   margin-left: 5px;

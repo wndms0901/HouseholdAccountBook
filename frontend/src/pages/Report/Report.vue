@@ -222,4 +222,27 @@ export default {
 .right_btn {
   float: right;
 }
+.report_top {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  background-color: white;
+}
+.report_top > table {
+  width: 700px;
+}
+.report_top > table tr th {
+  width: 50%;
+  text-align: center;
+  font-size: 50px;
+  font-weight: 500;
+  color: #424242;
+}
+.report_top > table tr td {
+  padding-left: 20px;
+  font-weight: 500;
+  color: #424242;
+}
+.report_top > table tr th h1 {
+  margin: 10px 20px;
+}
 </style>

@@ -1,35 +1,34 @@
 <template>
   <div>
-    <div class="monthReport_top">
-      <table style="width: 700px">
+    <div class="report_top">
+      <table>
         <tr>
-          <th rowspan="2">
-            <h1>{{ startDate }} - {{ endDate }}</h1>
-          </th>
+          <th rowspan="2">{{ startDate }} - {{ endDate }}</th>
           <td>
-            연간 수입 <span class="text-danger">{{ totalIncome }}</span>
+            연간 수입 <span class="ml-2 income_color">{{ totalIncome }}</span>
           </td>
         </tr>
         <tr>
           <td>
-            지출 합계 <span class="text-primary">{{ totalExpenditure }}</span>
+            지출 합계
+            <span class="ml-2 expenditure_color">{{ totalExpenditure }}</span>
           </td>
         </tr>
       </table>
     </div>
-    <!-- <div class="monthReport_centent"> -->
-    <div>
-      <h4>연간 보고서 현황</h4>
+    <div class="yearReport_centent">
+      <div class="grid_title">
+        <span>연간 보고서 현황</span>
+      </div>
       <grid
         ref="yearReportGrid"
-        style="height: 580px"
+        style="height: 530px"
         class="ag-theme-alpine"
         :gridOptions="gridOptions"
         :columnDefs="columnDefs"
         :defaultColDef="defaultColDef"
         :getRowStyle="getRowStyle"
         :rowData="rowData"
-        rowSelection="multiple"
         @grid-ready="onGridReady"
       >
       </grid>
@@ -57,13 +56,19 @@ export default {
   computed: {
     startDate() {
       const periodFrom = this.period.from;
-      const startDate = periodFrom.getMonth() + 1 + "." + periodFrom.getDate();
-      return startDate;
+      let month = periodFrom.getMonth() + 1;
+      month = month / 10 >= 1 ? month : "0" + month;
+      let day = periodFrom.getDate();
+      day = day / 10 >= 1 ? day : "0" + day;
+      return month + "." + day;
     },
     endDate() {
       const periodTo = this.period.to;
-      const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
-      return endDate;
+      let month = periodTo.getMonth() + 1;
+      month = month / 10 >= 1 ? month : "0" + month;
+      let day = periodTo.getDate();
+      day = day / 10 >= 1 ? day : "0" + day;
+      return month + "." + day;
     },
   },
   watch: {
@@ -106,9 +111,17 @@ export default {
     ];
     this.getRowStyle = function (params) {
       if (params.data.largeCategoryId === "") {
-        return { backgroundColor: "lightcoral" };
+        return {
+          color: "#608cef",
+          backgroundColor: "rgba(96, 140, 239, 0.1)",
+          fontWeight: "bold",
+        };
       } else if (params.data.largeCategoryId === "0") {
-        return { backgroundColor: "skyblue" };
+        return {
+          color: "#1fab89",
+          backgroundColor: "rgba(31, 171, 137, 0.1)",
+          fontWeight: "bold",
+        };
       }
     };
   },
@@ -191,6 +204,7 @@ export default {
           this.totalExpenditure = totalExpenditure[0].total;
           // 연간 수입/지출 목록
           this.gridApi.setRowData(res.data);
+          this.gridApi.sizeColumnsToFit();
         })
         .catch((Error) => {
           console.log(Error);
@@ -200,7 +214,7 @@ export default {
 };
 </script>
 <style scoped>
-.monthReport_centent > h4 {
-  margin-top: 0;
+.yearReport_centent {
+  margin-top: 20px;
 }
 </style>

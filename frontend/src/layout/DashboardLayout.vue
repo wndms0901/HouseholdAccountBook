@@ -99,9 +99,6 @@ export default {
 };
 </script>
 <style>
-.ag-cell {
-  /* cursor: pointer; */
-}
 .date_wrap {
   width: 100%;
   display: flex;
@@ -168,6 +165,33 @@ export default {
   border-radius: 0;
   background-color: white;
   display: inline-block;
+}
+.income_color {
+  color: #608cef;
+}
+.expenditure_color {
+  color: #1fab89;
+}
+.excess_color {
+  color: #ff5658;
+}
+.grid_title {
+  margin-bottom: 10px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 600;
+  color: #424242;
+}
+.selectBtn {
+  margin-right: 5px;
+  padding: 2px 8px;
+  border: 1px solid #babfc7;
+  background-color: white;
+}
+.selectBtn:hover {
+  border: 1px solid #babfc7;
+  background-color: white;
+  color: #1953d7;
 }
 .saveBtn {
   padding: 8px 25px;

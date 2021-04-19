@@ -96,6 +96,7 @@
               GROUP BY large_category_id
                ) c
             ON lc.large_category_id = c.large_category_id
+      ORDER BY FIELD(lc.large_category_id,1), lc.large_category_id
     </select>
     <select id="selectDailyExpenditureList" parameterType="com.app.dto.ReportRequestDto" resultMap="dailyExpenditureDto">
         SELECT (e.card+e.cash) AS daily_expenditure

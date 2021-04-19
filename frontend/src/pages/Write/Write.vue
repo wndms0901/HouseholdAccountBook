@@ -50,12 +50,16 @@
         </div>
       </div>
       <div class="tabs" style="width: 100%">
-        <b-tabs content-class="mt-3">
+        <b-tabs v-model="tabIndex" content-class="mt-3">
           <b-tab title="지출" active
-            ><expenditure :user="user" :period="period"></expenditure
+            ><expenditure
+              :user="user"
+              :period="period"
+              :tabIndex="tabIndex"
+            ></expenditure
           ></b-tab>
           <b-tab title="수입"
-            ><income :user="user" :period="period"></income
+            ><income :user="user" :period="period" :tabIndex="tabIndex"></income
           ></b-tab>
           <b-tab title="달력"></b-tab>
         </b-tabs>
@@ -79,6 +83,7 @@ export default {
         from: "",
         to: "",
       },
+      tabIndex: 0,
     };
   },
   computed: {
@@ -108,18 +113,26 @@ export default {
   },
   methods: {
     setPeriod() {
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
       let today = new Date();
-      let startDate = new Date(
+      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      const month =
+        monthStartDate > 15 ? today.getMonth() - 1 : today.getMonth();
+      const startDate = new Date(today.getFullYear(), month, monthStartDate);
+      const endDate = new Date(
         today.getFullYear(),
-        today.getMonth(),
-        monthStartDate
-      );
-      let endDate = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
+        month + 1,
         monthStartDate - 1
       );
+      // let startDate = new Date(
+      //   today.getFullYear(),
+      //   today.getMonth(),
+      //   monthStartDate
+      // );
+      // let endDate = new Date(
+      //   today.getFullYear(),
+      //   today.getMonth() + 1,
+      //   monthStartDate - 1
+      // );
       this.period.from = startDate;
       this.period.to = endDate;
     },
@@ -140,9 +153,6 @@ export default {
         .add(1, "months")
         .subtract(1, "days")._d;
       this.period.to = periodTo;
-
-      console.log("this.period.from", this.period.from);
-      console.log("this.period.to", this.period.to);
     },
     onPrevMonth() {
       const periodFrom = _.cloneDeep(this.period.from);
@@ -159,13 +169,6 @@ export default {
       this.period.to = this.$moment(this.period.from)
         .add(1, "months")
         .subtract(1, "days")._d;
-
-      // const periodFrom = this.$moment(this.period.from).subtract(1, "months");
-      // this.period.from = periodFrom._d;
-      // const periodTo = this.$moment(this.period.from)
-      //   .add(1, "months")
-      //   .subtract(1, "days");
-      // this.period.to = periodTo._d;
     },
     onNextMonth() {
       const periodFrom = _.cloneDeep(this.period.from);
@@ -182,13 +185,6 @@ export default {
       this.period.to = this.$moment(this.period.from)
         .add(1, "months")
         .subtract(1, "days")._d;
-
-      // const periodFrom = this.$moment(this.period.from).add(1, "months");
-      // this.period.from = periodFrom._d;
-      // const periodTo = this.$moment(this.period.from)
-      //   .add(1, "months")
-      //   .subtract(1, "days");
-      // this.period.to = periodTo._d;
     },
   },
 };

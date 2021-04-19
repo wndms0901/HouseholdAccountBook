@@ -204,14 +204,3 @@ export default {
   },
 };
 </script>
-<style>
-.content {
-  font-weight: 600;
-}
-.budgetDateInput {
-  cursor: default;
-}
-.budgetCalendarIconBox {
-  cursor: default;
-}
-</style>

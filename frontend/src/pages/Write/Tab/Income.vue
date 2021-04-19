@@ -21,10 +21,12 @@
     </grid>
     <div class="pt-3">
       <div class="left_btn">
-        <button @click="onRowDelete">선택삭제</button>
-        <button @click="onRowCopy">선택복사</button>
+        <button class="selectBtn" @click="onRowDelete">선택삭제</button>
+        <button class="selectBtn" @click="onRowCopy">선택복사</button>
       </div>
-      <div class="right_btn"><button @click="onSave">저장</button></div>
+      <div class="right_btn">
+        <button class="saveBtn" @click="onSave">저장</button>
+      </div>
     </div>
   </div>
 </template>
@@ -89,6 +91,7 @@ export default {
   props: {
     user: Object,
     period: Object,
+    tabIndex: Number,
   },
   data() {
     return {
@@ -106,27 +109,7 @@ export default {
       deletedRows: [],
     };
   },
-  computed: {
-    // searchPeriod: function () {
-    //   console.log("this.period11", this.period);
-    //   const period = {
-    //     from: this.$moment(this.period.from).format("YYYYMMDD"),
-    //     to: this.$moment(this.period.to).format("YYYYMMDD"),
-    //   };
-    //   // const period = _.cloneDeep(this.period);
-    //   // let from = period.from;
-    //   // let to = period.to;
-    //   // period.from =
-    //   //   String(from.getFullYear()) +
-    //   //   ("0" + (from.getMonth() + 1)).slice(-2) +
-    //   //   ("0" + from.getDate()).slice(-2);
-    //   // period.to =
-    //   //   String(to.getFullYear()) +
-    //   //   ("0" + (to.getMonth() + 1)).slice(-2) +
-    //   //   ("0" + to.getDate()).slice(-2);
-    //   return period;
-    // },
-  },
+  computed: {},
   watch: {
     period: {
       deep: true,
@@ -137,10 +120,12 @@ export default {
   },
   beforeCreate() {},
   created() {
-    // 입금통장 카테고리 목록 조회
-    this.getAccountCategoryList();
-    // 대분류 카테고리 목록 조회
-    this.getLargeCategoryList();
+    if (this.tabIndex === 1) {
+      // 입금통장 카테고리 목록 조회
+      this.getAccountCategoryList();
+      // 대분류 카테고리 목록 조회
+      this.getLargeCategoryList();
+    }
   },
   beforeMount() {
     this.gridOptions = {
@@ -233,6 +218,11 @@ export default {
         return params.node.selectable;
         //editable: true,
       },
+      cellStyle: (params) => {
+        return {
+          cursor: "pointer",
+        };
+      },
     }),
       (this.components = { datePicker: getDatePicker() });
 
@@ -249,7 +239,9 @@ export default {
     // });
   },
   mounted() {
-    this.getIncomeList();
+    if (this.tabIndex === 1) {
+      this.getIncomeList();
+    }
   },
   methods: {
     onGridReady(params) {
@@ -362,6 +354,7 @@ export default {
         rowIndex: rowData.length,
         colKey: "incomeDescription",
       });
+      this.gridApi.sizeColumnsToFit();
     },
     onRowClick(event) {
       if (event.data.incomeDate === "") {

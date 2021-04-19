@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <button @click="getSelectedRows">Get Selected Rows</button> -->
     <grid
       ref="expenditureGrid"
       style="height: 580px"
@@ -21,10 +20,12 @@
     </grid>
     <div class="pt-3">
       <div class="left_btn">
-        <button @click="onRowDelete">선택삭제</button>
-        <button @click="onRowCopy">선택복사</button>
+        <button class="selectBtn" @click="onRowDelete">선택삭제</button>
+        <button class="selectBtn" @click="onRowCopy">선택복사</button>
       </div>
-      <div class="right_btn"><button @click="onSave">저장</button></div>
+      <div class="right_btn">
+        <button class="saveBtn" @click="onSave">저장</button>
+      </div>
     </div>
   </div>
 </template>
@@ -128,6 +129,7 @@ export default {
   props: {
     user: Object,
     period: Object,
+    tabIndex: Number,
   },
   data() {
     return {
@@ -177,10 +179,12 @@ export default {
   },
   beforeCreate() {},
   created() {
-    // 출금통장 카테고리 목록 조회
-    this.getAccountCategoryList();
-    // 카테고리 목록 조회
-    this.getCategoryList();
+    if (this.tabIndex === 0) {
+      // 출금통장 카테고리 목록 조회
+      this.getAccountCategoryList();
+      // 카테고리 목록 조회
+      this.getCategoryList();
+    }
   },
   beforeMount() {
     this.gridOptions = {
@@ -288,6 +292,11 @@ export default {
         return params.node.selectable;
         //editable: true,
       },
+      cellStyle: (params) => {
+        return {
+          cursor: "pointer",
+        };
+      },
     }),
       (this.components = { datePicker: getDatePicker() });
 
@@ -304,7 +313,9 @@ export default {
     // });
   },
   mounted() {
-    this.getExpenditureList();
+    if (this.tabIndex === 0) {
+      this.getExpenditureList();
+    }
   },
   methods: {
     onGridReady(params) {
@@ -555,14 +566,6 @@ export default {
       });
     },
   },
-  // getSelectedRows() {
-  //   const selectedNodes = this.gridApi.getSelectedNodes();
-  //   const selectedData = selectedNodes.map((node) => node.data);
-  //   const selectedDataStringPresentation = selectedData
-  //     .map((node) => `${node.make} ${node.model}`)
-  //     .join(", ");
-  //   alert(`Selected nodes: ${selectedDataStringPresentation}`);
-  // },
 };
 </script>
 

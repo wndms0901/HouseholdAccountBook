@@ -1,18 +1,17 @@
 <template>
   <div>
-    <div class="monthReport_top">
+    <div class="report_top">
       <table>
         <tr>
-          <th rowspan="2">
-            <h1>{{ startDate }} - {{ endDate }}</h1>
-          </th>
+          <th rowspan="2">{{ startDate }} - {{ endDate }}</th>
           <td>
-            수입 합계 <span class="text-danger">{{ totalIncome }}</span>
+            수입 합계 <span class="ml-2 income_color">{{ totalIncome }}</span>
           </td>
         </tr>
         <tr>
           <td>
-            지출 합계 <span class="text-primary">{{ totalExpenditure }}</span>
+            지출 합계
+            <span class="ml-2 expenditure_color">{{ totalExpenditure }}</span>
           </td>
         </tr>
       </table>
@@ -22,7 +21,7 @@
         <div class="monthReport_left_top">
           <h2>요약</h2>
         </div>
-        <div class="monthReport_left_content">
+        <div>
           <b-table
             class="monthReport_left_content_table"
             responsive
@@ -45,7 +44,10 @@
         <div class="monthReport_center_top">
           <h2>통계</h2>
           <b-form-radio-group v-model="selected" class="mb-3 text-center">
-            <b-form-radio value="income">수입</b-form-radio>&ensp;<b-form-radio
+            <b-form-radio class="font-weight-bold income_color" value="income"
+              >수입</b-form-radio
+            >&ensp;<b-form-radio
+              class="font-weight-bold expenditure_color"
               value="expenditure"
               >지출</b-form-radio
             >
@@ -59,6 +61,7 @@
           />
           <b-table
             class="monthReport_center_content_table"
+            sticky-header
             responsive
             :items="chartTable.items"
             :fields="chartTable.fields"
@@ -115,8 +118,8 @@ export default {
       },
       totalTable: {
         fields: [
-          { key: "title", label: "", class: "w-25" },
-          { key: "total", label: "", class: "text-right" },
+          { key: "title", label: "", class: "w-25 font-weight-bold" },
+          { key: "total", label: "", class: "text-right font-weight-bold" },
         ],
         items: [],
       },
@@ -132,6 +135,7 @@ export default {
       pieChartRows: [],
       updatePieChartData: [],
       pieChartOptions: {
+        chartArea: { top: 0, height: "70%" },
         // chart: {
         //   title: "Company Performance",
         //   subtitle: "Sales, Expenses, and Profit: 2014-2017",
@@ -172,13 +176,19 @@ export default {
   computed: {
     startDate() {
       const periodFrom = this.period.from;
-      const startDate = periodFrom.getMonth() + 1 + "." + periodFrom.getDate();
-      return startDate;
+      let month = periodFrom.getMonth() + 1;
+      month = month / 10 >= 1 ? month : "0" + month;
+      let day = periodFrom.getDate();
+      day = day / 10 >= 1 ? day : "0" + day;
+      return month + "." + day;
     },
     endDate() {
       const periodTo = this.period.to;
-      const endDate = periodTo.getMonth() + 1 + "." + periodTo.getDate();
-      return endDate;
+      let month = periodTo.getMonth() + 1;
+      month = month / 10 >= 1 ? month : "0" + month;
+      let day = periodTo.getDate();
+      day = day / 10 >= 1 ? day : "0" + day;
+      return month + "." + day;
     },
     pieChartData() {
       return [this.pieChartHeader, ...this.updatePieChartData];
@@ -504,25 +514,10 @@ export default {
 };
 </script>
 <style>
-.monthReport_top {
-  border: 1px solid lightgray;
-  border-radius: 5px;
-  background-color: white;
-}
-.monthReport_top > table {
-  width: 700px;
-}
-.monthReport_top > table tr th {
-  width: 50%;
-}
-.monthReport_top > table tr th h1 {
-  margin: 10px 20px;
-}
 .monthReport_centent {
   margin-top: 30px;
   display: flex;
 }
-
 .monthReport_left {
   width: 33%;
   height: 550px;
@@ -536,8 +531,6 @@ export default {
 .monthReport_left_top > h2 {
   margin: 0;
   padding-bottom: 10px;
-}
-.monthReport_left_content {
 }
 .monthReport_left_content_table {
   width: 400px;
@@ -592,9 +585,14 @@ export default {
   /* vertical-align: top; */
 }
 .monthReport_center_content_table {
-  width: 300px;
+  width: 350px;
+  max-height: 190px;
+  overflow-y: auto;
   margin-left: auto;
   margin-right: auto;
+}
+.monthReport_center_content_table tr:last-child td {
+  font-weight: bold;
 }
 .monthReport_right {
   width: 33%;
@@ -611,10 +609,15 @@ export default {
 }
 .monthReport_right_content {
   text-align: center;
-  /* vertical-align: top; */
 }
 .monthReport_right_content > table {
   margin-top: 20px;
   width: 400px;
+}
+.monthReport_right_content > table tr td {
+  font-weight: bold;
+}
+.monthReport_right_content > table tr:last-child td {
+  color: #888888;
 }
 </style>
