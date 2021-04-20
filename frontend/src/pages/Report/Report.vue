@@ -6,7 +6,7 @@
           <p>보고서</p>
         </div>
         <div class="date_wrap">
-          <div class="date_picker_box" style="display: flex">
+          <div class="date_picker_box">
             <b-button class="prevMonthBtn" @click="onPrevMonth">
               <b-icon-chevron-left
                 variant="dark"
@@ -48,18 +48,10 @@
       <div class="tabs" style="width: 100%">
         <b-tabs v-model="tabIndex" content-class="mt-3">
           <b-tab title="월보고서">
-            <monthReport
-              :user="user"
-              :period="period"
-              :tabIndex="tabIndex"
-            ></monthReport>
+            <monthReport :user="user" :period="period"></monthReport>
           </b-tab>
           <b-tab title="연간보고서">
-            <yearReport
-              :user="user"
-              :period="period"
-              :tabIndex="tabIndex"
-            ></yearReport>
+            <yearReport :user="user" :period="period"></yearReport>
           </b-tab>
         </b-tabs>
       </div>

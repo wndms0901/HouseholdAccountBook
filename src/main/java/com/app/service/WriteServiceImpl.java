@@ -4,8 +4,7 @@ import com.app.domain.Expenditure;
 import com.app.domain.Income;
 import com.app.dto.*;
 import com.app.mapper.WriteMapper;
-import com.app.repository.ExpenditureRepository;
-import com.app.repository.IncomeRepository;
+import com.app.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +15,37 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class WriteServiceImpl implements WriteService{
+    private final LargeCategoryRepository largeCategoryRepository;
+    private final SmallCategoryRepository smallCategoryRepository;
+    private final AccountCategoryRepository accountCategoryRepository;
     private final IncomeRepository incomeRepository;
     private final ExpenditureRepository expenditureRepository;
     private final WriteMapper writeMapper;
     //    private final UserRepository userRepository;
+
+    /**
+     * 카테고리 목록 조회
+     * @param categoryType
+     * @return CategoryDto
+     */
+    @Override
+    public CategoryDto selectCategoryList(String categoryType) {
+        String accountCategoryType ="EXP".equals(categoryType)? "WDRL": "DPST";
+        // 대분류 카테고리 조회
+        List<LargeCategoryDto> largeCategoryDtoList = writeMapper.selectLargeCategoryList(categoryType);
+        //List<LargeCategoryDto> largeCategoryDtoList = largeCategoryRepository.findAllByCategoryType(categoryType).stream().map(LargeCategoryDto::new).collect(Collectors.toList());
+        // 통장 카테고리 목록 조회
+        List <AccountCategoryDto> accountCategoryDtoList = writeMapper.selectAccountCategoryList(accountCategoryType);
+        //List <AccountCategoryDto> accountCategoryDtoList = accountCategoryRepository.findAllByAccountCategoryType(accountCategoryType).stream().map(AccountCategoryDto::new).collect(Collectors.toList());
+        CategoryDto categoryDto = CategoryDto.builder().largeCategoryDtoList(largeCategoryDtoList).accountCategoryDtoList(accountCategoryDtoList).build();
+        if("EXP".equals(categoryType)) {
+            // 소분류 카테고리 조회
+            List<SmallCategoryDto> smallCategoryDtoList = writeMapper.selectSmallCategoryList(categoryType);
+          //  List<SmallCategoryDto> smallCategoryDtoList = smallCategoryRepository.findAll().stream().map(SmallCategoryDto::new).collect(Collectors.toList());
+            categoryDto.setSmallCategoryDtoList(smallCategoryDtoList);
+        }
+        return categoryDto;
+    }
 
     /**
      * 지출 목록 조회

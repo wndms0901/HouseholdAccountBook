@@ -7,6 +7,13 @@ import java.util.List;
 
 public interface WriteService {
     /**
+     * 카테고리 목록 조회
+     * @param categoryType
+     * @return CategoryDto
+     */
+    CategoryDto selectCategoryList(String categoryType);
+
+    /**
      * 지출 목록 조회
      * @param commonRequestDto
      * @return List<ExpenditureDto>

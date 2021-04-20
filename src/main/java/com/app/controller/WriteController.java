@@ -17,6 +17,19 @@ public class WriteController {
     private final WriteService writeService;
 
     /**
+     * 카테고리 목록 조회
+     * @param categoryType
+     * @return ResponseEntity<?>
+     */
+    @GetMapping("/category/list")
+    public ResponseEntity<?> selectCategoryList(@RequestParam String categoryType) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        CategoryDto result = writeService.selectCategoryList(categoryType);
+        resultMap.put("data", result);
+        return new ResponseEntity(resultMap, HttpStatus.OK);
+    }
+
+    /**
      * 지출 목록 조회
      * @param startDate
      * @param endDate

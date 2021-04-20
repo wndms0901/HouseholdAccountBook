@@ -40,7 +40,6 @@ export default {
   props: {
     user: Object,
     period: Object,
-    tabIndex: Number,
   },
   data() {
     return {
@@ -126,9 +125,10 @@ export default {
     };
   },
   mounted() {
-    if (this.tabIndex === 1) {
-      this.getMonthOfYear();
-    }
+    // if (this.tabIndex === 1) {
+    //   alert(this.tabIndex);
+    //   this.getMonthOfYear();
+    // }
   },
   methods: {
     onGridReady(params) {

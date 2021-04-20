@@ -186,14 +186,16 @@ export default {
   margin-right: 5px;
   padding: 2px 8px;
   border: 1px solid #babfc7;
+  border-radius: 3px;
   background-color: white;
 }
-.selectBtn:hover {
-  border: 1px solid #babfc7;
+.selectBtn:hover:enabled {
+  border: 1px solid #1953d7;
   background-color: white;
   color: #1953d7;
 }
 .saveBtn {
+  margin-left: 5px;
   padding: 8px 25px;
   border: none;
   border-radius: 3px;
@@ -204,5 +206,22 @@ export default {
   text-decoration: none;
   font-size: 16px;
   font-weight: bold;
+}
+.calculateBtn {
+  margin-left: 5px;
+  padding: 8px 25px;
+  border: 1px solid #babfc7;
+  border-radius: 3px;
+  background-color: white;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+}
+.calculateBtn:hover {
+  border: 1px solid #1953d7;
+  background-color: white;
+  color: #1953d7;
 }
 </style>

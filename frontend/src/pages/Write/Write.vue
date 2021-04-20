@@ -6,7 +6,7 @@
           <p>쓰기</p>
         </div>
         <div class="date_wrap">
-          <div class="date_picker_box" style="text-align: center">
+          <div class="date_picker_box">
             <b-button class="prevMonthBtn" @click="onPrevMonth">
               <b-icon-chevron-left
                 variant="dark"
@@ -47,19 +47,22 @@
               <b-icon-chevron-right variant="dark"></b-icon-chevron-right>
             </b-button>
           </div>
+          <div>
+            <button class="startDateBtn">월시작일</button>
+          </div>
         </div>
       </div>
       <div class="tabs" style="width: 100%">
         <b-tabs v-model="tabIndex" content-class="mt-3">
-          <b-tab title="지출" active
+          <b-tab title="지출" @click="onClickExpenditure"
             ><expenditure
+              ref="expenditureTab"
               :user="user"
               :period="period"
-              :tabIndex="tabIndex"
             ></expenditure
           ></b-tab>
-          <b-tab title="수입"
-            ><income :user="user" :period="period" :tabIndex="tabIndex"></income
+          <b-tab title="수입" @click="onClickIncome"
+            ><income ref="incomeTab" :user="user" :period="period"></income
           ></b-tab>
           <b-tab title="달력"></b-tab>
         </b-tabs>
@@ -186,15 +189,68 @@ export default {
         .add(1, "months")
         .subtract(1, "days")._d;
     },
+    // 지출 tab click
+    onClickExpenditure() {
+      this.$refs.expenditureTab.getExpenditureList();
+    },
+    // 수입 tab click
+    onClickIncome() {
+      this.$refs.incomeTab.getIncomeList();
+    },
   },
 };
 </script>
 
 <style>
+.startDateBtn {
+  margin-left: 5px;
+  padding: 7px 15px;
+  border: 1px solid lightgray;
+  background-color: white;
+  /* display: inline-block; */
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+}
+.startDateBtn:hover {
+  border: 1px solid #1953d7;
+  background-color: white;
+  color: #1953d7;
+}
+.tabs {
+  font-weight: 600;
+}
+.excel_btn_box {
+  text-align: right;
+}
 .left_btn {
   float: left;
 }
 .right_btn {
   float: right;
+}
+.right_btn span {
+  vertical-align: middle;
+  font-size: 20px;
+}
+.right_btn span:first-child {
+  font-weight: normal;
+}
+.total_box {
+  margin-left: 50px;
+  display: inline-block;
+}
+.total_box table {
+  width: 300px;
+  border-collapse: collapse;
+  background-color: white;
+}
+.total_box table tr td {
+  padding: 3px 10px;
+  border: 1px solid #babfc7;
+}
+.total_box table tr:last-child td {
+  font-size: 18px;
+  font-weight: bold;
 }
 </style>

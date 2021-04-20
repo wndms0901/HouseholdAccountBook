@@ -101,7 +101,6 @@ export default {
   props: {
     user: Object,
     period: Object,
-    tabIndex: Number,
   },
   data() {
     return {
@@ -222,9 +221,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.tabIndex === 0) {
-      this.getWeekOfMonth();
-    }
+    this.getWeekOfMonth();
   },
   methods: {
     tableRowClass(item, type) {

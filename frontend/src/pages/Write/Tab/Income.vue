@@ -1,6 +1,9 @@
 <template>
   <div>
-    <!-- <button @click="getSelectedRows()">Get Selected Rows</button> -->
+    <div class="pb-2 excel_btn_box">
+      <button class="selectBtn">엑셀 업로드</button>
+      <button class="selectBtn">엑셀 다운로드</button>
+    </div>
     <grid
       ref="incomeGrid"
       style="height: 580px"
@@ -91,7 +94,6 @@ export default {
   props: {
     user: Object,
     period: Object,
-    tabIndex: Number,
   },
   data() {
     return {
@@ -239,9 +241,7 @@ export default {
     // });
   },
   mounted() {
-    if (this.tabIndex === 1) {
-      this.getIncomeList();
-    }
+    // this.getIncomeList();
   },
   methods: {
     onGridReady(params) {

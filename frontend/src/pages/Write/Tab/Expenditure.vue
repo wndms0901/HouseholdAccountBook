@@ -1,8 +1,12 @@
 <template>
   <div>
+    <div class="pb-2 excel_btn_box">
+      <button class="selectBtn">엑셀 업로드</button>
+      <button class="selectBtn">엑셀 다운로드</button>
+    </div>
     <grid
       ref="expenditureGrid"
-      style="height: 580px"
+      style="height: 550px"
       class="ag-theme-alpine"
       :gridOptions="gridOptions"
       :columnDefs="columnDefs"
@@ -20,16 +24,44 @@
     </grid>
     <div class="pt-3">
       <div class="left_btn">
-        <button class="selectBtn" @click="onRowDelete">선택삭제</button>
-        <button class="selectBtn" @click="onRowCopy">선택복사</button>
+        <button
+          class="selectBtn"
+          :disabled="disabledSelectBtn"
+          @click="onRowDelete"
+        >
+          선택삭제
+        </button>
+        <button
+          class="selectBtn"
+          :disabled="disabledSelectBtn"
+          @click="onRowCopy"
+        >
+          선택복사
+        </button>
+      </div>
+      <div class="total_box">
+        <table>
+          <tr>
+            <td>현금합계</td>
+            <td>카드합계</td>
+          </tr>
+          <tr>
+            <td>{{ this.totalCashString }}</td>
+            <td>{{ this.totalCardString }}</td>
+          </tr>
+        </table>
       </div>
       <div class="right_btn">
+        <span class="mr-2">지출합계</span>
+        <span class="mr-2 expenditure_color">{{ this.totalExpenditure }}</span>
         <button class="saveBtn" @click="onSave">저장</button>
+        <button class="calculateBtn">정산</button>
       </div>
     </div>
   </div>
 </template>
 <script>
+import InputCellEditor from "src/components/CellEditor/InputCellEditor";
 const getDatePicker = () => {
   function Datepicker() {}
   Datepicker.prototype.init = function (params) {
@@ -114,22 +146,22 @@ window.lookupValue = function lookupValue(mappings, key) {
 //   }
 // };
 
-function onCellValueChanged(params) {
-  const colId = params.column.getId();
-  console.log("onCellValueChanged", params);
-  if (colId === "largeCategoryId") {
-    params.api.startEditingCell({
-      rowIndex: params.rowIndex,
-      colKey: "smallCategory",
-    });
-  }
-}
+// function onCellValueChanged(params) {
+//   const colId = params.column.getId();
+//   console.log("onCellValueChanged", params);
+//   if (colId === "largeCategoryId") {
+//     params.api.startEditingCell({
+//       rowIndex: params.rowIndex,
+//       colKey: "smallCategory",
+//     });
+//   }
+// }
 
 export default {
+  components: { InputCellEditor },
   props: {
     user: Object,
     period: Object,
-    tabIndex: Number,
   },
   data() {
     return {
@@ -146,28 +178,19 @@ export default {
       categoryType: "EXP",
       accountCategoryType: "WDRL",
       deletedRows: [],
+      totalCashNumber: 0,
+      totalCardNumber: 0,
+      totalCashString: 0,
+      totalCardString: 0,
+      disabledSelectBtn: false,
     };
   },
   computed: {
-    // searchPeriod: function () {
-    //   console.log("this.period11", this.period);
-    //   const period = {
-    //     from: this.$moment(this.period.from).format("YYYYMMDD"),
-    //     to: this.$moment(this.period.to).format("YYYYMMDD"),
-    //   };
-    //   // const period = _.cloneDeep(this.period);
-    //   // let from = period.from;
-    //   // let to = period.to;
-    //   // period.from =
-    //   //   String(from.getFullYear()) +
-    //   //   ("0" + (from.getMonth() + 1)).slice(-2) +
-    //   //   ("0" + from.getDate()).slice(-2);
-    //   // period.to =
-    //   //   String(to.getFullYear()) +
-    //   //   ("0" + (to.getMonth() + 1)).slice(-2) +
-    //   //   ("0" + to.getDate()).slice(-2);
-    //   return period;
-    // },
+    // 지출합계
+    totalExpenditure() {
+      let value = this.totalCashNumber + this.totalCardNumber;
+      return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
   },
   watch: {
     period: {
@@ -179,16 +202,14 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.tabIndex === 0) {
-      // 출금통장 카테고리 목록 조회
-      this.getAccountCategoryList();
-      // 카테고리 목록 조회
-      this.getCategoryList();
-    }
+    // 출금통장 카테고리 목록 조회
+    //this.getAccountCategoryList();
+    // 카테고리 목록 조회
+    this.getCategoryList();
   },
   beforeMount() {
     this.gridOptions = {
-      onCellValueChanged: onCellValueChanged,
+      onCellValueChanged: this.onCellValueChanged,
       //enableColResize: true,
       // enableSorting: true,
       // enableFilter: true,
@@ -217,11 +238,19 @@ export default {
         headerName: "현금",
         field: "cash",
         type: "numericColumn",
+        cellEditor: "InputCellEditor",
+        valueFormatter: (params) => {
+          return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
       },
       {
         headerName: "카드",
         field: "card",
         type: "numericColumn",
+        cellEditor: "InputCellEditor",
+        valueFormatter: (params) => {
+          return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
       },
       {
         headerName: "출금통장",
@@ -299,23 +328,16 @@ export default {
       },
     }),
       (this.components = { datePicker: getDatePicker() });
-
+    this.frameworkComponents = {
+      InputCellEditor: InputCellEditor,
+    };
     this.isRowSelectable = (rowNode) => {
       console.log("rowNode", rowNode);
       return rowNode.data.expenditureDate === "" ? false : true;
     };
-
-    // this.frameworkComponents = {
-    //   Datepicker: Datepicker,
-    // };
-    // this.$nextTick(function () {
-
-    // });
   },
   mounted() {
-    if (this.tabIndex === 0) {
-      this.getExpenditureList();
-    }
+    this.getExpenditureList();
   },
   methods: {
     onGridReady(params) {
@@ -323,6 +345,19 @@ export default {
       this.columnApi = params.columnApi;
       // 그리드 사이즈 자동 조정
       params.api.sizeColumnsToFit();
+    },
+    // grid cell 값 변경
+    onCellValueChanged(params) {
+      const colId = params.column.getId();
+      console.log("onCellValueChanged", params);
+      if (colId === "largeCategoryId") {
+        params.api.startEditingCell({
+          rowIndex: params.rowIndex,
+          colKey: "smallCategory",
+        });
+      } else if (colId === "cash" || colId === "card") {
+        this.getTotal();
+      }
     },
     // 출금통장 카테고리 목록 조회
     getAccountCategoryList() {
@@ -347,9 +382,18 @@ export default {
     // 카테고리 목록 조회
     getCategoryList() {
       this.$store
-        .dispatch("commonStore/selectCategoryList", this.categoryType)
+        .dispatch("writeStore/selectCategoryList", this.categoryType)
         .then((res) => {
           console.log("getCategoryList", res.data);
+          // 출금통장 카테고리 목록
+          // {id:name} 형식으로 만들기
+          let tmp = {};
+          _.forEach(res.data.accountCategoryDtoList, function (obj) {
+            let accountCategoryId = String(obj.accountCategoryId);
+            tmp[accountCategoryId] = obj.accountCategoryName;
+          });
+          this.accountCategory = tmp;
+
           // {largeCategoryId:largeCategoryName} 형식으로 만들기
           let largeCategoryObj = {};
           let smallCategoryObj = {};
@@ -379,6 +423,40 @@ export default {
           console.log(Error);
         });
     },
+    // getCategoryList() {
+    //   this.$store
+    //     .dispatch("commonStore/selectCategoryList", this.categoryType)
+    //     .then((res) => {
+    //       console.log("getCategoryList", res.data);
+    //       // {largeCategoryId:largeCategoryName} 형식으로 만들기
+    //       let largeCategoryObj = {};
+    //       let smallCategoryObj = {};
+    //       _.forEach(res.data.largeCategoryDtoList, function (obj) {
+    //         let largeCategoryId = String(obj.largeCategoryId);
+    //         largeCategoryObj[largeCategoryId] = obj.largeCategoryName;
+    //         const filterList = _.filter(res.data.smallCategoryDtoList, {
+    //           largeCategoryId: obj.largeCategoryId,
+    //         });
+    //         // {largeCategoryId:[{smallCategoryId:"",smallCategoryName:""}]} 형식으로 만들기
+    //         let lst = [];
+    //         _.forEach(filterList, function (obj2) {
+    //           const tmp = {
+    //             smallCategoryId: obj2.smallCategoryId,
+    //             smallCategoryName: obj2.smallCategoryName,
+    //           };
+    //           lst.push(tmp);
+    //           // let smallCategoryId = String(obj2.smallCategoryId);
+    //           // tmp[smallCategoryId] = obj2.smallCategoryName;
+    //         });
+    //         smallCategoryObj[largeCategoryId] = lst;
+    //       });
+    //       this.largeCategory = largeCategoryObj;
+    //       this.smallCategory = smallCategoryObj;
+    //     })
+    //     .catch((Error) => {
+    //       console.log(Error);
+    //     });
+    // },
     // 지출 목록 조회
     getExpenditureList() {
       // reset
@@ -465,6 +543,37 @@ export default {
         rowIndex: rowData.length,
         colKey: "expenditureDescription",
       });
+      this.getTotal();
+    },
+    getTotal() {
+      const rowData = _.cloneDeep(this.$refs.expenditureGrid.getRowData());
+      rowData.pop();
+      // 현금합계
+      let totalCash = _.reduce(
+        rowData,
+        function (sum, obj) {
+          return sum + parseInt(String(obj.cash).replace(/,/g, ""));
+        },
+        0
+      );
+      this.totalCashNumber = totalCash;
+      this.totalCashString = String(totalCash).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+      // 카드합계
+      let totalCard = _.reduce(
+        rowData,
+        function (sum, obj) {
+          return sum + parseInt(String(obj.card).replace(/,/g, ""));
+        },
+        0
+      );
+      this.totalCardNumber = totalCard;
+      this.totalCardString = String(totalCard).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
     },
     // Row 추가
     onRowClick(event) {
@@ -539,20 +648,21 @@ export default {
       );
       expenditureSaveDto.deleteExpenditureDtoList = this.deletedRows;
       console.log("expenditureSaveDto", expenditureSaveDto);
-      this.$store
-        .dispatch("writeStore/saveExpenditureList", expenditureSaveDto)
-        .then((res) => {
-          this.getExpenditureList();
-        })
-        .catch((Error) => {
-          console.log(Error);
-        });
+      // this.$store
+      //   .dispatch("writeStore/saveExpenditureList", expenditureSaveDto)
+      //   .then((res) => {
+      //     this.getExpenditureList();
+      //   })
+      //   .catch((Error) => {
+      //     console.log(Error);
+      //   });
     },
     // Row 선택 삭제
     onRowDelete() {
       const selectedRows = this.gridApi.getSelectedRows();
       this.deletedRows = _.filter(selectedRows, "expenditureId");
       this.gridApi.applyTransaction({ remove: selectedRows });
+      this.getTotal();
     },
     // Row 선택 복사
     onRowCopy() {
@@ -564,6 +674,7 @@ export default {
         add: selectedRows,
         addIndex: this.gridApi.getDisplayedRowCount() - 1,
       });
+      this.getTotal();
     },
   },
 };

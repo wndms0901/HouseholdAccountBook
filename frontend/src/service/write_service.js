@@ -4,6 +4,19 @@ const API_URL = 'http://localhost:8080/write/';
 
 class WriteService {
     /**
+     * 카테고리 목록 조회
+     * @param {*} categoryType
+     * @returns
+     */
+    selectCategoryList(categoryType) {
+        return axios
+            .get(API_URL + 'category/list', { params: { categoryType: categoryType } })
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
+    /**
      * 지출 목록 조회
      * @param {*} commonRequestDto 
      * @returns 

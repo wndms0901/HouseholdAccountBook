@@ -2,8 +2,12 @@ package com.app.dto;
 
 import com.app.domain.AccountCategory;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class AccountCategoryDto {
 
     private Long accountCategoryId;

@@ -6,7 +6,7 @@
           <p>예산쓰기</p>
         </div>
         <div class="date_wrap">
-          <div class="date_picker_box" style="display: flex">
+          <div class="date_picker_box">
             <b-button
               class="prevMonthBtn"
               v-show="showMonthBtn"
