@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="pb-2 excel_btn_box">
-      <button class="selectBtn">엑셀 업로드</button>
-      <button class="selectBtn">엑셀 다운로드</button>
+      <button class="basicBtn">엑셀 업로드</button>
+      <button class="basicBtn">엑셀 다운로드</button>
     </div>
     <grid
       ref="incomeGrid"
@@ -24,8 +24,8 @@
     </grid>
     <div class="pt-3">
       <div class="left_btn">
-        <button class="selectBtn" @click="onRowDelete">선택삭제</button>
-        <button class="selectBtn" @click="onRowCopy">선택복사</button>
+        <button class="basicBtn" @click="onRowDelete">선택삭제</button>
+        <button class="basicBtn" @click="onRowCopy">선택복사</button>
       </div>
       <div class="right_btn">
         <button class="saveBtn" @click="onSave">저장</button>

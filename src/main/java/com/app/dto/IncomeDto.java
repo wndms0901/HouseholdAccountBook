@@ -1,7 +1,7 @@
 package com.app.dto;
 
 import com.app.domain.Income;
-import com.app.domain.User;
+import com.app.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,7 @@
 package com.app.service;
 
-import com.app.domain.User;
+import com.app.domain.user.User;
+import com.app.dto.UserDto;
 
 public interface UserService {
     /**
@@ -22,4 +23,10 @@ public interface UserService {
      * @return boolean
      */
     boolean checkPassword(String rawPassword, String encodedPassword);
+    /**
+     * 월시작일 업데이트
+     * @param userDto
+     * @return void
+     */
+    void updateMonthStartDate(UserDto userDto);
 }

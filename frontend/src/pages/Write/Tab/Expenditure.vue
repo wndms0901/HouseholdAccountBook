@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="pb-2 excel_btn_box">
-      <button class="selectBtn">엑셀 업로드</button>
-      <button class="selectBtn">엑셀 다운로드</button>
+      <button class="basicBtn">엑셀 업로드</button>
+      <button class="basicBtn">엑셀 다운로드</button>
     </div>
     <grid
       ref="expenditureGrid"
@@ -20,19 +20,20 @@
       :frameworkComponents="frameworkComponents"
       @grid-ready="onGridReady"
       @rowClicked="onRowClick"
+      @selection-changed="onSelectionChanged"
     >
     </grid>
     <div class="pt-3">
       <div class="left_btn">
         <button
-          class="selectBtn"
+          class="basicBtn"
           :disabled="disabledSelectBtn"
           @click="onRowDelete"
         >
           선택삭제
         </button>
         <button
-          class="selectBtn"
+          class="basicBtn"
           :disabled="disabledSelectBtn"
           @click="onRowCopy"
         >
@@ -182,7 +183,7 @@ export default {
       totalCardNumber: 0,
       totalCashString: 0,
       totalCardString: 0,
-      disabledSelectBtn: false,
+      disabledSelectBtn: true,
     };
   },
   computed: {
@@ -608,6 +609,11 @@ export default {
           colKey: columnData.column.colId,
         });
       }
+    },
+    // row 선택 또는 선택취소 시 호출
+    onSelectionChanged(event) {
+      var rowCount = event.api.getSelectedNodes().length;
+      this.disabledSelectBtn = rowCount === 0;
     },
     // 지출 목록 저장
     onSave() {

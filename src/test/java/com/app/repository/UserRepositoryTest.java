@@ -1,8 +1,7 @@
 package com.app.repository;
 
-import com.app.domain.Role;
-import com.app.domain.RoleName;
-import com.app.domain.User;
+import com.app.domain.user.Role;
+import com.app.domain.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,7 @@ public class UserRepositoryTest {
     @Test
     public void 회원등록_불러오기(){
         // given
-        Role role = Role.builder().roleName(RoleName.USER).build();
+       // Role role = Role.builder().roleName(RoleName.USER).build();
 
         String name = "이름";
         String email = "test@test.com";
@@ -33,9 +32,10 @@ public class UserRepositoryTest {
                 .name(name)
                 .email(email)
                 .password(password)
+                .role(Role.USER)
                 .build();
 
-        role.setUser(user);
+        //role.setUser(user);
         userRepository.save(user);
 
         // when

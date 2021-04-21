@@ -3,7 +3,7 @@ package com.app.service;
 import java.util.Optional;
 
 import com.app.config.security.SecurityUser;
-import com.app.domain.User;
+import com.app.domain.user.User;
 import com.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

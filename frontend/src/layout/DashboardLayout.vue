@@ -107,7 +107,8 @@ export default {
 .date_picker_box {
   position: relative;
   display: flex;
-  width: 30%;
+  width: 50%;
+  justify-content: center;
 }
 .datepickerInput {
   width: 160px;
@@ -149,7 +150,7 @@ export default {
   height: 24px;
 }
 .prevMonthBtn {
-  width: 40px;
+  width: 20px;
   height: 40px;
   padding: 0px;
   border: 1px solid lightgray;
@@ -158,7 +159,7 @@ export default {
   display: inline-block;
 }
 .nextMonthBtn {
-  width: 40px;
+  width: 20px;
   height: 40px;
   padding: 0px;
   border: 1px solid lightgray;
@@ -182,14 +183,14 @@ export default {
   font-weight: 600;
   color: #424242;
 }
-.selectBtn {
+.basicBtn {
   margin-right: 5px;
   padding: 2px 8px;
   border: 1px solid #babfc7;
   border-radius: 3px;
   background-color: white;
 }
-.selectBtn:hover:enabled {
+.basicBtn:hover:enabled {
   border: 1px solid #1953d7;
   background-color: white;
   color: #1953d7;

@@ -1,6 +1,6 @@
 package com.app.dto;
 
-import com.app.domain.ExpenditureBudget;
+import com.app.domain.Budget;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,15 +12,15 @@ public class BudgetListDto {
     private Long largeCategoryId;
     private String largeCategoryName;
     //private Long expenditurebudgetId;
-    private String expenditureBudgetAmount;
-    private String expenditureBudgetDate;
+    private String budgetAmount;
+    private String budgetDate;
     private int expenditureAmount;
     private int total;
 
-    public ExpenditureBudget saveExpenditureBudget(UserDto userDto){
-        return ExpenditureBudget.builder()
-                .expenditureBudgetAmount(Integer.parseInt(expenditureBudgetAmount))
-                .expenditureBudgetDate(expenditureBudgetDate)
+    public Budget saveExpenditureBudget(UserDto userDto){
+        return Budget.builder()
+                .budgetAmount(Integer.parseInt(budgetAmount))
+                .budgetDate(budgetDate)
                 .largeCategoryId(largeCategoryId)
                 .user(userDto.toEntity())
                 .build();

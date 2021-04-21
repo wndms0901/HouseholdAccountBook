@@ -1,5 +1,6 @@
 package com.app.domain;
 
+import com.app.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,17 +10,17 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class ExpenditureBudget extends BaseTimeEntity {
+public class Budget extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long expenditurebudgetId;
+    private Long budgetId;
 
     @Column(nullable = false)
-    private int expenditureBudgetAmount;
+    private int budgetAmount;
 
     @Column(nullable = false)
-    private String expenditureBudgetDate;
+    private String budgetDate;
 
 //    @Column(nullable = false)
 //    private String email;
@@ -33,15 +34,15 @@ public class ExpenditureBudget extends BaseTimeEntity {
 
 
     @Builder
-    public ExpenditureBudget(int expenditureBudgetAmount, String expenditureBudgetDate, User user, Long largeCategoryId) {
-        this.expenditureBudgetAmount = expenditureBudgetAmount;
-        this.expenditureBudgetDate = expenditureBudgetDate;
+    public Budget(int budgetAmount, String budgetDate, User user, Long largeCategoryId) {
+        this.budgetAmount = budgetAmount;
+        this.budgetDate = budgetDate;
         this.user = user;
         this.largeCategoryId = largeCategoryId;
     }
 
-    public ExpenditureBudget update(int expenditureBudgetAmount) {
-        this.expenditureBudgetAmount = expenditureBudgetAmount;
+    public Budget update(int budgetAmount) {
+        this.budgetAmount = budgetAmount;
         return this;
     }
 

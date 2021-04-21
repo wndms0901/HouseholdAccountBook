@@ -1,10 +1,9 @@
 package com.app.controller;
 
 import com.app.config.jwt.JwtTokenProvider;
-import com.app.domain.Role;
-import com.app.domain.RoleName;
+import com.app.domain.user.Role;
 import com.app.dto.UserDto;
-import com.app.domain.User;
+import com.app.domain.user.User;
 import com.app.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,7 @@ public class UserController {
              if(!checkPw){
                  resultMap.put("error","login failed");
              }else{ // 토큰 생성
-                 String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoleList());
+                 String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().getKey());
                  resultMap.put("token", token);
                  // 회원 정보
                  UserDto userInfo = UserDto.builder().email(user.getEmail()).name(user.getName()).monthStartDate(user.getMonthStartDate()).build();
@@ -58,10 +57,26 @@ public class UserController {
      */
     @PostMapping("register")
     public ResponseEntity<?> register(@RequestBody UserDto userDto) {
-        Role role = Role.builder().roleName(RoleName.USER).build();
-        User user = User.builder().email(userDto.getEmail()).name(userDto.getName()).password(userDto.getPassword()).build();
-        role.setUser(user);
+//        Role role = Role.builder().roleName(RoleName.USER).build();
+        User user = User.builder()
+                .email(userDto.getEmail())
+                .name(userDto.getName())
+                .password(userDto.getPassword())
+                .role(Role.USER)
+                .build();
+//        role.setUser(user);
         userService.registerUser(user);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    /**
+     * 월시작일 업데이트
+     * @param userDto
+     * @return ResponseEntity<?>
+     */
+    @PostMapping("update/month-start-date")
+    public ResponseEntity<?> updateMonthStartDate(@RequestBody UserDto userDto) {
+        userService.updateMonthStartDate(userDto);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }

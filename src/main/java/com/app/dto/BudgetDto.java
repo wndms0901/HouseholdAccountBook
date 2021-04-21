@@ -1,7 +1,5 @@
 package com.app.dto;
 
-import com.app.domain.ExpenditureBudget;
-import com.app.domain.IncomeBudget;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

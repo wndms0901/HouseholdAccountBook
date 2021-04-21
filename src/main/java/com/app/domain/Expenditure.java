@@ -1,5 +1,6 @@
 package com.app.domain;
 
+import com.app.domain.user.User;
 import com.app.dto.ExpenditureDto;
 import lombok.Builder;
 import lombok.Getter;

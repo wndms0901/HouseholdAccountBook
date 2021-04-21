@@ -28,6 +28,10 @@ const userStore = {
         },
         registerFailure(state) {
             state.initialState.status.loggedIn = false;
+        },
+        updateMonthStartDate(state, userDto) {
+            state.initialState.user.userInfo.monthStartDate = userDto.monthStartDate;
+            console.log('state.initialState.user.userInfo.monthStartDate', state.initialState.user.userInfo.monthStartDate);
         }
     },
     actions: {
@@ -70,6 +74,22 @@ const userStore = {
                 },
                 error => {
                     commit('registerFailure');
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
+         * 월시작일 업데이트
+         * @param {*} userDto
+         * @returns
+         */
+        updateMonthStartDate({ commit }, userDto) {
+            return UserService.updateMonthStartDate(userDto).then(
+                response => {
+                    commit('updateMonthStartDate', userDto);
+                    return Promise.resolve(response.data);
+                },
+                error => {
                     return Promise.reject(error);
                 }
             );

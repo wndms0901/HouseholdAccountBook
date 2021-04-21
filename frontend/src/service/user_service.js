@@ -33,11 +33,24 @@ class UserService {
     }
     /**
      * 회원등록
-     * @param {*} user
+     * @param {*} userDto
      * @returns
      */
-    register(user) {
-        return axios.post(API_URL + 'register', user);
+    register(userDto) {
+        return axios.post(API_URL + 'register', userDto);
+    }
+    /**
+     * 월시작일 업데이트
+     * @param {*} userDto
+     * @returns
+     */
+    updateMonthStartDate(userDto) {
+        return axios
+            .post(API_URL + 'update/month-start-date', userDto)
+            .then(response => {
+                console.log('response', response);
+                return response;
+            });
     }
 
 

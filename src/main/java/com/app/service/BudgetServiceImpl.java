@@ -1,11 +1,9 @@
 package com.app.service;
 
-import com.app.domain.ExpenditureBudget;
-import com.app.domain.IncomeBudget;
+import com.app.domain.Budget;
 import com.app.dto.*;
 import com.app.mapper.BudgetMapper;
-import com.app.repository.ExpenditureBudgetRepository;
-import com.app.repository.IncomeBudgetRepository;
+import com.app.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +15,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class BudgetServiceImpl implements BudgetService {
-    private final IncomeBudgetRepository incomeBudgetRepository;
-    private final ExpenditureBudgetRepository expenditureBudgetRepository;
+    //private final IncomeBudgetRepository incomeBudgetRepository;
+    private final BudgetRepository budgetRepository;
     private final BudgetMapper budgetMapper;
 
     /**
@@ -66,18 +64,18 @@ public class BudgetServiceImpl implements BudgetService {
 
         // 지출 예산 조회
         for (BudgetListDto dto : budgetDto.getBudgetListDtoList()) {
-            Optional<ExpenditureBudget> expenditureBudget = expenditureBudgetRepository.findByUserEmailAndExpenditureBudgetDateAndLargeCategoryId(
+            Optional<Budget> budget = budgetRepository.findByUserEmailAndBudgetDateAndLargeCategoryId(
                     budgetDto.getUserDto().getEmail(),
                     budgetDto.getBudgetDate(),
                     dto.getLargeCategoryId()
             );
-            if (expenditureBudget.isPresent()) {
+            if (budget.isPresent()) {
                 // 지출 예산 수정
-                expenditureBudget.get().update(Integer.parseInt(dto.getExpenditureBudgetAmount()));
+                budget.get().update(Integer.parseInt(dto.getBudgetAmount()));
             } else{
                 // 지출 예산 등록
-                dto.setExpenditureBudgetDate(budgetDto.getBudgetDate());
-                expenditureBudgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
+                dto.setBudgetDate(budgetDto.getBudgetDate());
+                budgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
 
             }
         }

@@ -46,9 +46,37 @@
             <b-button class="nextMonthBtn" @click="onNextMonth">
               <b-icon-chevron-right variant="dark"></b-icon-chevron-right>
             </b-button>
-          </div>
-          <div>
-            <button class="startDateBtn">월시작일</button>
+            <button class="startDateBtn" @click="openModal">월시작일</button>
+            <!-- 월시작일 설정 Modal -->
+            <setStartDateModal @close="closeModal" v-if="showModal">
+              <!-- default 슬롯 콘텐츠 -->
+              <div>
+                <strong>월 시작일 설정</strong>
+                <b-form-select
+                  class="selectBox"
+                  v-model="monthStartDate"
+                  :options="options"
+                  size="sm"
+                ></b-form-select>
+                <span>(이달 1일 ~ 이달 말일)</span>
+              </div>
+              <!-- /default -->
+              <!-- footer 슬롯 콘텐츠 -->
+              <template slot="footer">
+                <div>
+                  <span
+                    >월 시작일로 지정한 날부터 한달이 시작되어 가계부가
+                    계산됩니다.</span
+                  >
+                </div>
+                <div class="modalFooterBtn-box">
+                  <button class="basicBtn" @click="onSaveStartDate">
+                    확인
+                  </button>
+                </div>
+              </template>
+              <!-- /footer -->
+            </setStartDateModal>
           </div>
         </div>
       </div>
@@ -76,8 +104,9 @@ import datepicker from "vuejs-datepicker";
 import expenditure from "./Tab/Expenditure.vue";
 import income from "./Tab/Income.vue";
 import { ko } from "vuejs-datepicker/dist/locale";
+import setStartDateModal from "src/components/Modal/SetStartDate";
 export default {
-  components: { datepicker, expenditure, income },
+  components: { datepicker, expenditure, income, setStartDateModal },
   data() {
     return {
       user: this.$store.state.userStore.initialState.user,
@@ -87,25 +116,20 @@ export default {
         to: "",
       },
       tabIndex: 0,
+      showModal: false,
+      monthStartDate: this.$store.state.userStore.initialState.user.userInfo
+        .monthStartDate,
     };
   },
   computed: {
-    // period: function () {
-    //   const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-    //   let today = new Date();
-    //   let startDate = new Date(
-    //     today.getFullYear(),
-    //     today.getMonth(),
-    //     monthStartDate
-    //   );
-    //   let endDate = new Date(
-    //     today.getFullYear(),
-    //     today.getMonth() + 1,
-    //     monthStartDate - 1
-    //   );
-    //   const period = { from: startDate, to: endDate };
-    //   return period;
-    // },
+    options() {
+      let options = [];
+      for (let i = 1; i < 29; i++) {
+        options.push({ value: String(i), text: i + "일" });
+      }
+      options.push({ value: "last", text: "말일" });
+      return options;
+    },
   },
   beforeCreate() {},
   created() {
@@ -115,29 +139,44 @@ export default {
     //  this.user = this.$store.state.initialState.user;
   },
   methods: {
+    // 조회 기간 setting
     setPeriod() {
       let today = new Date();
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      const month =
-        monthStartDate > 15 ? today.getMonth() - 1 : today.getMonth();
-      const startDate = new Date(today.getFullYear(), month, monthStartDate);
-      const endDate = new Date(
-        today.getFullYear(),
-        month + 1,
-        monthStartDate - 1
-      );
-      // let startDate = new Date(
-      //   today.getFullYear(),
-      //   today.getMonth(),
-      //   monthStartDate
-      // );
-      // let endDate = new Date(
-      //   today.getFullYear(),
-      //   today.getMonth() + 1,
-      //   monthStartDate - 1
-      // );
-      this.period.from = startDate;
-      this.period.to = endDate;
+      const monthStartDate = this.monthStartDate;
+
+      if (monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        const month = today.getMonth() - 1;
+        const startLastDate = this.$moment(
+          new Date(today.getFullYear(), month, 1)
+        ).endOf("month")._d;
+        const endLastDate = this.$moment(
+          new Date(today.getFullYear(), month + 1, 1)
+        ).endOf("month")._d;
+
+        this.period.from = new Date(
+          today.getFullYear(),
+          month,
+          startLastDate.getDate()
+        );
+        this.period.to = new Date(
+          today.getFullYear(),
+          month + 1,
+          endLastDate.getDate() - 1
+        );
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        const month =
+          parseInt(monthStartDate) > 15
+            ? today.getMonth() - 1
+            : today.getMonth();
+        this.period.from = new Date(today.getFullYear(), month, monthStartDate);
+        this.period.to = new Date(
+          today.getFullYear(),
+          month + 1,
+          monthStartDate - 1
+        );
+      }
     },
     onClickPeriodFromCalendar() {
       this.$refs.periodTo.close();
@@ -152,42 +191,109 @@ export default {
       this.$refs.periodTo.close();
     },
     onCloseStartDate() {
-      const periodTo = this.$moment(this.period.from)
-        .add(1, "months")
-        .subtract(1, "days")._d;
-      this.period.to = periodTo;
+      const isLastDay = this.checkMonthLastDay(this.period.from);
+
+      if (isLastDay) {
+        // 말일인 경우
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "months")
+          .endOf("month")
+          .subtract(1, "days")._d;
+      } else {
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "months")
+          .subtract(1, "days")._d;
+      }
     },
     onPrevMonth() {
-      const periodFrom = _.cloneDeep(this.period.from);
-      const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // 말일 체크
-      if (periodFrom.getDate() === lastDay.getDate()) {
+      const isPeriodFromLastDay = this.checkMonthLastDay(this.period.from);
+      const isPeriodtoLastDay = this.checkMonthLastDay(this.period.to);
+
+      if (isPeriodFromLastDay) {
+        // 말일인 경우
         this.period.from = this.$moment(this.period.from)
           .subtract(1, "months")
           .endOf("month")._d;
       } else {
-        this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
+        // 말일이 아닌 경우
+        this.period.from = this.$moment(this.period.from).subtract(
+          1,
+          "months"
+        )._d;
       }
-      // period.to setting
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "months")
-        .subtract(1, "days")._d;
+      if (isPeriodtoLastDay) {
+        this.period.to = this.$moment(this.period.to)
+          .subtract(1, "months")
+          .endOf("month")._d;
+      } else {
+        this.period.to = this.$moment(this.period.to).subtract(1, "months")._d;
+      }
+
+      // const periodFrom = _.cloneDeep(this.period.from);
+      // const periodTo = _.cloneDeep(this.period.to);
+      // const startLastDate = this.$moment(periodFrom).endOf("month")._d;
+      // const endLastDate = this.$moment(periodTo).endOf("month")._d;
+      // //const lastDay = this.$moment(periodFrom).endOf("month")._d;
+      // // 말일 체크
+      // if (periodFrom.getDate() === startLastDate.getDate()) {
+      //   this.period.from = this.$moment(this.period.from)
+      //     .subtract(1, "months")
+      //     .endOf("month")._d;
+      //   this.period.to = this.$moment(this.period.from)
+      //     .add(1, "months")
+      //     .endOf("month")._d;
+      // } else {
+      //   this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
+      // }
+      // // period.to setting
+      // this.period.to = this.$moment(this.period.from)
+      //   .add(1, "months")
+      //   .subtract(1, "days")._d;
     },
     onNextMonth() {
-      const periodFrom = _.cloneDeep(this.period.from);
-      const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // 말일 체크
-      if (periodFrom.getDate() === lastDay.getDate()) {
+      const isPeriodFromLastDay = this.checkMonthLastDay(this.period.from);
+      const isPeriodtoLastDay = this.checkMonthLastDay(this.period.to);
+
+      if (isPeriodFromLastDay) {
+        // 말일인 경우
         this.period.from = this.$moment(this.period.from)
           .add(1, "months")
           .endOf("month")._d;
       } else {
-        this.period.from = this.$moment(periodFrom).add(1, "months")._d;
+        // 말일이 아닌 경우
+        this.period.from = this.$moment(this.period.from).add(1, "months")._d;
       }
-      // period.to setting
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "months")
-        .subtract(1, "days")._d;
+      if (isPeriodtoLastDay) {
+        this.period.to = this.$moment(this.period.to)
+          .add(1, "months")
+          .endOf("month")._d;
+      } else {
+        this.period.to = this.$moment(this.period.to).add(1, "months")._d;
+      }
+
+      // const periodFrom = _.cloneDeep(this.period.from);
+      // const lastDay = this.$moment(periodFrom).endOf("month")._d;
+      // // 말일 체크
+      // if (periodFrom.getDate() === lastDay.getDate()) {
+      //   this.period.from = this.$moment(this.period.from)
+      //     .add(1, "months")
+      //     .endOf("month")._d;
+      // } else {
+      //   this.period.from = this.$moment(periodFrom).add(1, "months")._d;
+      // }
+      // // period.to setting
+      // this.period.to = this.$moment(this.period.from)
+      //   .add(1, "months")
+      //   .subtract(1, "days")._d;
+    },
+    // 말일 체크
+    checkMonthLastDay(value) {
+      const dt = _.cloneDeep(value);
+      const lastDay = this.$moment(dt).endOf("month")._d;
+      return (
+        parseInt(this.monthStartDate) !== 28 &&
+        dt.getDate() === lastDay.getDate()
+      );
     },
     // 지출 tab click
     onClickExpenditure() {
@@ -196,6 +302,29 @@ export default {
     // 수입 tab click
     onClickIncome() {
       this.$refs.incomeTab.getIncomeList();
+    },
+    openModal() {
+      this.showModal = !this.showModal;
+    },
+    closeModal() {
+      this.showModal = false;
+    },
+    // 월시작일 저장
+    onSaveStartDate() {
+      this.showModal = false;
+      const userDto = {
+        email: this.user.userInfo.email,
+        monthStartDate: this.monthStartDate,
+      };
+      console.log("userDto", userDto);
+      this.$store
+        .dispatch("userStore/updateMonthStartDate", userDto)
+        .then((res) => {
+          this.setPeriod();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
     },
   },
 };
@@ -216,6 +345,14 @@ export default {
   border: 1px solid #1953d7;
   background-color: white;
   color: #1953d7;
+}
+.selectBox {
+  margin: 0 6px 0 12px;
+  width: 70px;
+}
+.modalFooterBtn-box {
+  width: 100%;
+  text-align: center;
 }
 .tabs {
   font-weight: 600;

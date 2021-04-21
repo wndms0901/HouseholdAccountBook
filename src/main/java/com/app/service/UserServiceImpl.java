@@ -1,12 +1,13 @@
 package com.app.service;
 
-import com.app.domain.User;
+import com.app.domain.user.User;
+import com.app.dto.UserDto;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService{
      * @param email
      * @return User
      */
+    @Override
     public User findByEmail(String email){
         Optional<User> optional = userRepository.findByEmail(email);
         if(!optional.isPresent()) {
@@ -48,7 +50,26 @@ public class UserServiceImpl implements UserService{
      * @param encodedPassword
      * @return boolean
      */
+    @Override
     public boolean checkPassword(String rawPassword, String encodedPassword){
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    /**
+     * 월시작일 업데이트
+     * @param userDto
+     * @return void
+     */
+    @Transactional
+    @Override
+    public void updateMonthStartDate(UserDto userDto){
+        Optional<User> optional = userRepository.findByEmail(userDto.getEmail());
+        if(!optional.isPresent()) {
+            throw new UsernameNotFoundException(userDto.getEmail() + " 사용자 없음");
+        }else{
+            optional.get().updateMonthStartDate(userDto.getMonthStartDate());
+
+        }
+
     }
 }
