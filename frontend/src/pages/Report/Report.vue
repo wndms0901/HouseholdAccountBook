@@ -79,24 +79,7 @@ export default {
         .monthStartDate,
     };
   },
-  computed: {
-    // period: function () {
-    //   const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-    //   let today = new Date();
-    //   let startDate = new Date(
-    //     today.getFullYear(),
-    //     today.getMonth(),
-    //     monthStartDate
-    //   );
-    //   let endDate = new Date(
-    //     today.getFullYear(),
-    //     today.getMonth() + 1,
-    //     monthStartDate - 1
-    //   );
-    //   const period = { from: startDate, to: endDate };
-    //   return period;
-    // },
-  },
+  computed: {},
   watch: {
     tabIndex: {
       handler(newData) {
@@ -192,20 +175,20 @@ export default {
     onCloseStartDate() {
       if (this.monthStartDate === "last") {
         // 월시작일이 말일인 경우
+        this.period.from = this.$moment(this.period.from).endOf("month")._d;
         if (this.tabIndex === 0) {
           // 월보고서(월 단위)
-          this.period.from = this.$moment(this.period.from).endOf("month")._d;
           this.period.to = this.$moment(this.period.from)
             .add(1, "months")
             .endOf("month")
             .subtract(1, "days")._d;
-        } else {
-          // 연간보고서(연 단위)
-          this.period.from = this.$moment(this.period.from).endOf("month")._d;
-          this.period.to = this.$moment(this.period.from)
-            .add(1, "years")
-            .subtract(1, "days")._d;
         }
+        //  else {
+        //   // 연간보고서(연 단위)
+        //   this.period.to = this.$moment(this.period.from)
+        //     .add(1, "years")
+        //     .subtract(1, "days")._d;
+        // }
       } else {
         // 월시작일이 말일이 아닌 경우
         const periodFrom = _.cloneDeep(this.period.from);
@@ -219,61 +202,128 @@ export default {
           this.period.to = this.$moment(this.period.from)
             .add(1, "months")
             .subtract(1, "days")._d;
-        } else {
-          // 연간보고서(연 단위)
-          this.period.to = this.$moment(this.period.from)
-            .add(1, "years")
-            .subtract(1, "days")._d;
         }
+        // else {
+        //   // 연간보고서(연 단위)
+        //   this.period.to = this.$moment(this.period.from)
+        //     .add(1, "years")
+        //     .subtract(1, "days")._d;
+        // }
+      }
+      if (this.tabIndex === 1) {
+        // 연간보고서(연 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
       }
     },
     onPrevMonth() {
-      const periodFrom = _.cloneDeep(this.period.from);
-      const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // 말일 체크
-      if (periodFrom.getDate() === lastDay.getDate()) {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
         this.period.from = this.$moment(this.period.from)
           .subtract(1, "months")
           .endOf("month")._d;
+        if (this.tabIndex === 0) {
+          // 월보고서(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .endOf("month")
+            .subtract(1, "days")._d;
+        }
       } else {
-        this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
+        // 월시작일이 말일이 아닌 경우
+        this.period.from = this.$moment(this.period.from).subtract(
+          1,
+          "months"
+        )._d;
+        if (this.tabIndex === 0) {
+          // 월보고서(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .subtract(1, "days")._d;
+        }
       }
-      // period.to setting
-      if (this.tabIndex === 0) {
-        // 월보고서(월 단위)
-        this.period.to = this.$moment(this.period.from)
-          .add(1, "months")
-          .subtract(1, "days")._d;
-      } else {
+      if (this.tabIndex === 1) {
         // 연간보고서(연 단위)
         this.period.to = this.$moment(this.period.from)
           .add(1, "years")
           .subtract(1, "days")._d;
       }
+      // const periodFrom = _.cloneDeep(this.period.from);
+      // const lastDay = this.$moment(periodFrom).endOf("month")._d;
+      // // 말일 체크
+      // if (periodFrom.getDate() === lastDay.getDate()) {
+      //   this.period.from = this.$moment(this.period.from)
+      //     .subtract(1, "months")
+      //     .endOf("month")._d;
+      // } else {
+      //   this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
+      // }
+      // period.to setting
+      // if (this.tabIndex === 0) {
+      //   // 월보고서(월 단위)
+      //   this.period.to = this.$moment(this.period.from)
+      //     .add(1, "months")
+      //     .subtract(1, "days")._d;
+      // } else {
+      //   // 연간보고서(연 단위)
+      //   this.period.to = this.$moment(this.period.from)
+      //     .add(1, "years")
+      //     .subtract(1, "days")._d;
+      // }
     },
     onNextMonth() {
-      const periodFrom = _.cloneDeep(this.period.from);
-      const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // 말일 체크
-      if (periodFrom.getDate() === lastDay.getDate()) {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
         this.period.from = this.$moment(this.period.from)
           .add(1, "months")
           .endOf("month")._d;
+        if (this.tabIndex === 0) {
+          // 월보고서(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .endOf("month")
+            .subtract(1, "days")._d;
+        }
       } else {
-        this.period.from = this.$moment(periodFrom).add(1, "months")._d;
+        // 월시작일이 말일이 아닌 경우
+        this.period.from = this.$moment(this.period.from).add(1, "months")._d;
+        if (this.tabIndex === 0) {
+          // 월보고서(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .subtract(1, "days")._d;
+        }
       }
-      // period.to setting
-      if (this.tabIndex === 0) {
-        // 월보고서(월 단위)
-        this.period.to = this.$moment(this.period.from)
-          .add(1, "months")
-          .subtract(1, "days")._d;
-      } else {
+      if (this.tabIndex === 1) {
         // 연간보고서(연 단위)
         this.period.to = this.$moment(this.period.from)
           .add(1, "years")
           .subtract(1, "days")._d;
       }
+
+      //       const periodFrom = _.cloneDeep(this.period.from);
+      //       const lastDay = this.$moment(periodFrom).endOf("month")._d;
+      //       // 말일 체크
+      //       if (periodFrom.getDate() === lastDay.getDate()) {
+      //         this.period.from = this.$moment(this.period.from)
+      //           .add(1, "months")
+      //           .endOf("month")._d;
+      //       } else {
+      //         this.period.from = this.$moment(periodFrom).add(1, "months")._d;
+      //       }
+      //       // period.to setting
+      //       if (this.tabIndex === 0) {
+      //         // 월보고서(월 단위)
+      //         this.period.to = this.$moment(this.period.from)
+      //           .add(1, "months")
+      //           .subtract(1, "days")._d;
+      //       } else {
+      //         // 연간보고서(연 단위)
+      //         this.period.to = this.$moment(this.period.from)
+      //           .add(1, "years")
+      //           .subtract(1, "days")._d;
+      //       }
     },
   },
 };

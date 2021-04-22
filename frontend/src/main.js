@@ -16,6 +16,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
+import vClickOutside from 'v-click-outside'
 
 // LightBootstrap plugin
 import LightBootstrap from './light-bootstrap-main'
@@ -46,10 +47,11 @@ import VueMoment from 'vue-moment'
 
 import './registerServiceWorker'
 // plugin setup
+Vue.use(vClickOutside)
 Vue.use(VueRouter)
 Vue.use(LightBootstrap)
-Vue.use(BootstrapVue)
-Vue.use(IconsPlugin)
+//Vue.use(BootstrapVue)
+//Vue.use(IconsPlugin)
 Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 

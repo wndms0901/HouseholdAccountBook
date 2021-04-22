@@ -92,6 +92,8 @@ export default {
         to: "",
       },
       tabIndex: 0,
+      monthStartDate: this.$store.state.userStore.initialState.user.userInfo
+        .monthStartDate,
     };
   },
   computed: {
@@ -134,29 +136,74 @@ export default {
   methods: {
     // 조회 기간 setting
     setPeriod() {
-      let startDate = null;
-      let endDate = null;
       let today = new Date();
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      // let today = new Date(2021, 4, 1);
-      // const monthStartDate = 16;
-      if (this.tabIndex === 0) {
-        // 예산쓰기(월 단위)
-        const month =
-          monthStartDate > 15 ? today.getMonth() - 1 : today.getMonth();
-        startDate = new Date(today.getFullYear(), month, monthStartDate);
-        endDate = new Date(today.getFullYear(), month + 1, monthStartDate - 1);
-      } else if (this.tabIndex === 1) {
-        // 예산 대비 지출(연 단위)
-        const year =
-          monthStartDate > 15 ? today.getFullYear() - 1 : today.getFullYear();
-        const month = monthStartDate > 15 ? 11 : 0;
-        startDate = new Date(year, month, monthStartDate);
-        endDate = this.$moment(startDate).add(1, "years").subtract(1, "days")
-          ._d;
+
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          const month = today.getMonth() - 1;
+          const startLastDate = this.$moment(
+            new Date(today.getFullYear(), month, 1)
+          ).endOf("month")._d;
+          const endLastDate = this.$moment(
+            new Date(today.getFullYear(), month + 1, 1)
+          ).endOf("month")._d;
+
+          this.period.from = new Date(
+            today.getFullYear(),
+            month,
+            startLastDate.getDate()
+          );
+          this.period.to = new Date(
+            today.getFullYear(),
+            month + 1,
+            endLastDate.getDate() - 1
+          );
+        } else if (this.tabIndex === 1) {
+          // 예산 대비 지출(연 단위)
+          const year = today.getFullYear() - 1;
+          const month = 11;
+          this.period.from = new Date(year, month, 31);
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "years")
+            .subtract(1, "days")._d;
+        }
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          const month =
+            parseInt(this.monthStartDate) > 15
+              ? today.getMonth() - 1
+              : today.getMonth();
+          this.period.from = new Date(
+            today.getFullYear(),
+            month,
+            parseInt(this.monthStartDate)
+          );
+          this.period.to = new Date(
+            today.getFullYear(),
+            month + 1,
+            parseInt(this.monthStartDate) - 1
+          );
+        } else if (this.tabIndex === 1) {
+          // 예산 대비 지출(연 단위)
+          const year =
+            parseInt(this.monthStartDate) > 15
+              ? today.getFullYear() - 1
+              : today.getFullYear();
+          const month = parseInt(this.monthStartDate) > 15 ? 11 : 0;
+          this.period.from = new Date(
+            year,
+            month,
+            parseInt(this.monthStartDate)
+          );
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "years")
+            .subtract(1, "days")._d;
+        }
       }
-      this.period.from = startDate;
-      this.period.to = endDate;
     },
     onClickPeriodFromCalendar() {
       this.$refs.periodFrom.showCalendar();
@@ -165,38 +212,49 @@ export default {
       this.$refs.periodFrom.close();
     },
     onCloseStartDate() {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        this.period.from = this.$moment(this.period.from).endOf("month")._d;
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        const periodFrom = _.cloneDeep(this.period.from);
+        this.period.from = new Date(
+          periodFrom.getFullYear(),
+          periodFrom.getMonth(),
+          parseInt(this.monthStartDate)
+        );
+      }
       this.period.to = this.$moment(this.period.from)
         .add(1, "years")
         .subtract(1, "days")._d;
     },
     onPrevMonth() {
-      const periodFrom = _.cloneDeep(this.period.from);
-      const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // 말일 체크
-      if (periodFrom.getDate() === lastDay.getDate()) {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
         this.period.from = this.$moment(this.period.from)
           .subtract(1, "months")
           .endOf("month")._d;
       } else {
-        this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
+        // 월시작일이 말일이 아닌 경우
+        this.period.from = this.$moment(this.period.from).subtract(
+          1,
+          "months"
+        )._d;
       }
-      // period.to setting
       this.period.to = this.$moment(this.period.from)
         .add(1, "years")
         .subtract(1, "days")._d;
     },
     onNextMonth() {
-      const periodFrom = _.cloneDeep(this.period.from);
-      const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // 말일 체크
-      if (periodFrom.getDate() === lastDay.getDate()) {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
         this.period.from = this.$moment(this.period.from)
           .add(1, "months")
           .endOf("month")._d;
       } else {
-        this.period.from = this.$moment(periodFrom).add(1, "months")._d;
+        // 월시작일이 말일이 아닌 경우
+        this.period.from = this.$moment(this.period.from).add(1, "months")._d;
       }
-      // period.to setting
       this.period.to = this.$moment(this.period.from)
         .add(1, "years")
         .subtract(1, "days")._d;

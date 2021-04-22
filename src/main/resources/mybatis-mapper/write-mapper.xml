@@ -26,7 +26,9 @@
         <result column="cash" property="cash" />
         <result column="card" property="card" />
         <result column="account_category_id" property="accountCategoryId" />
+        <result column="account_category_name" property="accountCategoryName" />
         <result column="large_category_id" property="largeCategoryId" />
+        <result column="large_category_name" property="largeCategoryName" />
         <result column="small_category_id" property="smallCategoryId" />
         <result column="small_category_name" property="smallCategoryName" />
         <result column="memo" property="memo" />
@@ -44,7 +46,6 @@
     <select id="selectLargeCategoryList" parameterType="String" resultMap="largeCategoryDto">
         SELECT lc.large_category_id
              , lc.large_category_name
-             , lc.category_type
           FROM large_category lc
          WHERE lc.category_type=#{categoryType}
     </select>
@@ -60,7 +61,6 @@
     <select id="selectAccountCategoryList" parameterType="String" resultMap="accountCategoryDto">
         SELECT ac.account_category_id
              , ac.account_category_name
-             , ac.account_category_type
           FROM account_category ac
          WHERE ac.account_category_type=#{accountCategoryType}
     </select>
@@ -71,11 +71,17 @@
              , e.cash
              , e.card
              , e.account_category_id
+             , ac.account_category_name
              , e.large_category_id
+             , lc.large_category_name
              , e.small_category_id
              , s.small_category_name
              , e.memo
           FROM expenditure e
+    INNER JOIN account_category ac
+            ON e.account_category_id = ac.account_category_id
+    INNER JOIN large_category lc
+            ON e.large_category_id = lc.large_category_id
     INNER JOIN small_category s
             ON e.small_category_id = s.small_category_id
          WHERE e.expenditure_date BETWEEN #{startDate} AND #{endDate}

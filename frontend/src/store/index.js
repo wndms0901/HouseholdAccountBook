@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex)
 
@@ -16,7 +17,12 @@ const store = new Vuex.Store({
         writeStore: writeStore,
         budgetStore: budgetStore,
         reportStore: reportStore,
-    }
+    },
+    plugins: [createPersistedState({
+        // 필요한 모듈만 선택해서 저장
+        paths: ["userStore"],
+    }),],
+
 })
 
 export default store

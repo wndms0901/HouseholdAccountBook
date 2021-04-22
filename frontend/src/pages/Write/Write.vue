@@ -47,39 +47,37 @@
               <b-icon-chevron-right variant="dark"></b-icon-chevron-right>
             </b-button>
             <button class="startDateBtn" @click="openModal">월시작일</button>
-            <!-- 월시작일 설정 Modal -->
-            <setStartDateModal @close="closeModal" v-if="showModal">
-              <!-- default 슬롯 콘텐츠 -->
-              <div>
-                <strong>월 시작일 설정</strong>
-                <b-form-select
-                  class="selectBox"
-                  v-model="monthStartDate"
-                  :options="options"
-                  size="sm"
-                ></b-form-select>
-                <span>(이달 1일 ~ 이달 말일)</span>
-              </div>
-              <!-- /default -->
-              <!-- footer 슬롯 콘텐츠 -->
-              <template slot="footer">
-                <div>
-                  <span
-                    >월 시작일로 지정한 날부터 한달이 시작되어 가계부가
-                    계산됩니다.</span
-                  >
-                </div>
-                <div class="modalFooterBtn-box">
-                  <button class="basicBtn" @click="onSaveStartDate">
-                    확인
-                  </button>
-                </div>
-              </template>
-              <!-- /footer -->
-            </setStartDateModal>
           </div>
         </div>
       </div>
+      <!-- 월시작일 설정 Modal -->
+      <setStartDateModal v-click-outside="onClickOutside" v-if="showModal">
+        <!-- default 슬롯 콘텐츠 -->
+        <div>
+          <strong>월 시작일 설정</strong>
+          <b-form-select
+            class="selectBox"
+            v-model="monthStartDate"
+            :options="options"
+            size="sm"
+          ></b-form-select>
+          <span>(이달 1일 ~ 이달 말일)</span>
+        </div>
+        <!-- /default -->
+        <!-- footer 슬롯 콘텐츠 -->
+        <template slot="footer">
+          <div>
+            <span
+              >월 시작일로 지정한 날부터 한달이 시작되어 가계부가
+              계산됩니다.</span
+            >
+          </div>
+          <div class="modalFooterBtn-box">
+            <button class="basicBtn" @click="onSaveStartDate">확인</button>
+          </div>
+        </template>
+        <!-- /footer -->
+      </setStartDateModal>
       <div class="tabs" style="width: 100%">
         <b-tabs v-model="tabIndex" content-class="mt-3">
           <b-tab title="지출" @click="onClickExpenditure"
@@ -308,6 +306,11 @@ export default {
     },
     closeModal() {
       this.showModal = false;
+    },
+    onClickOutside(event) {
+      if (event.target.className !== "startDateBtn") {
+        this.closeModal();
+      }
     },
     // 월시작일 저장
     onSaveStartDate() {

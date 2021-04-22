@@ -128,25 +128,6 @@ const getDatePicker = () => {
   return Datepicker;
 };
 
-window.extractValues = function extractValues(mappings) {
-  //var value = Object.keys(mappings);
-  return Object.keys(mappings).sort();
-  //return ["English", "Spanish", "French", "Portuguese", "(other)"];
-};
-
-window.lookupValue = function lookupValue(mappings, key) {
-  return mappings[key];
-};
-// window.lookupKey = function lookupKey(mappings, name) {
-//   var keys = Object.keys(mappings);
-//   for (var i = 0; i < keys.length; i++) {
-//     var key = keys[i];
-//     if (mappings[key] === name) {
-//       return key;
-//     }
-//   }
-// };
-
 // function onCellValueChanged(params) {
 //   const colId = params.column.getId();
 //   console.log("onCellValueChanged", params);
@@ -172,7 +153,6 @@ export default {
       rowData: [],
       components: null,
       frameworkComponents: null,
-      accountCategoryList: [],
       accountCategory: {},
       largeCategory: {},
       smallCategory: {},
@@ -192,6 +172,36 @@ export default {
       let value = this.totalCashNumber + this.totalCardNumber;
       return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
+    // 기본 row
+    defaultRow() {
+      const today = new Date();
+      const expenditureDate =
+        String(today.getFullYear()) +
+        "." +
+        ("0" + (today.getMonth() + 1)).slice(-2) +
+        "." +
+        ("0" + today.getDate()).slice(-2);
+      const row = [
+        {
+          expenditureId: "",
+          expenditureDate: expenditureDate,
+          expenditureDescription: "",
+          cash: "0",
+          card: "0",
+          accountCategory: {
+            accountCategoryId: 1,
+            accountCategoryName: "선택없음",
+          },
+          largeCategory: {
+            largeCategoryId: 1,
+            largeCategoryName: "미분류",
+          },
+          smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
+          memo: "",
+        },
+      ];
+      return row;
+    },
   },
   watch: {
     period: {
@@ -203,8 +213,6 @@ export default {
   },
   beforeCreate() {},
   created() {
-    // 출금통장 카테고리 목록 조회
-    //this.getAccountCategoryList();
     // 카테고리 목록 조회
     this.getCategoryList();
   },
@@ -255,47 +263,47 @@ export default {
       },
       {
         headerName: "출금통장",
-        field: "accountCategoryId",
+        field: "accountCategory",
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
           return {
-            values: Object.keys(this.accountCategory).sort(function (a, b) {
-              return a - b;
-            }),
+            values: this.accountCategory,
           };
+          //return {
+          // values: Object.keys(this.accountCategory).sort(function (a, b) {
+          //   return a - b;
+          // }),
+          //};
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("출금통장>", this.accountCategory);
-          console.log("출금통장>>", params.value);
-          return this.accountCategory[params.value];
+          console.log("출금>", this.accountCategory);
+          console.log("출금>>", params.value);
+          return params.value.accountCategoryName;
+          //return this.accountCategory[params.value];
         },
-        // // convert value to code
-        //valueParser: (params) => {
-        //return lookupKey(this.accountCategoryList, params.newValue);
-        // },
       },
       {
         headerName: "대분류",
-        field: "largeCategoryId",
+        field: "largeCategory",
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
           return {
-            values: Object.keys(this.largeCategory).sort(function (a, b) {
-              return a - b;
-            }),
+            values: this.largeCategory,
           };
+          // return {
+          //   values: Object.keys(this.largeCategory).sort(function (a, b) {
+          //     return a - b;
+          //   }),
+          //};
         },
         // convert code to value
         valueFormatter: (params) => {
           console.log("대분류>", this.largeCategory);
           console.log("대분류>>", params.value);
-          return this.largeCategory[params.value];
+          return params.value.largeCategoryName;
+          //return this.largeCategory[params.value];
         },
-        // // convert value to code
-        // valueParser: (params) => {
-        //return lookupKey(this.largeCategory, params.newValue);
-        // },
       },
       {
         headerName: "소분류",
@@ -303,15 +311,19 @@ export default {
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
           console.log(
-            "cellEditorParams",
-            this.smallCategory[params.data.largeCategoryId]
+            "소분류",
+            this.smallCategory[params.data.largeCategory.largeCategoryId]
           );
           return {
-            values: this.smallCategory[params.data.largeCategoryId],
+            values: this.smallCategory[
+              params.data.largeCategory.largeCategoryId
+            ],
           };
         },
         // convert code to value
         valueFormatter: (params) => {
+          console.log("소분류>", this.smallCategory);
+          console.log("소분류>>", params);
           return params.value.smallCategoryName;
         },
       },
@@ -351,7 +363,7 @@ export default {
     onCellValueChanged(params) {
       const colId = params.column.getId();
       console.log("onCellValueChanged", params);
-      if (colId === "largeCategoryId") {
+      if (colId === "largeCategory") {
         params.api.startEditingCell({
           rowIndex: params.rowIndex,
           colKey: "smallCategory",
@@ -360,26 +372,6 @@ export default {
         this.getTotal();
       }
     },
-    // 출금통장 카테고리 목록 조회
-    getAccountCategoryList() {
-      this.$store
-        .dispatch(
-          "commonStore/selectAccountCtgryList",
-          this.accountCategoryType
-        )
-        .then((res) => {
-          // {id:name} 형식으로 만들기
-          let tmp = {};
-          _.forEach(res.data, function (obj) {
-            let accountCategoryId = String(obj.accountCategoryId);
-            tmp[accountCategoryId] = obj.accountCategoryName;
-          });
-          this.accountCategory = tmp;
-        })
-        .catch((Error) => {
-          console.log(Error);
-        });
-    },
     // 카테고리 목록 조회
     getCategoryList() {
       this.$store
@@ -387,20 +379,37 @@ export default {
         .then((res) => {
           console.log("getCategoryList", res.data);
           // 출금통장 카테고리 목록
-          // {id:name} 형식으로 만들기
-          let tmp = {};
-          _.forEach(res.data.accountCategoryDtoList, function (obj) {
-            let accountCategoryId = String(obj.accountCategoryId);
-            tmp[accountCategoryId] = obj.accountCategoryName;
-          });
-          this.accountCategory = tmp;
+          this.accountCategory = res.data.accountCategoryDtoList;
+          // let arry = [];
+          // _.forEach(res.data.accountCategoryDtoList, function (obj) {
+          //   const tmp = {
+          //     accountCategoryId: obj.accountCategoryId,
+          //     accountCategoryName: obj.accountCategoryName,
+          //   };
+          //   arry.push(tmp);
+          // });
+          // this.accountCategory = arry;
 
+          ////
+          // 출금통장 카테고리 목록
+          // {id:name} 형식으로 만들기
+          // let tmp = {};
+          // _.forEach(res.data.accountCategoryDtoList, function (obj) {
+          //   let accountCategoryId = String(obj.accountCategoryId);
+          //   tmp[accountCategoryId] = obj.accountCategoryName;
+          // });
+          // this.accountCategory = tmp;
+
+          // 대분류 카테고리 목록
+          this.largeCategory = res.data.largeCategoryDtoList;
+
+          // 소분류 카테고리 목록
           // {largeCategoryId:largeCategoryName} 형식으로 만들기
-          let largeCategoryObj = {};
+          //let largeCategoryObj = {};
           let smallCategoryObj = {};
           _.forEach(res.data.largeCategoryDtoList, function (obj) {
-            let largeCategoryId = String(obj.largeCategoryId);
-            largeCategoryObj[largeCategoryId] = obj.largeCategoryName;
+            // let largeCategoryId = String(obj.largeCategoryId);
+            // largeCategoryObj[largeCategoryId] = obj.largeCategoryName;
             const filterList = _.filter(res.data.smallCategoryDtoList, {
               largeCategoryId: obj.largeCategoryId,
             });
@@ -412,52 +421,16 @@ export default {
                 smallCategoryName: obj2.smallCategoryName,
               };
               lst.push(tmp);
-              // let smallCategoryId = String(obj2.smallCategoryId);
-              // tmp[smallCategoryId] = obj2.smallCategoryName;
             });
-            smallCategoryObj[largeCategoryId] = lst;
+            smallCategoryObj[obj.largeCategoryId] = lst;
           });
-          this.largeCategory = largeCategoryObj;
+          // this.largeCategory = largeCategoryObj;
           this.smallCategory = smallCategoryObj;
         })
         .catch((Error) => {
           console.log(Error);
         });
     },
-    // getCategoryList() {
-    //   this.$store
-    //     .dispatch("commonStore/selectCategoryList", this.categoryType)
-    //     .then((res) => {
-    //       console.log("getCategoryList", res.data);
-    //       // {largeCategoryId:largeCategoryName} 형식으로 만들기
-    //       let largeCategoryObj = {};
-    //       let smallCategoryObj = {};
-    //       _.forEach(res.data.largeCategoryDtoList, function (obj) {
-    //         let largeCategoryId = String(obj.largeCategoryId);
-    //         largeCategoryObj[largeCategoryId] = obj.largeCategoryName;
-    //         const filterList = _.filter(res.data.smallCategoryDtoList, {
-    //           largeCategoryId: obj.largeCategoryId,
-    //         });
-    //         // {largeCategoryId:[{smallCategoryId:"",smallCategoryName:""}]} 형식으로 만들기
-    //         let lst = [];
-    //         _.forEach(filterList, function (obj2) {
-    //           const tmp = {
-    //             smallCategoryId: obj2.smallCategoryId,
-    //             smallCategoryName: obj2.smallCategoryName,
-    //           };
-    //           lst.push(tmp);
-    //           // let smallCategoryId = String(obj2.smallCategoryId);
-    //           // tmp[smallCategoryId] = obj2.smallCategoryName;
-    //         });
-    //         smallCategoryObj[largeCategoryId] = lst;
-    //       });
-    //       this.largeCategory = largeCategoryObj;
-    //       this.smallCategory = smallCategoryObj;
-    //     })
-    //     .catch((Error) => {
-    //       console.log(Error);
-    //     });
-    // },
     // 지출 목록 조회
     getExpenditureList() {
       // reset
@@ -484,12 +457,22 @@ export default {
               ".",
               date
             );
+            // accountCategory setting
+            res.data[index].accountCategory = {
+              accountCategoryId: row.accountCategoryId,
+              accountCategoryName: row.accountCategoryName,
+            };
+            // largeCategory setting
+            res.data[index].largeCategory = {
+              largeCategoryId: row.largeCategoryId,
+              largeCategoryName: row.largeCategoryName,
+            };
             // accountCategoryId
-            res.data[index].accountCategoryId =
-              row.accountCategoryId === null ? "" : row.accountCategoryId;
+            // res.data[index].accountCategoryId =
+            //   row.accountCategoryId === null ? "" : row.accountCategoryId;
             // largeCategoryId
-            res.data[index].largeCategoryId =
-              row.largeCategoryId === null ? "" : row.largeCategoryId;
+            // res.data[index].largeCategoryId =
+            //   row.largeCategoryId === null ? "" : row.largeCategoryId;
             // smallCategory setting
             res.data[index].smallCategory = {
               smallCategoryId: row.smallCategoryId,
@@ -497,47 +480,70 @@ export default {
             };
           });
           this.gridApi.setRowData(res.data);
-          this.defaultRow();
+          this.setDefaultRow();
         })
         .catch((Error) => {
           console.log(Error);
         });
     },
-    defaultRow() {
+    setDefaultRow() {
       const rowData = this.$refs.expenditureGrid.getRowData();
-      const today = new Date();
-      const expenditureDate =
-        String(today.getFullYear()) +
-        "." +
-        ("0" + (today.getMonth() + 1)).slice(-2) +
-        "." +
-        ("0" + today.getDate()).slice(-2);
-      const rows = [
-        {
-          expenditureId: "",
-          expenditureDate: expenditureDate,
-          expenditureDescription: "",
-          cash: "0",
-          card: "0",
-          accountCategoryId: 1,
-          largeCategoryId: 1,
-          smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
-          memo: "",
-        },
-        {
-          expenditureId: "",
-          expenditureDate: "",
-          expenditureDescription: "",
-          cash: "",
-          card: "",
-          accountCategoryId: " ",
-          largeCategoryId: " ",
-          smallCategory: " ",
-          memo: "",
-        },
-      ];
+      const defaultRow = _.cloneDeep(this.defaultRow);
+      const emptyRow = {
+        expenditureId: "",
+        expenditureDate: "",
+        expenditureDescription: "",
+        cash: "",
+        card: "",
+        accountCategory: " ",
+        largeCategory: " ",
+        smallCategory: " ",
+        memo: "",
+      };
+      defaultRow.push(emptyRow);
+      // const today = new Date();
+      // const expenditureDate =
+      //   String(today.getFullYear()) +
+      //   "." +
+      //   ("0" + (today.getMonth() + 1)).slice(-2) +
+      //   "." +
+      //   ("0" + today.getDate()).slice(-2);
+      // const rows = [
+      //   {
+      //     expenditureId: "",
+      //     expenditureDate: expenditureDate,
+      //     expenditureDescription: "",
+      //     cash: "0",
+      //     card: "0",
+      //     accountCategory: {
+      //       accountCategoryId: 1,
+      //       accountCategoryName: "선택없음",
+      //     },
+      //     largeCategory: {
+      //       largeCategoryId: 1,
+      //       largeCategoryName: "미분류",
+      //     },
+      //     // accountCategoryId: 1,
+      //     // largeCategoryId: 1,
+      //     smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
+      //     memo: "",
+      //   },
+      //   {
+      //     expenditureId: "",
+      //     expenditureDate: "",
+      //     expenditureDescription: "",
+      //     cash: "",
+      //     card: "",
+      //     accountCategory: " ",
+      //     largeCategory: " ",
+      //     // accountCategoryId: " ",
+      //     //largeCategoryId: " ",
+      //     smallCategory: " ",
+      //     memo: "",
+      //   },
+      // ];
       this.gridApi.applyTransaction({
-        add: rows,
+        add: defaultRow,
         addIndex: rowData.length,
       });
       this.gridApi.startEditingCell({
@@ -581,27 +587,37 @@ export default {
       if (event.data.expenditureDate === "") {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.expenditureGrid.getRowData();
-        const today = new Date();
-        const expenditureDate =
-          String(today.getFullYear()) +
-          "." +
-          ("0" + (today.getMonth() + 1)).slice(-2) +
-          "." +
-          ("0" + today.getDate()).slice(-2);
-        const row = [
-          {
-            expenditureDate: expenditureDate,
-            expenditureDescription: "",
-            cash: "0",
-            card: "0",
-            accountCategoryId: "",
-            largeCategoryId: 1,
-            smallCategory: { smallCategoryId: "", smallCategoryName: "미분류" },
-            memo: "",
-          },
-        ];
+        // const today = new Date();
+        // const expenditureDate =
+        //   String(today.getFullYear()) +
+        //   "." +
+        //   ("0" + (today.getMonth() + 1)).slice(-2) +
+        //   "." +
+        //   ("0" + today.getDate()).slice(-2);
+
+        // const row = [
+        //   {
+        //     expenditureId: "",
+        //     expenditureDate: expenditureDate,
+        //     expenditureDescription: "",
+        //     cash: "0",
+        //     card: "0",
+        //     accountCategory: {
+        //       accountCategoryId: 1,
+        //       accountCategoryName: "선택없음",
+        //     },
+        //     largeCategory: {
+        //       largeCategoryId: 1,
+        //       largeCategoryName: "미분류",
+        //     },
+        //     // accountCategoryId: 1,
+        //     // largeCategoryId: 1,
+        //     smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
+        //     memo: "",
+        //   },
+        // ];
         this.gridApi.applyTransaction({
-          add: row,
+          add: this.defaultRow,
           addIndex: rowData.length - 1,
         });
         this.gridApi.startEditingCell({
@@ -626,42 +642,52 @@ export default {
         updateExpenditureDtoList: [],
         deleteExpenditureDtoList: [],
       };
-
       _.forEach(rowData, function (row, index) {
         const expenditureDate = row.expenditureDate.replace(/\./gi, "");
         rowData[index] = {
           expenditureId: row.expenditureId,
           expenditureDate: expenditureDate,
-          expenditureDescription: row.expenditureDescription,
-          cash: row.cash,
-          card: row.card,
-          accountCategoryId: row.accountCategoryId,
-          largeCategoryId: row.largeCategoryId,
+          expenditureDescription: row.expenditureDescription || "",
+          cash: parseInt(String(row.cash).replace(/,/g, "")),
+          card: parseInt(String(row.card).replace(/,/g, "")),
+          accountCategoryId: row.accountCategory.accountCategoryId,
+          largeCategoryId: row.largeCategory.largeCategoryId,
           smallCategoryId: row.smallCategory.smallCategoryId,
-          memo: row.memo,
+          memo: row.memo || "",
           userDto: userDto,
         };
       });
+      // 등록 rows
       expenditureSaveDto.insertExpenditureDtoList = _.filter(
         rowData,
         function (row) {
-          return !row.expenditureId && (row.expenditureDescription || row.memo);
+          return (
+            !row.expenditureId &&
+            (row.expenditureDescription ||
+              row.cash > 0 ||
+              row.card > 0 ||
+              row.accountCategoryId !== 1 ||
+              row.largeCategoryId !== 1 ||
+              row.memo)
+          );
         }
       );
+      // 수정 rows
       expenditureSaveDto.updateExpenditureDtoList = _.filter(
         rowData,
         "expenditureId"
       );
+      // 삭제 rows
       expenditureSaveDto.deleteExpenditureDtoList = this.deletedRows;
       console.log("expenditureSaveDto", expenditureSaveDto);
-      // this.$store
-      //   .dispatch("writeStore/saveExpenditureList", expenditureSaveDto)
-      //   .then((res) => {
-      //     this.getExpenditureList();
-      //   })
-      //   .catch((Error) => {
-      //     console.log(Error);
-      //   });
+      this.$store
+        .dispatch("writeStore/saveExpenditureList", expenditureSaveDto)
+        .then((res) => {
+          this.getExpenditureList();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
     },
     // Row 선택 삭제
     onRowDelete() {
