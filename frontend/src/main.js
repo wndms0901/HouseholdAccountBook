@@ -22,6 +22,9 @@ import vClickOutside from 'v-click-outside'
 import LightBootstrap from './light-bootstrap-main'
 // Bootstrap-vue
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+// Import Bootstrap an BootstrapVue CSS files (order is important)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // router setup
 import routes from './routes/routes'
@@ -50,8 +53,8 @@ import './registerServiceWorker'
 Vue.use(vClickOutside)
 Vue.use(VueRouter)
 Vue.use(LightBootstrap)
-//Vue.use(BootstrapVue)
-//Vue.use(IconsPlugin)
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
 Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 

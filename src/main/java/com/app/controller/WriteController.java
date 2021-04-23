@@ -41,7 +41,7 @@ public class WriteController {
                                               @RequestParam String endDate,
                                               @RequestParam String email){
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        List<ExpenditureDto> list = writeService.selectExpenditureList(CommonRequestDto.builder().startDate(startDate).endDate(endDate).email(email).build());
+        List<ExpenditureDto> list = writeService.selectExpenditureList(WriteRequestDto.builder().startDate(startDate).endDate(endDate).userDto(UserDto.builder().email(email).build()).build());
         resultMap.put("data", list);
         return new ResponseEntity(resultMap, HttpStatus.OK);
     }
@@ -58,6 +58,17 @@ public class WriteController {
     }
 
     /**
+     * 정산 저장
+     * @param writeRequestDto
+     * @return ResponseEntity<?>
+     */
+    @PostMapping("/calculation/save")
+    public ResponseEntity<?> saveCalculation(@RequestBody WriteRequestDto writeRequestDto) {
+        writeService.saveCalculation(writeRequestDto);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    /**
      * 수입 목록 조회
      * @param startDate
      * @param endDate
@@ -69,7 +80,7 @@ public class WriteController {
                                               @RequestParam String endDate,
                                               @RequestParam String email){
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        List<IncomeDto> list = writeService.selectIncomeList(CommonRequestDto.builder().startDate(startDate).endDate(endDate).email(email).build());
+        List<IncomeDto> list = writeService.selectIncomeList(WriteRequestDto.builder().startDate(startDate).endDate(endDate).userDto(UserDto.builder().email(email).build()).build());
         resultMap.put("data", list);
         return new ResponseEntity(resultMap, HttpStatus.OK);
     }

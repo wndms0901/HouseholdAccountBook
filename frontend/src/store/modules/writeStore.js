@@ -21,11 +21,11 @@ const writeStore = {
         },
         /**
          * 지출 목록 조회
-         * @param {*} commonRequestDto 
+         * @param {*} writeRequestDto 
          * @returns 
          */
-        selectExpenditureList({ }, commonRequestDto) {
-            return WriteService.selectExpenditureList(commonRequestDto).then(
+        selectExpenditureList({ }, writeRequestDto) {
+            return WriteService.selectExpenditureList(writeRequestDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);
@@ -51,14 +51,30 @@ const writeStore = {
                 }
             );
         },
+        /**
+         * 정산 저장
+         * @param {*} WriteRequestDto
+         * @returns 
+         */
+        saveCalculation({ }, WriteRequestDto) {
+            return WriteService.saveCalculation(WriteRequestDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
 
         /**
          * 수입 목록 조회
-         * @param {*} commonRequestDto 
+         * @param {*} writeRequestDto 
          * @returns 
          */
-        selectIncomeList({ }, commonRequestDto) {
-            return WriteService.selectIncomeList(commonRequestDto).then(
+        selectIncomeList({ }, writeRequestDto) {
+            return WriteService.selectIncomeList(writeRequestDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);

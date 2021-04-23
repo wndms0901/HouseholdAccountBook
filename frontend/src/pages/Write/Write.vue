@@ -85,6 +85,7 @@
               ref="expenditureTab"
               :user="user"
               :period="period"
+              :monthStartDate="monthStartDate"
             ></expenditure
           ></b-tab>
           <b-tab title="수입" @click="onClickIncome"
@@ -393,4 +394,31 @@ export default {
   font-size: 18px;
   font-weight: bold;
 }
+/* tooltip css */
+/* .tooltip .tooltip-inner {
+  max-width: 330px !important;
+  text-align: left;
+  background: white;
+  color: #000;
+  border: 1px solid #1953d7;
+}
+.tooltip .arrow {
+  width: 11px;
+  height: 11px;
+  border: 1px solid #1953d7;
+  bottom: 2px;
+}
+.tooltip .arrow:before {
+  width: 11px;
+  height: 11px;
+  background: white;
+  border: 0;
+}
+.tooltip.bs-tooltip-top .arrow {
+  transform: rotate(-135deg);
+}
+.tooltip.bs-tooltip-bottom .arrow {
+  transform: rotate(135deg);
+  top: 2px;
+} */
 </style>

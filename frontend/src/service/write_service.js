@@ -18,16 +18,16 @@ class WriteService {
     }
     /**
      * 지출 목록 조회
-     * @param {*} commonRequestDto 
+     * @param {*} writeRequestDto 
      * @returns 
      */
-    selectExpenditureList(commonRequestDto) {
+    selectExpenditureList(writeRequestDto) {
         return axios
             .get(API_URL + 'expenditure/list', {
                 params: {
-                    startDate: commonRequestDto.startDate,
-                    endDate: commonRequestDto.endDate,
-                    email: commonRequestDto.email,
+                    startDate: writeRequestDto.startDate,
+                    endDate: writeRequestDto.endDate,
+                    email: writeRequestDto.email,
                 }
             })
             .then(response => {
@@ -48,19 +48,32 @@ class WriteService {
                 return response.data;
             });
     }
+    /**
+     * 정산 저장
+     * @param {*} WriteRequestDto
+     * @returns 
+     */
+    saveCalculation(WriteRequestDto) {
+        return axios
+            .post(API_URL + 'calculation/save', WriteRequestDto)
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
 
     /**
      * 수입 목록 조회
-     * @param {*} commonRequestDto 
+     * @param {*} writeRequestDto 
      * @returns 
      */
-    selectIncomeList(commonRequestDto) {
+    selectIncomeList(writeRequestDto) {
         return axios
             .get(API_URL + 'income/list', {
                 params: {
-                    startDate: commonRequestDto.startDate,
-                    endDate: commonRequestDto.endDate,
-                    email: commonRequestDto.email,
+                    startDate: writeRequestDto.startDate,
+                    endDate: writeRequestDto.endDate,
+                    email: writeRequestDto.email,
                 }
             })
             .then(response => {

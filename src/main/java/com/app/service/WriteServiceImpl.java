@@ -49,12 +49,12 @@ public class WriteServiceImpl implements WriteService{
 
     /**
      * 지출 목록 조회
-     * @param commonRequestDto
+     * @param writeRequestDto
      * @return List<ExpenditureDto>
      */
     @Override
-    public List<ExpenditureDto> selectExpenditureList(CommonRequestDto commonRequestDto) {
-        return writeMapper.selectExpenditureList(commonRequestDto);
+    public List<ExpenditureDto> selectExpenditureList(WriteRequestDto writeRequestDto) {
+        return writeMapper.selectExpenditureList(writeRequestDto);
     }
     /**
      * 지출 목록 저장
@@ -80,15 +80,36 @@ public class WriteServiceImpl implements WriteService{
             expenditureRepository.saveAll(insertExpenditureDtoList);
         }
     }
+    /**
+     * 정산 저장
+     * @param writeRequestDto
+     */
+    @Override
+    public void saveCalculation(WriteRequestDto writeRequestDto) {
+        List<IncomeDto> incomeDtoList = writeMapper.selectCalculationList(writeRequestDto);
+        if(incomeDtoList.size()>0){
+            List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity()).collect(Collectors.toList());
+            incomeRepository.saveAll(insertIncomeDtoList);
+        }else{
+            String str = "지갑속현금 ";
+            incomeRepository.save(Income.builder()
+                    .user(writeRequestDto.getUserDto().toEntity())
+                    .incomeDescription(str.concat(writeRequestDto.getLastMonth()).concat(" 월 전월이월 잔액"))
+                    .incomeAmount(0)
+                    .accountCategoryId(7L)
+                    .largeCategoryId(25L)
+                    .build());
+        }
+    }
 
     /**
      * 수입 목록 조회
-     * @param commonRequestDto
+     * @param writeRequestDto
      * @return List<IncomeDto>
      */
     @Override
-    public List<IncomeDto> selectIncomeList(CommonRequestDto commonRequestDto) {
-        return writeMapper.selectIncomeList(commonRequestDto);
+    public List<IncomeDto> selectIncomeList(WriteRequestDto writeRequestDto) {
+        return writeMapper.selectIncomeList(writeRequestDto);
     }
     /**
      * 수입 목록 저장

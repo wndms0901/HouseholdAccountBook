@@ -27,14 +27,20 @@ public interface WriteMapper {
     List<AccountCategoryDto> selectAccountCategoryList(String accountCategoryType);
     /**
      * 지출 목록 조회
-     * @param commonRequestDto
+     * @param writeRequestDto
      * @return List<ExpenditureDto>
      */
-    List<ExpenditureDto> selectExpenditureList(CommonRequestDto commonRequestDto);
+    List<ExpenditureDto> selectExpenditureList(WriteRequestDto writeRequestDto);
     /**
-     * 수입 목록 조회
-     * @param commonRequestDto
+     * 정산 목록 조회
+     * @param writeRequestDto
      * @return List<IncomeDto>
      */
-    List<IncomeDto> selectIncomeList(CommonRequestDto commonRequestDto);
+    List<IncomeDto> selectCalculationList(WriteRequestDto writeRequestDto);
+    /**
+     * 수입 목록 조회
+     * @param writeRequestDto
+     * @return List<IncomeDto>
+     */
+    List<IncomeDto> selectIncomeList(WriteRequestDto writeRequestDto);
 }

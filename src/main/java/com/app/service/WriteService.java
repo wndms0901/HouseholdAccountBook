@@ -15,22 +15,27 @@ public interface WriteService {
 
     /**
      * 지출 목록 조회
-     * @param commonRequestDto
+     * @param writeRequestDto
      * @return List<ExpenditureDto>
      */
-    List<ExpenditureDto> selectExpenditureList(CommonRequestDto commonRequestDto);
+    List<ExpenditureDto> selectExpenditureList(WriteRequestDto writeRequestDto);
     /**
      * 지출 목록 저장
      * @param expenditureSaveDto
      */
     void saveExpenditureList(ExpenditureSaveDto expenditureSaveDto);
+    /**
+     * 정산 저장
+     * @param writeRequestDto
+     */
+    void saveCalculation(WriteRequestDto writeRequestDto);
 
     /**
      * 수입 목록 조회
-     * @param commonRequestDto
+     * @param writeRequestDto
      * @return List<IncomeDto>
      */
-    List<IncomeDto> selectIncomeList(CommonRequestDto commonRequestDto);
+    List<IncomeDto> selectIncomeList(WriteRequestDto writeRequestDto);
     /**
      * 수입 목록 저장
      * @param incomeSaveDto

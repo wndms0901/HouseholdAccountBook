@@ -17,21 +17,23 @@ public class IncomeDto {
     private String incomeDescription;
     private int incomeAmount;
     private Long accountCategoryId;
+    private String accountCategoryName;
     private Long largeCategoryId;
+    private String largeCategoryName;
     private String memo;
     private UserDto userDto;
 
-    @Builder
-    public IncomeDto(Long incomeId, String incomeDate, String incomeDescription, int incomeAmount, Long accountCategoryId, Long largeCategoryId, String memo, UserDto userDto) {
-        this.incomeId = incomeId;
-        this.incomeDate = incomeDate;
-        this.incomeDescription = incomeDescription;
-        this.incomeAmount = incomeAmount;
-        this.accountCategoryId = accountCategoryId;
-        this.largeCategoryId = largeCategoryId;
-        this.memo = memo;
-        this.userDto = userDto;
-    }
+//    @Builder
+//    public IncomeDto(Long incomeId, String incomeDate, String incomeDescription, int incomeAmount, Long accountCategoryId, Long largeCategoryId, String memo, UserDto userDto) {
+//        this.incomeId = incomeId;
+//        this.incomeDate = incomeDate;
+//        this.incomeDescription = incomeDescription;
+//        this.incomeAmount = incomeAmount;
+//        this.accountCategoryId = accountCategoryId;
+//        this.largeCategoryId = largeCategoryId;
+//        this.memo = memo;
+//        this.userDto = userDto;
+//    }
 
     public Income toEntity(){
         User userEntity = userDto==null?null:userDto.toEntity();

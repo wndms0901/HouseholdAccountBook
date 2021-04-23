@@ -20,12 +20,25 @@
       :frameworkComponents="frameworkComponents"
       @grid-ready="onGridReady"
       @rowClicked="onRowClick"
+      @selection-changed="onSelectionChanged"
     >
     </grid>
     <div class="pt-3">
       <div class="left_btn">
-        <button class="basicBtn" @click="onRowDelete">선택삭제</button>
-        <button class="basicBtn" @click="onRowCopy">선택복사</button>
+        <button
+          class="basicBtn"
+          :disabled="disabledSelectBtn"
+          @click="onRowDelete"
+        >
+          선택삭제
+        </button>
+        <button
+          class="basicBtn"
+          :disabled="disabledSelectBtn"
+          @click="onRowCopy"
+        >
+          선택복사
+        </button>
       </div>
       <div class="right_btn">
         <button class="saveBtn" @click="onSave">저장</button>
@@ -89,8 +102,9 @@ window.lookupValue = function lookupValue(mappings, key) {
 //     params.node.setDataValue("smallCategory", { key: "", value: value });
 //   }
 // }
-
+import InputCellEditor from "src/components/CellEditor/InputCellEditor";
 export default {
+  components: { InputCellEditor },
   props: {
     user: Object,
     period: Object,
@@ -104,14 +118,44 @@ export default {
       components: null,
       frameworkComponents: null,
       accountCategoryList: [],
-      accountCategory: {},
-      largeCategory: {},
+      accountCategory: [],
+      largeCategory: [],
       categoryType: "INC",
       accountCategoryType: "DPST",
       deletedRows: [],
+      disabledSelectBtn: true,
     };
   },
-  computed: {},
+  computed: {
+    // 기본 row
+    defaultRow() {
+      const today = new Date();
+      const incomeDate =
+        String(today.getFullYear()) +
+        "." +
+        ("0" + (today.getMonth() + 1)).slice(-2) +
+        "." +
+        ("0" + today.getDate()).slice(-2);
+      const row = [
+        {
+          incomeId: "",
+          incomeDate: incomeDate,
+          incomeDescription: "",
+          incomeAmount: "0",
+          accountCategory: {
+            accountCategoryId: 6,
+            accountCategoryName: "선택없음",
+          },
+          largeCategory: {
+            largeCategoryId: 20,
+            largeCategoryName: "미분류",
+          },
+          memo: "",
+        },
+      ];
+      return row;
+    },
+  },
   watch: {
     period: {
       deep: true,
@@ -122,12 +166,12 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.tabIndex === 1) {
-      // 입금통장 카테고리 목록 조회
-      this.getAccountCategoryList();
-      // 대분류 카테고리 목록 조회
-      this.getLargeCategoryList();
-    }
+    // 카테고리 목록 조회
+    this.getCategoryList();
+    // // 입금통장 카테고리 목록 조회
+    // this.getAccountCategoryList();
+    // // 대분류 카테고리 목록 조회
+    // this.getLargeCategoryList();
   },
   beforeMount() {
     this.gridOptions = {
@@ -161,57 +205,39 @@ export default {
         headerName: "금액",
         field: "incomeAmount",
         type: "numericColumn",
+        cellEditor: "InputCellEditor",
+        valueFormatter: (params) => {
+          return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
       },
       {
         headerName: "입금통장",
-        field: "accountCategoryId",
+        field: "accountCategory",
         cellEditor: "agSelectCellEditor",
         //cellEditorParams: this.getAccountCategoryList.bind(this),
         cellEditorParams: (params) => {
-          console.log("입금통장>", Object.keys(this.accountCategory).sort());
           return {
-            values: Object.keys(this.accountCategory).sort(function (a, b) {
-              return a - b;
-            }),
+            values: this.accountCategory,
           };
-          // values: extractValues(this.accountCategory),
-          // values: this.accountCategory,
-          //       cellRenderer: cellRenderer2(this.accountCategoryList),
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("this.accountCategory,", params.value);
-          return this.accountCategory[params.value];
-          //  return lookupValue(this.accountCategory, params.value);
+          return params.value.accountCategoryName;
         },
-        // // convert value to code
-        //valueParser: (params) => {
-        //return lookupKey(this.accountCategoryList, params.newValue);
-        // },
       },
       {
         headerName: "분류",
-        field: "largeCategoryId",
+        field: "largeCategory",
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
           return {
-            values: Object.keys(this.largeCategory).sort(function (a, b) {
-              return a - b;
-            }),
+            values: this.largeCategory,
           };
-          // values: extractValues(this.accountCategory),
-          // values: this.accountCategory,
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("this.largeCategory,", params.value);
-          return this.largeCategory[params.value];
-          //  return lookupValue(this.accountCategory, params.value);
+          return params.value.largeCategoryName;
         },
-        // // convert value to code
-        // valueParser: (params) => {
-        //return lookupKey(this.accountCategoryList, params.newValue);
-        // },
       },
       { headerName: "메모", field: "memo" },
     ];
@@ -228,67 +254,78 @@ export default {
     }),
       (this.components = { datePicker: getDatePicker() });
 
+    this.frameworkComponents = {
+      InputCellEditor: InputCellEditor,
+    };
+
     this.isRowSelectable = (rowNode) => {
       console.log("rowNode", rowNode);
       return rowNode.data.incomeDate === "" ? false : true;
     };
-
-    // this.frameworkComponents = {
-    //   Datepicker: Datepicker,
-    // };
-    // this.$nextTick(function () {
-
-    // });
   },
   mounted() {
     // this.getIncomeList();
   },
   methods: {
     onGridReady(params) {
-      console.log("params", params);
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
-
+      // 그리드 사이즈 자동 조정
       params.api.sizeColumnsToFit();
     },
-    // 입금통장 카테고리 목록 조회
-    getAccountCategoryList() {
+    // 카테고리 목록 조회
+    getCategoryList() {
       this.$store
-        .dispatch(
-          "commonStore/selectAccountCtgryList",
-          this.accountCategoryType
-        )
+        .dispatch("writeStore/selectCategoryList", this.categoryType)
         .then((res) => {
-          // {id:name} 형식으로 만들기
-          let tmp = {};
-          _.forEach(res.data, function (obj) {
-            let accountCategoryId = String(obj.accountCategoryId);
-            tmp[accountCategoryId] = obj.accountCategoryName;
-          });
-          this.accountCategory = tmp;
+          console.log("getCategoryList", res.data);
+          // 입금통장 카테고리 목록
+          this.accountCategory = res.data.accountCategoryDtoList;
+          // 대분류 카테고리 목록
+          this.largeCategory = res.data.largeCategoryDtoList;
         })
         .catch((Error) => {
           console.log(Error);
         });
     },
-    // 대분류 카테고리 목록 조회
-    getLargeCategoryList() {
-      this.$store
-        .dispatch("commonStore/selectLargeCtgryList", this.categoryType)
-        .then((res) => {
-          console.log("getLargeCategoryList", res.data);
-          // {id:name} 형식으로 만들기
-          let tmp = {};
-          _.forEach(res.data, function (obj) {
-            let largeCategoryId = String(obj.largeCategoryId);
-            tmp[largeCategoryId] = obj.largeCategoryName;
-          });
-          this.largeCategory = tmp;
-        })
-        .catch((Error) => {
-          console.log(Error);
-        });
-    },
+    // // 입금통장 카테고리 목록 조회
+    // getAccountCategoryList() {
+    //   this.$store
+    //     .dispatch(
+    //       "commonStore/selectAccountCtgryList",
+    //       this.accountCategoryType
+    //     )
+    //     .then((res) => {
+    //       // {id:name} 형식으로 만들기
+    //       let tmp = {};
+    //       _.forEach(res.data, function (obj) {
+    //         let accountCategoryId = String(obj.accountCategoryId);
+    //         tmp[accountCategoryId] = obj.accountCategoryName;
+    //       });
+    //       this.accountCategory = tmp;
+    //     })
+    //     .catch((Error) => {
+    //       console.log(Error);
+    //     });
+    // },
+    // // 대분류 카테고리 목록 조회
+    // getLargeCategoryList() {
+    //   this.$store
+    //     .dispatch("commonStore/selectLargeCtgryList", this.categoryType)
+    //     .then((res) => {
+    //       console.log("getLargeCategoryList", res.data);
+    //       // {id:name} 형식으로 만들기
+    //       let tmp = {};
+    //       _.forEach(res.data, function (obj) {
+    //         let largeCategoryId = String(obj.largeCategoryId);
+    //         tmp[largeCategoryId] = obj.largeCategoryName;
+    //       });
+    //       this.largeCategory = tmp;
+    //     })
+    //     .catch((Error) => {
+    //       console.log(Error);
+    //     });
+    // },
     // 수입 목록 조회
     getIncomeList() {
       // reset
@@ -309,45 +346,40 @@ export default {
             const month = row.incomeDate.substr(4, 2);
             const date = row.incomeDate.substr(6, 2);
             res.data[index].incomeDate = year.concat(".", month, ".", date);
+            // accountCategory setting
+            res.data[index].accountCategory = {
+              accountCategoryId: row.accountCategoryId,
+              accountCategoryName: row.accountCategoryName,
+            };
+            // largeCategory setting
+            res.data[index].largeCategory = {
+              largeCategoryId: row.largeCategoryId,
+              largeCategoryName: row.largeCategoryName,
+            };
           });
           this.gridApi.setRowData(res.data);
-          this.defaultRow();
+          this.setDefaultRow();
         })
         .catch((Error) => {
           console.log(Error);
         });
     },
-    defaultRow() {
+    setDefaultRow() {
       const rowData = this.$refs.incomeGrid.getRowData();
-      const today = new Date();
-      const incomeDate =
-        String(today.getFullYear()) +
-        "." +
-        ("0" + (today.getMonth() + 1)).slice(-2) +
-        "." +
-        ("0" + today.getDate()).slice(-2);
-      const rows = [
-        {
-          incomeId: "",
-          incomeDate: incomeDate,
-          incomeDescription: "",
-          incomeAmount: "0",
-          accountCategoryId: 6,
-          largeCategoryId: 20,
-          memo: "",
-        },
-        {
-          incomeId: "",
-          incomeDate: "",
-          incomeDescription: "",
-          incomeAmount: "",
-          accountCategoryId: " ",
-          largeCategoryId: " ",
-          memo: "",
-        },
-      ];
+      const defaultRow = _.cloneDeep(this.defaultRow);
+      const emptyRow = {
+        incomeId: "",
+        incomeDate: "",
+        incomeDescription: "",
+        incomeAmount: "",
+        accountCategory: " ",
+        largeCategory: " ",
+        memo: "",
+      };
+      defaultRow.push(emptyRow);
+
       this.gridApi.applyTransaction({
-        add: rows,
+        add: defaultRow,
         addIndex: rowData.length,
       });
       this.gridApi.startEditingCell({
@@ -360,25 +392,26 @@ export default {
       if (event.data.incomeDate === "") {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.incomeGrid.getRowData();
-        const today = new Date();
-        const incomeDate =
-          String(today.getFullYear()) +
-          "." +
-          ("0" + (today.getMonth() + 1)).slice(-2) +
-          "." +
-          ("0" + today.getDate()).slice(-2);
-        const row = [
-          {
-            incomeDate: incomeDate,
-            incomeDescription: "",
-            incomeAmount: "0",
-            accountCategoryId: "",
-            largeCategoryId: "",
-            memo: "",
-          },
-        ];
+        // const today = new Date();
+        // const incomeDate =
+        //   String(today.getFullYear()) +
+        //   "." +
+        //   ("0" + (today.getMonth() + 1)).slice(-2) +
+        //   "." +
+        //   ("0" + today.getDate()).slice(-2);
+        // const row = [
+        //   {
+        //     incomeDate: incomeDate,
+        //     incomeDescription: "",
+        //     incomeAmount: "0",
+        //     accountCategoryId: "",
+        //     largeCategoryId: "",
+        //     memo: "",
+        //   },
+        // ];
+        console.log("><><>", this.defaultRow);
         this.gridApi.applyTransaction({
-          add: row,
+          add: this.defaultRow,
           addIndex: rowData.length - 1,
         });
         this.gridApi.startEditingCell({
@@ -387,11 +420,17 @@ export default {
         });
       }
     },
+    // row 선택 또는 선택취소 시 호출
+    onSelectionChanged(event) {
+      var rowCount = event.api.getSelectedNodes().length;
+      this.disabledSelectBtn = rowCount === 0;
+    },
     // 수입 목록 저장
     onSave() {
       this.gridApi.clearFocusedCell();
       const rowData = _.cloneDeep(this.$refs.incomeGrid.getRowData());
       rowData.pop();
+      const userDto = this.user.userInfo;
       const incomeSaveDto = {
         insertIncomeDtoList: [],
         updateIncomeDtoList: [],
@@ -403,23 +442,30 @@ export default {
         rowData[index] = {
           incomeId: row.incomeId,
           incomeDate: incomeDate,
-          incomeDescription: row.incomeDescription,
-          incomeAmount: row.incomeAmount,
-          accountCategoryId: row.accountCategoryId,
-          largeCategoryId: row.largeCategoryId,
-          memo: row.memo,
-          userDto: this.user.userInfo,
+          incomeDescription: row.incomeDescription || "",
+          incomeAmount: parseInt(String(row.incomeAmount).replace(/,/g, "")),
+          accountCategoryId: row.accountCategory.accountCategoryId,
+          largeCategoryId: row.largeCategory.largeCategoryId,
+          memo: row.memo || "",
+          userDto: userDto,
         };
       });
+      // 등록 rows
       incomeSaveDto.insertIncomeDtoList = _.filter(rowData, function (row) {
-        return !row.incomeId && (row.incomeDescription || row.memo);
+        return (
+          !row.incomeId &&
+          (row.incomeDescription ||
+            row.incomeAmount > 0 ||
+            row.accountCategoryId !== 6 ||
+            row.largeCategoryId !== 20 ||
+            row.memo)
+        );
       });
+      // 수정 rows
       incomeSaveDto.updateIncomeDtoList = _.filter(rowData, "incomeId");
+      // 삭제 rows
       incomeSaveDto.deleteIncomeDtoList = this.deletedRows;
-      console.log(
-        "incomeSaveDto.insertIncomeDtoList",
-        incomeSaveDto.insertIncomeDtoList
-      );
+      console.log("incomeSaveDto", incomeSaveDto);
       this.$store
         .dispatch("writeStore/saveIncomeList", incomeSaveDto)
         .then((res) => {
@@ -437,25 +483,18 @@ export default {
     },
     // Row 선택 복사
     onRowCopy() {
-      console.log(this.searchPeriod);
       const selectedRows = _.cloneDeep(this.gridApi.getSelectedRows());
       _.forEach(selectedRows, function (row, index) {
         selectedRows[index].incomeId = "";
       });
       this.gridApi.applyTransaction({
         add: selectedRows,
-        addIndex: this.gridApi.getDisplayedRowCount() - 1,
+        addIndex: this.gridApi.getDisplayedRowCount() - 2,
       });
+      this.gridApi.deselectAll();
+      this.gridApi.clearFocusedCell();
     },
   },
-  // getSelectedRows() {
-  //   const selectedNodes = this.gridApi.getSelectedNodes();
-  //   const selectedData = selectedNodes.map((node) => node.data);
-  //   const selectedDataStringPresentation = selectedData
-  //     .map((node) => `${node.make} ${node.model}`)
-  //     .join(", ");
-  //   alert(`Selected nodes: ${selectedDataStringPresentation}`);
-  // },
 };
 </script>
       

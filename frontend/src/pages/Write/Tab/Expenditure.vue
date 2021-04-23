@@ -56,13 +56,42 @@
         <span class="mr-2">지출합계</span>
         <span class="mr-2 expenditure_color">{{ this.totalExpenditure }}</span>
         <button class="saveBtn" @click="onSave">저장</button>
-        <button class="calculateBtn">정산</button>
+        <button id="calculate-button" class="calculateBtn" @click="openModal">
+          정산
+        </button>
+        <!-- <b-tooltip target="calculate-button" class="calculate-button-tooltip"
+          >전월이월을 원하는 시점에 생성할 수 있습니다.<br />
+          정산은 한달치만 가능하며, 전월의 잔액을 이달의 시작일로 생성합니다.
+        </b-tooltip> -->
       </div>
+      <!-- 월시작일 설정 Modal -->
+      <calculateModal v-if="showModal">
+        <!-- default 슬롯 콘텐츠 -->
+        <div>
+          <span>가계내역 정산하기</span>
+        </div>
+        <!-- /default -->
+        <!-- footer 슬롯 콘텐츠 -->
+        <template slot="footer">
+          <div>
+            <span
+              >전월이월을 원하는 시점에 생성할 수 있습니다.<br />
+              정산은 한달치만 가능하며, 전월의 잔액을 이달의 시작일로
+              생성합니다.</span
+            >
+          </div>
+          <div class="modalFooterBtn-box mt-2">
+            <button class="basicBtn" @click="onSaveCalculation">정산</button>
+            <button class="basicBtn" @click="closeModal">닫기</button>
+            <!-- <button class="basicBtn" @click="onSaveStartDate">확인</button> -->
+          </div>
+        </template>
+        <!-- /footer -->
+      </calculateModal>
     </div>
   </div>
 </template>
 <script>
-import InputCellEditor from "src/components/CellEditor/InputCellEditor";
 const getDatePicker = () => {
   function Datepicker() {}
   Datepicker.prototype.init = function (params) {
@@ -138,12 +167,14 @@ const getDatePicker = () => {
 //     });
 //   }
 // }
-
+import InputCellEditor from "src/components/CellEditor/InputCellEditor";
+import calculateModal from "src/components/Modal/Calculate";
 export default {
-  components: { InputCellEditor },
+  components: { InputCellEditor, calculateModal },
   props: {
     user: Object,
     period: Object,
+    monthStartDate: String,
   },
   data() {
     return {
@@ -153,8 +184,8 @@ export default {
       rowData: [],
       components: null,
       frameworkComponents: null,
-      accountCategory: {},
-      largeCategory: {},
+      accountCategory: [],
+      largeCategory: [],
       smallCategory: {},
       categoryType: "EXP",
       accountCategoryType: "WDRL",
@@ -164,6 +195,7 @@ export default {
       totalCashString: 0,
       totalCardString: 0,
       disabledSelectBtn: true,
+      showModal: false,
     };
   },
   computed: {
@@ -341,9 +373,11 @@ export default {
       },
     }),
       (this.components = { datePicker: getDatePicker() });
+
     this.frameworkComponents = {
       InputCellEditor: InputCellEditor,
     };
+
     this.isRowSelectable = (rowNode) => {
       console.log("rowNode", rowNode);
       return rowNode.data.expenditureDate === "" ? false : true;
@@ -550,6 +584,7 @@ export default {
         rowIndex: rowData.length,
         colKey: "expenditureDescription",
       });
+      this.gridApi.sizeColumnsToFit();
       this.getTotal();
     },
     getTotal() {
@@ -689,6 +724,48 @@ export default {
           console.log(Error);
         });
     },
+    // 정산
+    onSaveCalculation() {
+      let startDate = null;
+      let endDate = null;
+      let lastMonth = null;
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        startDate = this.$moment(this.period.from)
+          .subtract(1, "months")
+          .endOf("month");
+        endDate = this.$moment(startDate._d)
+          .add(1, "months")
+          .endOf("month")
+          .subtract(1, "days");
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        startDate = this.$moment(this.period.from).subtract(1, "months");
+        endDate = this.$moment(startDate._d)
+          .add(1, "months")
+          .subtract(1, "days");
+        // 월시작일이 15일 이하일 때
+        if (parseInt(this.monthStartDate) < 16) {
+        }
+      }
+
+      const writeRequestDto = {
+        startDate: startDate.format("YYYYMMDD"),
+        endDate: endDate.format("YYYYMMDD"),
+        incomeDate: "",
+        lastMonth: lastMonth,
+        userDto: this.user.userInfo,
+      };
+
+      console.log("writeRequestDto", writeRequestDto);
+      // this.$store
+      //   .dispatch("writeStore/saveCalculation", writeRequestDto)
+      //   .then((res) => {
+      //   })
+      //   .catch((Error) => {
+      //     console.log(Error);
+      //   });
+    },
     // Row 선택 삭제
     onRowDelete() {
       const selectedRows = this.gridApi.getSelectedRows();
@@ -704,9 +781,17 @@ export default {
       });
       this.gridApi.applyTransaction({
         add: selectedRows,
-        addIndex: this.gridApi.getDisplayedRowCount() - 1,
+        addIndex: this.gridApi.getDisplayedRowCount() - 2,
       });
+      this.gridApi.deselectAll();
+      this.gridApi.clearFocusedCell();
       this.getTotal();
+    },
+    openModal() {
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
     },
   },
 };
