@@ -195,6 +195,7 @@ export default {
         headerName: "날짜",
         field: "incomeDate",
         cellEditor: "datePicker",
+        width: 95,
         //cellRenderer: "datePicker",
         checkboxSelection: true,
         headerCheckboxSelection: true,
@@ -328,6 +329,7 @@ export default {
     // },
     // 수입 목록 조회
     getIncomeList() {
+      this.gridApi.clearFocusedCell();
       // reset
       this.deletedRows = [];
 
@@ -392,6 +394,7 @@ export default {
       if (event.data.incomeDate === "") {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.incomeGrid.getRowData();
+        const defaultRow = _.cloneDeep(this.defaultRow);
         // const today = new Date();
         // const incomeDate =
         //   String(today.getFullYear()) +
@@ -409,9 +412,8 @@ export default {
         //     memo: "",
         //   },
         // ];
-        console.log("><><>", this.defaultRow);
         this.gridApi.applyTransaction({
-          add: this.defaultRow,
+          add: defaultRow,
           addIndex: rowData.length - 1,
         });
         this.gridApi.startEditingCell({

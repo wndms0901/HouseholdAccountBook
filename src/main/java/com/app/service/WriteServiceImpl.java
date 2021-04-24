@@ -87,19 +87,22 @@ public class WriteServiceImpl implements WriteService{
     @Override
     public void saveCalculation(WriteRequestDto writeRequestDto) {
         List<IncomeDto> incomeDtoList = writeMapper.selectCalculationList(writeRequestDto);
-        if(incomeDtoList.size()>0){
-            List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity()).collect(Collectors.toList());
-            incomeRepository.saveAll(insertIncomeDtoList);
-        }else{
-            String str = "지갑속현금 ";
-            incomeRepository.save(Income.builder()
-                    .user(writeRequestDto.getUserDto().toEntity())
-                    .incomeDescription(str.concat(writeRequestDto.getLastMonth()).concat(" 월 전월이월 잔액"))
-                    .incomeAmount(0)
-                    .accountCategoryId(7L)
-                    .largeCategoryId(25L)
-                    .build());
-        }
+        List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity(writeRequestDto.getUserDto())).collect(Collectors.toList());
+        incomeRepository.saveAll(insertIncomeDtoList);
+//        if(incomeDtoList.size()>0){
+//            List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity(writeRequestDto.getUserDto())).collect(Collectors.toList());
+//            incomeRepository.saveAll(insertIncomeDtoList);
+//        }else{
+//            String str = "지갑속현금 ";
+//            incomeRepository.save(Income.builder()
+//                    .user(writeRequestDto.getUserDto().toEntity())
+//                    .incomeDate(writeRequestDto.getIncomeDate())
+//                    .incomeDescription(str.concat(writeRequestDto.getLastMonth()).concat("월 전월이월 잔액"))
+//                    .incomeAmount(0)
+//                    .accountCategoryId(7L)
+//                    .largeCategoryId(25L)
+//                    .build());
+//        }
     }
 
     /**
@@ -131,7 +134,9 @@ public class WriteServiceImpl implements WriteService{
         }
         // 수입 목록 등록
         if(incomeSaveDto.getInsertIncomeDtoList().size()>0) {
-            List<Income> insertIncomeDtoList = incomeSaveDto.getInsertIncomeDtoList().stream().map(o -> o.toEntity()).collect(Collectors.toList());
+            List<Income> insertIncomeDtoList = incomeSaveDto.getInsertIncomeDtoList().stream()
+                    .map(o -> o.toEntity(incomeSaveDto.getInsertIncomeDtoList().get(0).getUserDto()))
+                    .collect(Collectors.toList());
             incomeRepository.saveAll(insertIncomeDtoList);
         }
     }

@@ -35,10 +35,9 @@ public class IncomeDto {
 //        this.userDto = userDto;
 //    }
 
-    public Income toEntity(){
-        User userEntity = userDto==null?null:userDto.toEntity();
+    public Income toEntity(UserDto userDto){
         return Income.builder()
-                .user(userEntity)
+                .user(userDto.toEntity())
                 .incomeDate(incomeDate)
                 .incomeDescription(incomeDescription)
                 .incomeAmount(incomeAmount)

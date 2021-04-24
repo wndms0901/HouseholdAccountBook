@@ -270,6 +270,7 @@ export default {
         headerName: "날짜",
         field: "expenditureDate",
         cellEditor: "datePicker",
+        width: 135,
         checkboxSelection: true,
         headerCheckboxSelection: true,
         //headerCheckboxSelectionFilteredOnly: true,
@@ -467,6 +468,7 @@ export default {
     },
     // 지출 목록 조회
     getExpenditureList() {
+      this.gridApi.clearFocusedCell();
       // reset
       this.deletedRows = [];
 
@@ -622,6 +624,7 @@ export default {
       if (event.data.expenditureDate === "") {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.expenditureGrid.getRowData();
+        const defaultRow = _.cloneDeep(this.defaultRow);
         // const today = new Date();
         // const expenditureDate =
         //   String(today.getFullYear()) +
@@ -652,7 +655,7 @@ export default {
         //   },
         // ];
         this.gridApi.applyTransaction({
-          add: this.defaultRow,
+          add: defaultRow,
           addIndex: rowData.length - 1,
         });
         this.gridApi.startEditingCell({
@@ -726,45 +729,62 @@ export default {
     },
     // 정산
     onSaveCalculation() {
+      const periodTo = _.cloneDeep(this.period.to);
+      let subtractMonth = null;
       let startDate = null;
       let endDate = null;
-      let lastMonth = null;
       if (this.monthStartDate === "last") {
         // 월시작일이 말일인 경우
-        startDate = this.$moment(this.period.from)
-          .subtract(1, "months")
-          .endOf("month");
-        endDate = this.$moment(startDate._d)
+        // 종료일이 말일인 경우 지난달, 아닌경우 지지난달 정산
+        subtractMonth =
+          this.$moment(periodTo).format("YYYYMMDD") ===
+          this.$moment(periodTo).endOf("month").format("YYYYMMDD")
+            ? 1
+            : 2;
+        // 정산 시작일
+        startDate = this.$moment(periodTo)
+          .subtract(subtractMonth, "months")
+          .endOf("month")._d;
+        // 정산 종료일
+        endDate = this.$moment(startDate)
           .add(1, "months")
           .endOf("month")
           .subtract(1, "days");
       } else {
         // 월시작일이 말일이 아닌 경우
-        startDate = this.$moment(this.period.from).subtract(1, "months");
-        endDate = this.$moment(startDate._d)
-          .add(1, "months")
-          .subtract(1, "days");
-        // 월시작일이 15일 이하일 때
-        if (parseInt(this.monthStartDate) < 16) {
-        }
+        // 종료일이 월시작일과 같거나 큰 경우 지난달, 아닌경우 지지난달 정산
+        subtractMonth =
+          periodTo.getDate() < parseInt(this.monthStartDate) ? 2 : 1;
+        // 정산 시작일
+        startDate = this.$moment(periodTo).subtract(subtractMonth, "months")._d;
+        startDate = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          parseInt(this.monthStartDate)
+        );
+        // 정산 종료일
+        endDate = this.$moment(startDate).add(1, "months").subtract(1, "days");
       }
-
       const writeRequestDto = {
-        startDate: startDate.format("YYYYMMDD"),
+        startDate: this.$moment(startDate).format("YYYYMMDD"),
         endDate: endDate.format("YYYYMMDD"),
-        incomeDate: "",
-        lastMonth: lastMonth,
+        incomeDate: this.$moment(endDate).add(1, "days").format("YYYYMMDD"),
+        lastMonth:
+          parseInt(this.monthStartDate) < 16
+            ? this.$moment(startDate).format("MM")
+            : endDate.format("MM"),
         userDto: this.user.userInfo,
       };
 
       console.log("writeRequestDto", writeRequestDto);
-      // this.$store
-      //   .dispatch("writeStore/saveCalculation", writeRequestDto)
-      //   .then((res) => {
-      //   })
-      //   .catch((Error) => {
-      //     console.log(Error);
-      //   });
+      this.$store
+        .dispatch("writeStore/saveCalculation", writeRequestDto)
+        .then((res) => {
+          this.showModal = false;
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
     },
     // Row 선택 삭제
     onRowDelete() {

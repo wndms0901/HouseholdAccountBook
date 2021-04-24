@@ -92,22 +92,28 @@
     </select>
     <select id="selectCalculationList" parameterType="com.app.dto.WriteRequestDto" resultMap="incomeDto">
         SELECT #{incomeDate} AS income_date
-             , CASE WHEN IFNULL(i.account_category_id, e.account_category_id) = 6
+             , CASE WHEN ac.account_category_id = 6
                     THEN CONCAT(#{lastMonth}, '월 전월이월 잔액')
                     ELSE CONCAT('지갑속현금 ', #{lastMonth}, '월 전월이월 잔액')
                 END AS income_description
              , IFNULL(i.income_amount,0) - IFNULL(e.cash,0) AS income_amount
-             , IFNULL(i.account_category_id, e.account_category_id) AS account_category_id
+             , ac.account_category_id
              , 25 AS large_category_id
           FROM (
+                SELECT ac.account_category_id
+                  FROM account_category ac
+                 WHERE ac.account_category_id IN (6,7)
+               ) ac
+     LEFT JOIN (
                 SELECT i.account_category_id
                      , SUM(i.income_amount) AS income_amount
                   FROM income i
                  WHERE i.income_date BETWEEN #{startDate} AND #{endDate}
                    AND i.user_email=#{userDto.email}
-                   AND i.account_category_id in (6,7)
+                   AND i.account_category_id IN (6,7)
               GROUP BY i.account_category_id
                ) i
+            ON ac.account_category_id = i.account_category_id
      LEFT JOIN (
                 SELECT CASE WHEN e.account_category_id = 1
                             THEN 6
@@ -117,41 +123,10 @@
                   FROM expenditure e
                  WHERE e.expenditure_date BETWEEN #{startDate} AND #{endDate}
                    AND e.user_email=#{userDto.email}
-                   AND e.account_category_id in (1,2)
+                   AND e.account_category_id IN (1,2)
               GROUP BY e.account_category_id
                ) e
-            ON i.account_category_id =e.account_category_id
-         UNION
-        SELECT #{incomeDate} AS income_date
-             , CASE WHEN IFNULL(i.account_category_id, e.account_category_id) = 6
-                    THEN CONCAT(#{lastMonth}, '월 전월이월 잔액')
-                    ELSE CONCAT('지갑속현금 ', #{lastMonth}, '월 전월이월 잔액')
-                END AS income_description
-             , IFNULL(i.income_amount,0) - IFNULL(e.cash,0) AS income_amount
-             , IFNULL(i.account_category_id, e.account_category_id) AS account_category_id
-             , 25 AS large_category_id
-          FROM (
-                SELECT i.account_category_id
-                     , SUM(i.income_amount) AS income_amount
-                  FROM income i
-                 WHERE i.income_date BETWEEN #{startDate} AND #{endDate}
-                   AND i.user_email=#{userDto.email}
-                   AND i.account_category_id in (6,7)
-              GROUP BY i.account_category_id
-               ) i
-    RIGHT JOIN (
-                SELECT CASE WHEN e.account_category_id = 1
-                            THEN 6
-                            ELSE 7
-                        END AS account_category_id
-                     , SUM(e.cash) as cash
-                  FROM expenditure e
-                 WHERE e.expenditure_date BETWEEN #{startDate} AND #{endDate}
-                   AND e.user_email=#{userDto.email}
-                   AND e.account_category_id in (1,2)
-              GROUP BY e.account_category_id
-               ) e
-            ON i.account_category_id = e.account_category_id
+            ON ac.account_category_id = e.account_category_id
     </select>
     <select id="selectIncomeList" parameterType="com.app.dto.WriteRequestDto" resultMap="incomeDto">
         SELECT i.income_id

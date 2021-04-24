@@ -176,6 +176,18 @@ export default {
           monthStartDate - 1
         );
       }
+      const currentDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      if (!(currentDate >= this.period.from && currentDate <= this.period.to)) {
+        if (parseInt(monthStartDate) < 16) {
+          this.onPrevMonth();
+        } else {
+          this.onNextMonth();
+        }
+      }
     },
     onClickPeriodFromCalendar() {
       this.$refs.periodTo.close();
