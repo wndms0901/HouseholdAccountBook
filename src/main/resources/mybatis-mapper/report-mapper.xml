@@ -99,13 +99,14 @@
       ORDER BY FIELD(lc.large_category_id,1), lc.large_category_id
     </select>
     <select id="selectDailyExpenditureList" parameterType="com.app.dto.ReportRequestDto" resultMap="dailyExpenditureDto">
-        SELECT (e.card+e.cash) AS daily_expenditure
+        SELECT SUM(e.card)+SUM(e.cash) AS daily_expenditure
              , SUBSTRING(expenditure_date,1,4) AS expenditure_year
              , SUBSTRING(expenditure_date,5,2) AS expenditure_month
              , SUBSTRING(expenditure_date,7,2) AS expenditure_day
           FROM expenditure e
          WHERE e.user_email=#{email}
            AND e.expenditure_date between #{startDate} AND #{endDate}
+      GROUP BY e.expenditure_date
       ORDER BY e.expenditure_date
     </select>
 

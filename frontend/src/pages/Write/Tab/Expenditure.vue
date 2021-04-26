@@ -6,7 +6,7 @@
     </div>
     <grid
       ref="expenditureGrid"
-      style="height: 550px"
+      style="height: 580px"
       class="ag-theme-alpine"
       :gridOptions="gridOptions"
       :columnDefs="columnDefs"
@@ -262,6 +262,17 @@ export default {
       //   this.columnApi = event.columnApi;
       // },
     };
+    this.defaultColDef = {
+      editable: (params) => {
+        return params.node.selectable;
+        //editable: true,
+      },
+      cellStyle: (params) => {
+        return {
+          cursor: "pointer",
+        };
+      },
+    };
     // 그리드 header명과, 매핑되는 data attribute, column type과 width, column id 등을 지정 가능합니다.
     // computed에 선언하지 않고 data에서도 선언 가능합니다.
     this.columnDefs = [
@@ -362,18 +373,8 @@ export default {
       },
       { headerName: "메모", field: "memo" },
     ];
-    (this.defaultColDef = {
-      editable: (params) => {
-        return params.node.selectable;
-        //editable: true,
-      },
-      cellStyle: (params) => {
-        return {
-          cursor: "pointer",
-        };
-      },
-    }),
-      (this.components = { datePicker: getDatePicker() });
+
+    this.components = { datePicker: getDatePicker() };
 
     this.frameworkComponents = {
       InputCellEditor: InputCellEditor,
@@ -468,7 +469,6 @@ export default {
     },
     // 지출 목록 조회
     getExpenditureList() {
-      this.gridApi.clearFocusedCell();
       // reset
       this.deletedRows = [];
 
@@ -482,6 +482,7 @@ export default {
         .dispatch("writeStore/selectExpenditureList", params)
         .then((res) => {
           console.log("getExpenditureList", res.data);
+          this.gridApi.clearFocusedCell();
           // 날짜 형식 setting
           _.forEach(res.data, function (row, index) {
             const year = row.expenditureDate.substr(0, 4);

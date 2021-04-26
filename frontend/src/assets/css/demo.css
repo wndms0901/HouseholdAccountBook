@@ -554,7 +554,7 @@
     width: 100%;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .parallax .parallax-image {
         width: 100%;
         height: 640px;
@@ -564,7 +564,7 @@
         height: 100%;
         width: auto;
     }
-}
+} */
 
 /*.separator{
     content: "Separator";
@@ -609,7 +609,7 @@
     padding: 0;
 }
 
-@media screen and (min-width: 991px) {
+/* @media screen and (min-width: 991px) {
     .lightbox .modal-dialog {
         width: 960px;
     }
@@ -633,7 +633,7 @@
         font-size: 60px;
         width: 270px;
     }
-}
+} */
 
 /*       Loading dots  */
 

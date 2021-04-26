@@ -41,6 +41,8 @@
         </button>
       </div>
       <div class="right_btn">
+        <span class="mr-2">수입합계</span>
+        <span class="mr-2 income_color">{{ this.totalIncome }}</span>
         <button class="saveBtn" @click="onSave">저장</button>
       </div>
     </div>
@@ -124,6 +126,7 @@ export default {
       accountCategoryType: "DPST",
       deletedRows: [],
       disabledSelectBtn: true,
+      totalIncomeNumber: 0,
     };
   },
   computed: {
@@ -155,6 +158,12 @@ export default {
       ];
       return row;
     },
+    totalIncome() {
+      return String(this.totalIncomeNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
   },
   watch: {
     period: {
@@ -175,7 +184,7 @@ export default {
   },
   beforeMount() {
     this.gridOptions = {
-      //onCellValueChanged: onCellValueChanged,
+      onCellValueChanged: this.onCellValueChanged,
       //enableColResize: true,
       // enableSorting: true,
       // enableFilter: true,
@@ -186,6 +195,17 @@ export default {
       //   this.gridApi = event.api;
       //   this.columnApi = event.columnApi;
       // },
+    };
+    this.defaultColDef = {
+      editable: (params) => {
+        return params.node.selectable;
+        //editable: true,
+      },
+      cellStyle: (params) => {
+        return {
+          cursor: "pointer",
+        };
+      },
     };
     // 그리드 header명과, 매핑되는 data attribute, column type과 width, column id 등을 지정 가능합니다.
     // computed에 선언하지 않고 data에서도 선언 가능합니다.
@@ -242,18 +262,8 @@ export default {
       },
       { headerName: "메모", field: "memo" },
     ];
-    (this.defaultColDef = {
-      editable: (params) => {
-        return params.node.selectable;
-        //editable: true,
-      },
-      cellStyle: (params) => {
-        return {
-          cursor: "pointer",
-        };
-      },
-    }),
-      (this.components = { datePicker: getDatePicker() });
+
+    this.components = { datePicker: getDatePicker() };
 
     this.frameworkComponents = {
       InputCellEditor: InputCellEditor,
@@ -273,6 +283,13 @@ export default {
       this.columnApi = params.columnApi;
       // 그리드 사이즈 자동 조정
       params.api.sizeColumnsToFit();
+    },
+    // grid cell 값 변경
+    onCellValueChanged(params) {
+      const colId = params.column.getId();
+      if (colId === "incomeAmount") {
+        this.getTotal();
+      }
     },
     // 카테고리 목록 조회
     getCategoryList() {
@@ -389,7 +406,23 @@ export default {
         colKey: "incomeDescription",
       });
       this.gridApi.sizeColumnsToFit();
+      this.getTotal();
     },
+    // 수입 합계 계산
+    getTotal() {
+      const rowData = _.cloneDeep(this.$refs.incomeGrid.getRowData());
+      rowData.pop();
+      // 수입 합계
+      let totalIncome = _.reduce(
+        rowData,
+        function (sum, obj) {
+          return sum + parseInt(String(obj.incomeAmount).replace(/,/g, ""));
+        },
+        0
+      );
+      this.totalIncomeNumber = totalIncome;
+    },
+    // Row 추가
     onRowClick(event) {
       if (event.data.incomeDate === "") {
         const columnData = this.gridApi.getFocusedCell();
@@ -422,6 +455,7 @@ export default {
         });
       }
     },
+
     // row 선택 또는 선택취소 시 호출
     onSelectionChanged(event) {
       var rowCount = event.api.getSelectedNodes().length;
@@ -482,6 +516,7 @@ export default {
       const selectedRows = this.gridApi.getSelectedRows();
       this.deletedRows = _.filter(selectedRows, "incomeId");
       this.gridApi.applyTransaction({ remove: selectedRows });
+      this.getTotal();
     },
     // Row 선택 복사
     onRowCopy() {
@@ -495,6 +530,7 @@ export default {
       });
       this.gridApi.deselectAll();
       this.gridApi.clearFocusedCell();
+      this.getTotal();
     },
   },
 };

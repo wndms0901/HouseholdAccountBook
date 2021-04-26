@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <side-bar>
-      <mobile-menu slot="content"></mobile-menu>
+      <!-- <mobile-menu slot="content"></mobile-menu> -->
       <sidebar-link to="/mybook/write">
         <!-- <i class="nc-icon nc-chart-pie-35"></i> -->
         <b-icon
@@ -84,11 +84,7 @@ export default {
       return this.$store.state.userStore.initialState.status.loggedIn;
     },
   },
-  mounted() {
-    if (this.loggedIn) {
-      this.$router.push("/");
-    }
-  },
+  mounted() {},
   methods: {
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {
@@ -100,6 +96,8 @@ export default {
 </script>
 <style>
 .date_wrap {
+  padding-top: 20px;
+  padding-bottom: 10px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -152,7 +150,7 @@ export default {
 .prevMonthBtn {
   width: 20px;
   height: 40px;
-  padding: 0px;
+  padding: 0;
   border: 1px solid lightgray;
   border-radius: 0;
   background-color: white;

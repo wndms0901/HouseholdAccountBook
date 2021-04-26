@@ -3,6 +3,8 @@ body,
 .wrapper{
     min-height: 100vh;
     position: relative;
+    width:1920px; /* Custom */
+    display: flex; /* Custom */
 }
 a{
   color: $info-color;
@@ -57,7 +59,8 @@ input:focus {
 .wrapper{
     position: relative;
     top: 0;
-    height: 100vh;
+   // height: 100vh;
+    height: 100%; /* Custom */
 }
 
 // documentation

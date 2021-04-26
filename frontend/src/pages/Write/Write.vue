@@ -2,9 +2,6 @@
   <div class="content">
     <div class="container-fluid">
       <div class="row">
-        <div id="title" style="width: 100%">
-          <p>쓰기</p>
-        </div>
         <div class="date_wrap">
           <div class="date_picker_box">
             <b-button class="prevMonthBtn" @click="onPrevMonth">
@@ -32,7 +29,7 @@
               :format="'yyyy.MM.dd'"
               v-model="period.to"
               input-class="datepickerInput"
-              :disabledDates="{ to: this.period.from }"
+              :disabledDates="disabledDates"
               :language="ko"
             ></datepicker>
             <span
@@ -129,6 +126,14 @@ export default {
       options.push({ value: "last", text: "말일" });
       return options;
     },
+    disabledDates() {
+      return {
+        to: this.period.from,
+        from: this.$moment(this.period.from)
+          .add(6, "months")
+          .subtract(1, "days")._d,
+      };
+    },
   },
   beforeCreate() {},
   created() {
@@ -176,11 +181,13 @@ export default {
           monthStartDate - 1
         );
       }
+      // 오늘 날짜
       const currentDate = new Date(
         today.getFullYear(),
         today.getMonth(),
         today.getDate()
       );
+      // 오늘 날짜가 시작일~종료일 사이로 조회되도록 설정
       if (!(currentDate >= this.period.from && currentDate <= this.period.to)) {
         if (parseInt(monthStartDate) < 16) {
           this.onPrevMonth();

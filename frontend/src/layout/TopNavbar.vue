@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Dashboard</a>
+      <!-- <a class="navbar-brand" href="#">Dashboard</a>
       <button
         type="button"
         class="navbar-toggler navbar-toggler-right"
@@ -14,9 +14,9 @@
         <span class="navbar-toggler-bar burger-lines"></span>
         <span class="navbar-toggler-bar burger-lines"></span>
         <span class="navbar-toggler-bar burger-lines"></span>
-      </button>
+      </button> -->
       <div class="collapse navbar-collapse justify-content-end">
-        <ul class="nav navbar-nav mr-auto">
+        <!-- <ul class="nav navbar-nav mr-auto">
           <li class="nav-item">
             <a class="nav-link" href="#" data-toggle="dropdown">
               <i class="nc-icon nc-palette"></i>
@@ -40,13 +40,10 @@
               <span class="d-lg-block">&nbsp;Search</span>
             </a>
           </li>
-        </ul>
+        </ul> -->
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#"> Account </a>
-          </li>
           <base-dropdown title="Dropdown">
-            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="/mybook/overview">Action</a>
             <a class="dropdown-item" href="#">Another action</a>
             <a class="dropdown-item" href="#">Something</a>
             <a class="dropdown-item" href="#">Another action</a>
@@ -55,19 +52,25 @@
             <a class="dropdown-item" href="#">Separated link</a>
           </base-dropdown>
           <li class="nav-item">
-            <b-button id="top_btn" variant="outline-primary" class="m-0">
-              <i class="nc-icon nc-single-02 pr-1"></i><span>내정보</span>
-            </b-button>
+            <!-- <b-button id="top_btn" variant="outline-primary" class="m-0"> -->
+            <a class="nav-link"
+              ><i class="nc-icon nc-single-02 pr-1" href="#"></i>내정보</a
+            >
+
+            <!-- </b-button> -->
           </li>
           <li class="nav-item">
-            <b-button
+            <a class="nav-link" href="#" @click="logout"
+              ><i class="nc-icon nc-button-power pr-1"></i>로그아웃</a
+            >
+            <!-- <b-button
               id="top_btn"
               variant="outline-secondary"
               class="m-0"
               @click="logout"
             >
-              <i class="nc-icon nc-button-power pr-1"></i><span>로그아웃</span>
-            </b-button>
+
+            </b-button>-->
             <!-- <a href="/user/login" class="nav-link"> Log out </a> -->
           </li>
         </ul>

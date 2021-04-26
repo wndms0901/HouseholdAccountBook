@@ -25,7 +25,7 @@
     </div>
     <grid
       ref="budgetExpndGrid"
-      style="height: 610px"
+      style="height: 640px"
       class="ag-theme-alpine"
       :gridOptions="gridOptions"
       :columnDefs="columnDefs"
@@ -42,7 +42,7 @@ export default {
   props: {
     user: Object,
     period: Object,
-    tabIndex: Number,
+    monthStartDate: String,
   },
   data() {
     return {
@@ -70,6 +70,9 @@ export default {
   beforeMount() {
     this.gridOptions = {};
     this.defaultColDef = {
+      valueFormatter: (params) => {
+        return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      },
       cellStyle: (params) => {
         if (params.data.largeCategoryId === 0) {
           // 합계 row
@@ -124,21 +127,35 @@ export default {
     getMonthOfYear() {
       const monthOfYearList = [];
       const period_from = _.cloneDeep(this.period.from);
-      //const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      const monthStartDate = 16;
+      let startDate = null;
+      let endDate = null;
+      let year = null;
+      let month = null;
       for (let i = 0; i < 12; i++) {
-        const startDate = this.$moment(period_from).add(i, "months");
-        const endDate = this.$moment(period_from)
-          .add(i + 1, "months")
-          .subtract(1, "days");
-
-        const year =
-          monthStartDate > 15
-            ? endDate.format("YYYY")
-            : startDate.format("YYYY");
-        const month =
-          monthStartDate > 15 ? endDate.format("MM") : startDate.format("MM");
-
+        if (this.monthStartDate === "last") {
+          // 월시작일이 말일인 경우
+          startDate = this.$moment(period_from).add(i, "months").endOf("month");
+          endDate = this.$moment(period_from)
+            .add(i + 1, "months")
+            .endOf("month")
+            .subtract(1, "days");
+          year = endDate.format("YYYY");
+          month = endDate.format("MM");
+        } else {
+          // 월시작일이 말일이 아닌 경우
+          startDate = this.$moment(period_from).add(i, "months");
+          endDate = this.$moment(period_from)
+            .add(i + 1, "months")
+            .subtract(1, "days");
+          year =
+            parseInt(this.monthStartDate) > 15
+              ? endDate.format("YYYY")
+              : startDate.format("YYYY");
+          month =
+            parseInt(this.monthStartDate) > 15
+              ? endDate.format("MM")
+              : startDate.format("MM");
+        }
         const obj = {
           year: year,
           month: month,

@@ -22,7 +22,7 @@
       </div>
       <grid
         ref="yearReportGrid"
-        style="height: 530px"
+        style="height: 550px"
         class="ag-theme-alpine"
         :gridOptions="gridOptions"
         :columnDefs="columnDefs"
@@ -40,11 +40,12 @@ export default {
   props: {
     user: Object,
     period: Object,
+    monthStartDate: String,
   },
   data() {
     return {
-      totalExpenditure: 0,
-      totalIncome: 0,
+      totalIncomeNumber: 0,
+      totalExpenditureNumber: 0,
       gridOptions: null,
       columnDefs: null,
       defaultColDef: null,
@@ -69,6 +70,18 @@ export default {
       day = day / 10 >= 1 ? day : "0" + day;
       return month + "." + day;
     },
+    totalIncome() {
+      return String(this.totalIncomeNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    totalExpenditure() {
+      return String(this.totalExpenditureNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
   },
   watch: {
     period: {
@@ -87,7 +100,11 @@ export default {
   created() {},
   beforeMount() {
     this.gridOptions = {};
-    this.defaultColDef = {};
+    this.defaultColDef = {
+      valueFormatter: (params) => {
+        return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      },
+    };
     this.columnDefs = [
       { field: "largeCategoryId", hide: true },
       {
@@ -124,12 +141,7 @@ export default {
       }
     };
   },
-  mounted() {
-    // if (this.tabIndex === 1) {
-    //   alert(this.tabIndex);
-    //   this.getMonthOfYear();
-    // }
-  },
+  mounted() {},
   methods: {
     onGridReady(params) {
       this.gridApi = params.api;
@@ -140,20 +152,35 @@ export default {
     getMonthOfYear() {
       const monthOfYearList = [];
       const period_from = _.cloneDeep(this.period.from);
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
+      let startDate = null;
+      let endDate = null;
+      let year = null;
+      let month = null;
       for (let i = 0; i < 12; i++) {
-        const startDate = this.$moment(period_from).add(i, "months");
-        const endDate = this.$moment(period_from)
-          .add(i + 1, "months")
-          .subtract(1, "days");
-
-        const year =
-          monthStartDate > 15
-            ? endDate.format("YYYY")
-            : startDate.format("YYYY");
-        const month =
-          monthStartDate > 15 ? endDate.format("MM") : startDate.format("MM");
-
+        if (this.monthStartDate === "last") {
+          // 월시작일이 말일인 경우
+          startDate = this.$moment(period_from).add(i, "months").endOf("month");
+          endDate = this.$moment(period_from)
+            .add(i + 1, "months")
+            .endOf("month")
+            .subtract(1, "days");
+          year = endDate.format("YYYY");
+          month = endDate.format("MM");
+        } else {
+          // 월시작일이 말일이 아닌 경우
+          startDate = this.$moment(period_from).add(i, "months");
+          endDate = this.$moment(period_from)
+            .add(i + 1, "months")
+            .subtract(1, "days");
+          year =
+            parseInt(this.monthStartDate) > 15
+              ? endDate.format("YYYY")
+              : startDate.format("YYYY");
+          month =
+            parseInt(this.monthStartDate) > 15
+              ? endDate.format("MM")
+              : startDate.format("MM");
+        }
         const obj = {
           year: year,
           month: month,
@@ -163,6 +190,7 @@ export default {
         };
         monthOfYearList.push(obj);
       }
+      console.log("monthOfYearList><>>", monthOfYearList);
       // column headers name setting
       this.setHeaderNames(monthOfYearList);
       // 연간보고서 조회
@@ -199,9 +227,9 @@ export default {
             largeCategoryId: "0",
           });
           // 연간 수입
-          this.totalIncome = totalIncome[0].total;
+          this.totalIncomeNumber = totalIncome[0].total;
           // 지출 합계
-          this.totalExpenditure = totalExpenditure[0].total;
+          this.totalExpenditureNumber = totalExpenditure[0].total;
           // 연간 수입/지출 목록
           this.gridApi.setRowData(res.data);
           this.gridApi.sizeColumnsToFit();

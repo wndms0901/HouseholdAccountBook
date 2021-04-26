@@ -104,9 +104,9 @@ export default {
   },
   data() {
     return {
-      totalExpenditure: 0,
-      totalIncome: 0,
-      dailyAverageLastMonth: 0,
+      totalIncomeNumber: 0,
+      totalExpenditureNumber: 0,
+      dailyAverageLastMonthNumber: 0,
       selected: "expenditure",
       summaryTable: {
         fields: [
@@ -188,6 +188,24 @@ export default {
       let day = periodTo.getDate();
       day = day / 10 >= 1 ? day : "0" + day;
       return month + "." + day;
+    },
+    totalIncome() {
+      return String(this.totalIncomeNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    totalExpenditure() {
+      return String(this.totalExpenditureNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    dailyAverageLastMonth() {
+      return String(this.dailyAverageLastMonthNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
     },
     pieChartData() {
       return [this.pieChartHeader, ...this.updatePieChartData];
@@ -381,20 +399,23 @@ export default {
         .then((res) => {
           console.log("결과>", res.data);
           // 수입/지출 합계, 지난달 일평균
-          this.totalExpenditure = res.data.totalExpenditure;
-          this.totalIncome = res.data.totalIncome;
-          this.dailyAverageLastMonth = res.data.dailyAverageLastMonth;
+          this.totalExpenditureNumber = res.data.totalExpenditure;
+          this.totalIncomeNumber = res.data.totalIncome;
+          this.dailyAverageLastMonthNumber = res.data.dailyAverageLastMonth;
           // 요약 테이블 data
           _.forEach(res.data.weeklyExpenditureDtoList, function (obj, index) {
             res.data.weeklyExpenditureDtoList[index].weeklyExpenditure =
-              obj.weeklyExpenditure + "원";
+              String(obj.weeklyExpenditure).replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                ","
+              ) + "원";
             res.data.weeklyExpenditureDtoList[index].bottom =
               res.data.weeklyExpenditureDtoList.length === index + 1;
           });
           this.summaryTable.items = res.data.weeklyExpenditureDtoList;
           // 총 합계 테이블 data
           this.totalTable.items = [
-            { title: "총 지출", total: res.data.totalExpenditure + "원" },
+            { title: "총 지출", total: this.totalExpenditure + "원" },
           ];
 
           // 카테고리 통계 차트 data
@@ -471,7 +492,7 @@ export default {
       let total = 0;
       if (this.selected === "income") {
         // 수입 radio button
-        total = monthReportData.totalIncome; // 총 수입
+        total = this.totalIncome; // 총 수입
         const incomeCtgryList = _.filter(
           monthReportData.categoryStatisticsDtoList,
           {
@@ -481,12 +502,14 @@ export default {
         _.forEach(incomeCtgryList, function (obj, index) {
           updatePieChartTableData.push({
             largeCategoryName: obj.largeCategoryName,
-            totalCategory: obj.totalCategory + "원",
+            totalCategory:
+              String(obj.totalCategory).replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+              "원",
           });
         });
       } else {
         // 지출 radio button
-        total = monthReportData.totalExpenditure; // 총 지출
+        total = this.totalExpenditure; // 총 지출
         const expenditureCtgryList = _.filter(
           monthReportData.categoryStatisticsDtoList,
           {
@@ -496,7 +519,9 @@ export default {
         _.forEach(expenditureCtgryList, function (obj, index) {
           updatePieChartTableData.push({
             largeCategoryName: obj.largeCategoryName,
-            totalCategory: obj.totalCategory + "원",
+            totalCategory:
+              String(obj.totalCategory).replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+              "원",
           });
         });
       }

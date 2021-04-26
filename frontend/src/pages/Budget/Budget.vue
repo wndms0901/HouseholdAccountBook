@@ -2,32 +2,26 @@
   <div class="content">
     <div class="container-fluid">
       <div class="row">
-        <div id="title" style="width: 100%">
-          <p>예산쓰기</p>
-        </div>
         <div class="date_wrap">
           <div class="date_picker_box">
-            <b-button
-              class="prevMonthBtn"
-              v-show="showMonthBtn"
-              @click="onPrevMonth"
-            >
-              <b-icon-chevron-left
+            <button class="prevMonthBtn" @click="onPrevMonth">
+              <b-icon
+                icon="chevron-left"
                 variant="dark"
-              ></b-icon-chevron-left></b-button
+                style="vertical-align: middle"
+              ></b-icon></button
             >&nbsp;
             <datepicker
               ref="periodFrom"
               :format="'yyyy.MM.dd'"
               v-model="period.from"
-              :input-class="datepickerInputClass"
+              input-class="datepickerInput"
               minimum-view="month"
               :language="ko"
               @closed="onCloseStartDate"
-              :disabled="periodFromDisabled"
             ></datepicker>
             <span
-              :class="datepickerSpanClass"
+              class="calendarIconBox"
               @click="onClickPeriodFromCalendar"
               @blur="onBlurCalendar"
               tabindex="0"
@@ -44,13 +38,13 @@
             ><span class="calendarIconBox_disabled"
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon
             ></span>
-            &nbsp;<b-button
-              class="nextMonthBtn"
-              v-show="showMonthBtn"
-              @click="onNextMonth"
-            >
-              <b-icon-chevron-right variant="dark"></b-icon-chevron-right>
-            </b-button>
+            &nbsp;<button class="nextMonthBtn" @click="onNextMonth">
+              <b-icon
+                icon="chevron-right"
+                variant="dark"
+                style="vertical-align: middle"
+              ></b-icon>
+            </button>
           </div>
         </div>
         <div class="tabs" style="width: 100%">
@@ -59,14 +53,14 @@
               ><budgetWrite
                 :user="user"
                 :period="period"
-                :tabIndex="tabIndex"
+                :monthStartDate="monthStartDate"
               ></budgetWrite
             ></b-tab>
             <b-tab title="예산 대비 지출"
               ><budgetExpenditure
                 :user="user"
                 :period="period"
-                :tabIndex="tabIndex"
+                :monthStartDate="monthStartDate"
               ></budgetExpenditure
             ></b-tab>
           </b-tabs>
@@ -96,31 +90,7 @@ export default {
         .monthStartDate,
     };
   },
-  computed: {
-    // 캘린더 이전달, 다음달 버튼 보이기 여부
-    showMonthBtn() {
-      return this.tabIndex === 1;
-    },
-    // 시작일 datepicker disabled
-    periodFromDisabled() {
-      return this.tabIndex === 0;
-    },
-    // datepicker input class
-    datepickerInputClass() {
-      if (this.tabIndex === 0) {
-        return "datepickerInput_disabled";
-      } else if (this.tabIndex === 1) {
-        return "datepickerInput";
-      }
-    },
-    datepickerSpanClass() {
-      if (this.tabIndex === 0) {
-        return "calendarIconBox_disabled";
-      } else if (this.tabIndex === 1) {
-        return "calendarIconBox";
-      }
-    },
-  },
+  computed: {},
   watch: {
     tabIndex: {
       handler(newData) {
@@ -138,10 +108,10 @@ export default {
     setPeriod() {
       let today = new Date();
 
-      if (this.monthStartDate === "last") {
-        // 월시작일이 말일인 경우
-        if (this.tabIndex === 0) {
-          // 예산쓰기(월 단위)
+      if (this.tabIndex === 0) {
+        // 예산쓰기(월 단위)
+        if (this.monthStartDate === "last") {
+          // 월시작일이 말일인 경우
           const month = today.getMonth() - 1;
           const startLastDate = this.$moment(
             new Date(today.getFullYear(), month, 1)
@@ -160,19 +130,8 @@ export default {
             month + 1,
             endLastDate.getDate() - 1
           );
-        } else if (this.tabIndex === 1) {
-          // 예산 대비 지출(연 단위)
-          const year = today.getFullYear() - 1;
-          const month = 11;
-          this.period.from = new Date(year, month, 31);
-          this.period.to = this.$moment(this.period.from)
-            .add(1, "years")
-            .subtract(1, "days")._d;
-        }
-      } else {
-        // 월시작일이 말일이 아닌 경우
-        if (this.tabIndex === 0) {
-          // 예산쓰기(월 단위)
+        } else {
+          // 월시작일이 말일이 아닌 경우
           const month =
             parseInt(this.monthStartDate) > 15
               ? today.getMonth() - 1
@@ -187,8 +146,35 @@ export default {
             month + 1,
             parseInt(this.monthStartDate) - 1
           );
-        } else if (this.tabIndex === 1) {
-          // 예산 대비 지출(연 단위)
+        }
+        // 오늘 날짜
+        const currentDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+        // 오늘 날짜가 시작일~종료일 사이로 조회되도록 설정
+        if (
+          !(currentDate >= this.period.from && currentDate <= this.period.to)
+        ) {
+          if (parseInt(this.monthStartDate) < 16) {
+            this.onPrevMonth();
+          } else {
+            this.onNextMonth();
+          }
+        }
+      } else if (this.tabIndex === 1) {
+        // 예산 대비 지출(연 단위)
+        if (this.monthStartDate === "last") {
+          // 월시작일이 말일인 경우
+          const year = today.getFullYear() - 1;
+          const month = 11;
+          this.period.from = new Date(year, month, 31);
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "years")
+            .subtract(1, "days")._d;
+        } else {
+          // 월시작일이 말일이 아닌 경우
           const year =
             parseInt(this.monthStartDate) > 15
               ? today.getFullYear() - 1
@@ -215,6 +201,13 @@ export default {
       if (this.monthStartDate === "last") {
         // 월시작일이 말일인 경우
         this.period.from = this.$moment(this.period.from).endOf("month")._d;
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .endOf("month")
+            .subtract(1, "days")._d;
+        }
       } else {
         // 월시작일이 말일이 아닌 경우
         const periodFrom = _.cloneDeep(this.period.from);
@@ -223,10 +216,19 @@ export default {
           periodFrom.getMonth(),
           parseInt(this.monthStartDate)
         );
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .subtract(1, "days")._d;
+        }
       }
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "years")
-        .subtract(1, "days")._d;
+      if (this.tabIndex === 1) {
+        // 예산 대비 지출(연 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
+      }
     },
     onPrevMonth() {
       if (this.monthStartDate === "last") {
@@ -234,16 +236,32 @@ export default {
         this.period.from = this.$moment(this.period.from)
           .subtract(1, "months")
           .endOf("month")._d;
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .endOf("month")
+            .subtract(1, "days")._d;
+        }
       } else {
         // 월시작일이 말일이 아닌 경우
         this.period.from = this.$moment(this.period.from).subtract(
           1,
           "months"
         )._d;
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .subtract(1, "days")._d;
+        }
       }
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "years")
-        .subtract(1, "days")._d;
+      if (this.tabIndex === 1) {
+        // 예산 대비 지출(연 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
+      }
     },
     onNextMonth() {
       if (this.monthStartDate === "last") {
@@ -251,13 +269,29 @@ export default {
         this.period.from = this.$moment(this.period.from)
           .add(1, "months")
           .endOf("month")._d;
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .endOf("month")
+            .subtract(1, "days")._d;
+        }
       } else {
         // 월시작일이 말일이 아닌 경우
         this.period.from = this.$moment(this.period.from).add(1, "months")._d;
+        if (this.tabIndex === 0) {
+          // 예산쓰기(월 단위)
+          this.period.to = this.$moment(this.period.from)
+            .add(1, "months")
+            .subtract(1, "days")._d;
+        }
       }
-      this.period.to = this.$moment(this.period.from)
-        .add(1, "years")
-        .subtract(1, "days")._d;
+      if (this.tabIndex === 1) {
+        // 예산 대비 지출(연 단위)
+        this.period.to = this.$moment(this.period.from)
+          .add(1, "years")
+          .subtract(1, "days")._d;
+      }
     },
   },
 };

@@ -34,7 +34,7 @@
     > -->
     <grid
       ref="budgetGrid"
-      style="height: 450px"
+      style="height: 490px"
       class="ag-theme-alpine"
       :defaultColDef="defaultColDef"
       :gridOptions="gridOptions"
@@ -61,7 +61,7 @@ export default {
   props: {
     user: Object,
     period: Object,
-    tabIndex: Number,
+    monthStartDate: String,
   },
   data() {
     return {
@@ -73,10 +73,10 @@ export default {
       modules: AllCommunityModules,
       frameworkComponents: null,
       getRowStyle: null,
-      totalIncome: 0,
-      totalBudget: 0,
-      threeMonthAverageExpenditure: 0,
-      lastMonthExpenditure: 0,
+      totalIncomeNumber: 0,
+      totalBudgetNumber: 0,
+      threeMonthAverageExpenditureNumber: 0,
+      lastMonthExpenditureNumber: 0,
     };
   },
   computed: {
@@ -97,13 +97,90 @@ export default {
       return month + "." + day;
     },
     budgetDate() {
-      const monthStartDate = parseInt(this.user.userInfo.monthStartDate);
-      return monthStartDate > 15
-        ? this.$moment(this.period.to).format("YYYYMM")
-        : this.$moment(this.period.from).format("YYYYMM");
+      return parseInt(this.monthStartDate) < 16
+        ? this.$moment(this.period.from).format("YYYYMM")
+        : this.$moment(this.period.to).format("YYYYMM");
+    },
+    // 3개월 전 시작일
+    threeMonthStartDate() {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        return this.$moment(this.period.from)
+          .subtract(3, "months")
+          .endOf("month");
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        return this.$moment(this.period.from).subtract(3, "months");
+      }
+    },
+    // 3개월 전 종료일
+    threeMonthEndDate() {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        return this.$moment(this.threeMonthStartDate._d)
+          .add(3, "months")
+          .endOf("month")
+          .subtract(1, "days");
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        return this.$moment(this.threeMonthStartDate._d)
+          .add(3, "months")
+          .subtract(1, "days");
+      }
+    },
+    // 지난달 시작일
+    lastMonthStartDate() {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        return this.$moment(this.period.from)
+          .subtract(1, "months")
+          .endOf("month");
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        return this.$moment(this.period.from).subtract(1, "months");
+      }
+    },
+    // 지난달 종료일
+    lastMonthEndDate() {
+      if (this.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        return this.$moment(this.lastMonthStartDate._d)
+          .add(1, "months")
+          .endOf("month")
+          .subtract(1, "days");
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        return this.$moment(this.lastMonthStartDate._d)
+          .add(1, "months")
+          .subtract(1, "days");
+      }
+    },
+    totalIncome() {
+      return String(this.totalIncomeNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    totalBudget() {
+      return String(this.totalBudgetNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    threeMonthAverageExpenditure() {
+      return String(this.threeMonthAverageExpenditureNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    lastMonthExpenditure() {
+      return String(this.lastMonthExpenditureNumber).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
     },
     styleObject() {
-      if (this.totalBudget < 0) {
+      if (this.totalBudgetNumber < 0) {
         return {
           color: "#ff5658",
         };
@@ -111,35 +188,50 @@ export default {
     },
   },
   watch: {
+    period: {
+      deep: true,
+      handler(newData) {
+        const periodFrom = this.$moment(newData.from);
+        const periodTo = this.$moment(newData.to);
+        const diff = periodTo.diff(periodFrom, "months");
+        // 예산쓰기 기간이 변경되었을때만 재조회
+        if (diff === 0) {
+          this.getBudgetList();
+        }
+      },
+    },
     rowData: {
       deep: true,
       handler(newData) {
         // 합계 row
         // 예산 금액 숫자로 변환
-        const expenditureBudgetAmount = _.reduce(
+        const budgetAmount = _.reduce(
           this.rowData,
           function (sum, obj) {
-            return sum + parseInt(obj.expenditureBudgetAmount);
+            return sum + parseInt(String(obj.budgetAmount).replace(/,/g, ""));
           },
           0
         );
         const obj = [
           {
             largeCategoryName: "합계",
-            expenditureBudgetAmount: expenditureBudgetAmount,
+            budgetAmount: budgetAmount,
             expenditureAmount: _.sumBy(this.rowData, "expenditureAmount"),
             total: _.sumBy(this.rowData, "total"),
           },
         ];
         this.pinnedBottomRowData = obj;
-        this.gridApi.setPinnedBottomRowData(obj);
+        if (this.gridApi) {
+          this.gridApi.setPinnedBottomRowData(obj);
+        }
       },
     },
     pinnedBottomRowData: {
       deep: true,
       handler(newData) {
-        this.totalBudget =
-          this.totalIncome - newData[0].expenditureBudgetAmount;
+        // 예산 설정 가능 금액
+        this.totalBudgetNumber =
+          this.totalIncomeNumber - newData[0].budgetAmount;
       },
     },
     // incomeBudgetAmount() {
@@ -176,14 +268,14 @@ export default {
       },
       {
         headerName: "예산",
-        field: "expenditureBudgetAmount",
+        field: "budgetAmount",
         cellEditor: "InputCellEditor",
         type: "numericColumn",
         valueFormatter: (params) => {
           if (params.data.largeCategoryId === 1) {
             return "-";
           }
-          return params.value;
+          return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
         editable: (params) => {
           if (params.node.rowPinned || params.data.largeCategoryId === 1) {
@@ -203,15 +295,15 @@ export default {
               cursor: "pointer",
             };
           }
-          // if (params.node.rowPinned) {
-          //   return { color: "#1fab89" };
-          // }
         },
       },
       {
         headerName: "지출",
         field: "expenditureAmount",
         type: "numericColumn",
+        valueFormatter: (params) => {
+          return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
         cellStyle: (params) => {
           if (params.node.rowPinned) {
             return { color: "#1fab89" };
@@ -222,6 +314,9 @@ export default {
         headerName: "남은 돈",
         field: "total",
         type: "numericColumn",
+        valueFormatter: (params) => {
+          return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        },
         cellStyle: (params) => {
           if (params.value < 0) {
             return { color: "#ff5658" };
@@ -239,9 +334,7 @@ export default {
     };
   },
   mounted() {
-    if (this.tabIndex === 0) {
-      this.getBudgetList();
-    }
+    this.getBudgetList();
   },
   methods: {
     onGridReady(params) {
@@ -252,31 +345,23 @@ export default {
     },
     // 예산 목록 조회
     getBudgetList() {
-      // 3개월 전 시작일
-      const threeMonthStartDate = this.$moment(this.period.from).subtract(
-        3,
-        "months"
-      );
-      // 지난달 시작일
-      const lastMonthStartDate = this.$moment(this.period.from).subtract(
-        1,
-        "months"
-      );
-
+      this.rowData = [];
       const budgetRequestDto = {
         budgetDate: this.budgetDate,
         thisMonthStartDate: this.$moment(this.period.from).format("YYYYMMDD"),
         thisMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
-        threeMonthStartDate: threeMonthStartDate.format("YYYYMMDD"),
-        threeMonthEndDate: this.$moment(threeMonthStartDate._d)
-          .add(3, "months")
-          .subtract(1, "days")
-          .format("YYYYMMDD"),
-        lastMonthStartDate: lastMonthStartDate.format("YYYYMMDD"),
-        lastMonthEndDate: this.$moment(lastMonthStartDate._d)
-          .add(1, "months")
-          .subtract(1, "days")
-          .format("YYYYMMDD"),
+        threeMonthStartDate: this.$moment(this.threeMonthStartDate).format(
+          "YYYYMMDD"
+        ),
+        threeMonthEndDate: this.$moment(this.threeMonthEndDate).format(
+          "YYYYMMDD"
+        ),
+        lastMonthStartDate: this.$moment(this.lastMonthStartDate).format(
+          "YYYYMMDD"
+        ),
+        lastMonthEndDate: this.$moment(this.lastMonthEndDate).format(
+          "YYYYMMDD"
+        ),
         email: this.user.userInfo.email,
       };
       console.log("budgetRequestDto", budgetRequestDto);
@@ -285,12 +370,12 @@ export default {
         .then((res) => {
           console.log("결과>", res.data);
           // 이번달 수입 합계
-          this.totalIncome = res.data.totalIncome;
+          this.totalIncomeNumber = res.data.totalIncome;
           // 3개월 간 평균 지출
-          this.threeMonthAverageExpenditure =
+          this.threeMonthAverageExpenditureNumber =
             res.data.threeMonthAverageExpenditure;
           // // 지난달 지출
-          this.lastMonthExpenditure = res.data.lastMonthExpenditure;
+          this.lastMonthExpenditureNumber = res.data.lastMonthExpenditure;
           // 카테고리별 예산 grid
           this.rowData = res.data.budgetListDtoList;
           this.gridApi.setRowData(res.data.budgetListDtoList);
@@ -299,10 +384,13 @@ export default {
           console.log(Error);
         });
     },
+    // 저장
     onSave() {
       this.gridApi.clearFocusedCell();
       const budgetListDtoList = this.$refs.budgetGrid.getRowData();
       budgetListDtoList.pop();
+      // 예산 금액 숫자로 변환
+      _.map(budgetListDtoList, this.convertStringToNumber);
       const budgetDto = {
         budgetListDtoList: budgetListDtoList,
         budgetDate: this.budgetDate,
@@ -317,13 +405,18 @@ export default {
           console.log(Error);
         });
     },
+    // 예산 금액 숫자로 변환
+    convertStringToNumber(obj) {
+      obj.budgetAmount = parseInt(String(obj.budgetAmount).replace(/,/g, ""));
+      return obj;
+    },
   },
 };
 </script>
 <style scoped>
 .budgetWrite_top {
   height: 100px;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   border: 1px solid lightgray;
   border-radius: 5px;
   background-color: white;

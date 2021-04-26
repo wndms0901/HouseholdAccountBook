@@ -18,8 +18,8 @@
 <style lang="scss" scoped>
 .modal {
   &.modal-overlay {
-    left: 1280px;
-    top: 160px;
+    left: 1000px;
+    top: 123px;
     // transform-origin: 374px -4px;
     display: block;
     // align-items: center;
