@@ -76,6 +76,7 @@ import budgetWrite from "./Tab/BudgetWrite.vue";
 import budgetExpenditure from "./Tab/BudgetExpenditure.vue";
 import { ko } from "vuejs-datepicker/dist/locale";
 export default {
+  name: "Budget",
   components: { datepicker, budgetWrite, budgetExpenditure },
   data() {
     return {
@@ -100,6 +101,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    alert(this.name);
     this.setPeriod();
   },
   mounted() {},

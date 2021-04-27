@@ -72,6 +72,7 @@ import monthReport from "./Tab/MonthReport.vue";
 import yearReport from "./Tab/YearReport.vue";
 import { ko } from "vuejs-datepicker/dist/locale";
 export default {
+  name: "Report",
   components: { datepicker, monthReport, yearReport },
   data() {
     return {

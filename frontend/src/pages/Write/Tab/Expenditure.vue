@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="pb-2 excel_btn_box">
-      <button class="basicBtn">엑셀 업로드</button>
-      <button class="basicBtn">엑셀 다운로드</button>
+      <button class="basicBtn" @click="excelUpload">엑셀 업로드</button>
+      <button class="basicBtn" @click="excelDownload">엑셀 다운로드</button>
     </div>
     <grid
       ref="expenditureGrid"
@@ -170,6 +170,7 @@ const getDatePicker = () => {
 import InputCellEditor from "src/components/CellEditor/InputCellEditor";
 import calculateModal from "src/components/Modal/Calculate";
 export default {
+  name: "Expenditure",
   components: { InputCellEditor, calculateModal },
   props: {
     user: Object,
@@ -782,6 +783,56 @@ export default {
         .dispatch("writeStore/saveCalculation", writeRequestDto)
         .then((res) => {
           this.showModal = false;
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
+    // 엑셀 업로드
+    excelUpload() {},
+    // 엑셀 다운로드
+    excelDownload() {
+      const startDate = this.$moment(this.period.from).format("YYYYMMDD");
+      const endDate = this.$moment(this.period.to).format("YYYYMMDD");
+      const period = startDate
+        .substr(0, 4)
+        .concat(
+          "년",
+          startDate.substr(4, 2),
+          "월",
+          startDate.substr(6, 2),
+          "일 ~ ",
+          endDate.substr(0, 4),
+          "년",
+          endDate.substr(4, 2),
+          "월",
+          endDate.substr(6, 2),
+          "일"
+        );
+      const excelRequestDto = {
+        writeRequestDto: {
+          startDate: startDate,
+          endDate: endDate,
+          userDto: this.user.userInfo,
+        },
+        pageName: "Expenditure",
+        period: period,
+      };
+      this.$store
+        .dispatch("excelStore/excelDownload", excelRequestDto)
+        .then((res) => {
+          const fileName =
+            "가계부_지출현황_" + startDate + "_" + endDate + ".xlsx";
+          const url = window.URL.createObjectURL(
+            new Blob([res.data], {
+              type: res.headers["content-type"],
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
         })
         .catch((Error) => {
           console.log(Error);

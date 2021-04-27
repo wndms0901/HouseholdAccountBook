@@ -4,7 +4,7 @@ import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex)
 
-import commonStore from './modules/commonStore.js'
+import excelStore from './modules/excelStore.js'
 import userStore from './modules/userStore.js'
 import writeStore from './modules/writeStore.js'
 import budgetStore from './modules/budgetStore.js'
@@ -12,7 +12,7 @@ import reportStore from './modules/reportStore.js'
 
 const store = new Vuex.Store({
     modules: {
-        commonStore: commonStore,
+        excelStore: excelStore,
         userStore: userStore,
         writeStore: writeStore,
         budgetStore: budgetStore,

@@ -57,6 +57,7 @@
 import { AllCommunityModules } from "@ag-grid-community/all-modules";
 import InputCellEditor from "src/components/CellEditor/InputCellEditor";
 export default {
+  name: "BudgetWrite",
   components: { AllCommunityModules, InputCellEditor },
   props: {
     user: Object,

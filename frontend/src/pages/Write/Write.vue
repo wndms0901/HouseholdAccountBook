@@ -102,6 +102,7 @@ import income from "./Tab/Income.vue";
 import { ko } from "vuejs-datepicker/dist/locale";
 import setStartDateModal from "src/components/Modal/SetStartDate";
 export default {
+  name: "Write",
   components: { datepicker, expenditure, income, setStartDateModal },
   data() {
     return {

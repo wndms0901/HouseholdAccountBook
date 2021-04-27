@@ -97,6 +97,7 @@
 <script>
 import { GChart } from "vue-google-charts";
 export default {
+  name: "MonthReport",
   components: { GChart },
   props: {
     user: Object,
