@@ -4,10 +4,12 @@
       <div class="row">
         <div class="date_wrap">
           <div class="date_picker_box">
-            <b-button class="prevMonthBtn" @click="onPrevMonth">
-              <b-icon-chevron-left
+            <button class="prevMonthBtn" @click="onPrevMonth">
+              <b-icon
+                icon="chevron-left"
                 variant="dark"
-              ></b-icon-chevron-left> </b-button
+                style="vertical-align: middle"
+              ></b-icon></button
             >&nbsp;
             <datepicker
               ref="periodFrom"
@@ -40,9 +42,13 @@
               ><b-icon class="calendarIcon" icon="calendar3"></b-icon
             ></span>
             &nbsp;
-            <b-button class="nextMonthBtn" @click="onNextMonth">
-              <b-icon-chevron-right variant="dark"></b-icon-chevron-right>
-            </b-button>
+            <button class="nextMonthBtn" @click="onNextMonth">
+              <b-icon
+                icon="chevron-right"
+                variant="dark"
+                style="vertical-align: middle"
+              ></b-icon>
+            </button>
             <button class="startDateBtn" @click="openModal">월시작일</button>
           </div>
         </div>
@@ -380,9 +386,6 @@ export default {
 }
 .tabs {
   font-weight: 600;
-}
-.excel_btn_box {
-  text-align: right;
 }
 .left_btn {
   float: left;

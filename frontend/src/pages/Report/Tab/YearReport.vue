@@ -16,23 +16,26 @@
         </tr>
       </table>
     </div>
-    <div class="yearReport_centent">
+    <div class="grid_top">
       <div class="grid_title">
         <span>연간 보고서 현황</span>
       </div>
-      <grid
-        ref="yearReportGrid"
-        style="height: 550px"
-        class="ag-theme-alpine"
-        :gridOptions="gridOptions"
-        :columnDefs="columnDefs"
-        :defaultColDef="defaultColDef"
-        :getRowStyle="getRowStyle"
-        :rowData="rowData"
-        @grid-ready="onGridReady"
-      >
-      </grid>
+      <div class="pb-2 excel_btn_box">
+        <button class="basicBtn" @click="excelDownload">엑셀 다운로드</button>
+      </div>
     </div>
+    <grid
+      ref="yearReportGrid"
+      style="height: 550px"
+      class="ag-theme-alpine"
+      :gridOptions="gridOptions"
+      :columnDefs="columnDefs"
+      :defaultColDef="defaultColDef"
+      :getRowStyle="getRowStyle"
+      :rowData="rowData"
+      @grid-ready="onGridReady"
+    >
+    </grid>
   </div>
 </template>
 <script>
@@ -52,6 +55,7 @@ export default {
       defaultColDef: null,
       getRowStyle: null,
       rowData: [],
+      monthOfYearList: [],
     };
   },
   computed: {
@@ -92,7 +96,7 @@ export default {
         const periodTo = this.$moment(newData.to);
         const diff = periodTo.diff(periodFrom, "months");
         // 연간보고서 기간이 변경되었을때만 재조회
-        if (diff > 0) {
+        if (diff > 2) {
           this.getMonthOfYear();
         }
       },
@@ -151,7 +155,7 @@ export default {
     },
     // 월 목록 조회
     getMonthOfYear() {
-      const monthOfYearList = [];
+      this.monthOfYearList = [];
       const period_from = _.cloneDeep(this.period.from);
       let startDate = null;
       let endDate = null;
@@ -189,19 +193,18 @@ export default {
           endDate: endDate.format("YYYYMMDD"),
           email: this.user.userInfo.email,
         };
-        monthOfYearList.push(obj);
+        this.monthOfYearList.push(obj);
       }
-      console.log("monthOfYearList><>>", monthOfYearList);
       // column headers name setting
-      this.setHeaderNames(monthOfYearList);
+      this.setHeaderNames();
       // 연간보고서 조회
-      this.selectYearReport(monthOfYearList);
+      this.selectYearReport();
     },
     // column headers name setting
-    setHeaderNames(monthOfYearList) {
+    setHeaderNames() {
       let columnDefs = this.columnDefs;
 
-      _.forEach(monthOfYearList, function (obj, index) {
+      _.forEach(this.monthOfYearList, function (obj, index) {
         // 첫번째 월과 1월은 연도 표시
         if (index === 0 || obj.month === "01") {
           columnDefs[index + 2].headerName = obj.year + "." + obj.month + " 월";
@@ -213,9 +216,9 @@ export default {
       this.gridApi.setColumnDefs(columnDefs);
     },
     // 연간보고서 조회
-    selectYearReport(monthOfYearList) {
+    selectYearReport() {
       const reportRequestDto = {
-        periodDtoList: monthOfYearList,
+        periodDtoList: this.monthOfYearList,
       };
       this.$store
         .dispatch("reportStore/selectYearReport", reportRequestDto)
@@ -239,11 +242,47 @@ export default {
           console.log(Error);
         });
     },
+    // 엑셀 다운로드
+    excelDownload() {
+      const startDate = this.$moment(this.period.from).format("YYYYMMDD");
+      const endDate = this.$moment(this.period.to).format("YYYYMMDD");
+      const period =
+        this.monthOfYearList[0].year +
+        "년 " +
+        this.monthOfYearList[0].month +
+        "월 ~ " +
+        this.monthOfYearList[11].year +
+        "년 " +
+        this.monthOfYearList[11].month +
+        "월";
+      const excelRequestDto = {
+        reportRequestDto: {
+          periodDtoList: this.monthOfYearList,
+        },
+        pageName: "YearReport",
+        period: period,
+      };
+      console.log("excelRequestDto", excelRequestDto);
+      this.$store
+        .dispatch("excelStore/excelDownload", excelRequestDto)
+        .then((res) => {
+          const fileName =
+            "가계부_연간보고서_" + startDate + "_" + endDate + ".xlsx";
+          const url = window.URL.createObjectURL(
+            new Blob([res.data], {
+              type: res.headers["content-type"],
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
   },
 };
 </script>
-<style scoped>
-.yearReport_centent {
-  margin-top: 20px;
-}
-</style>

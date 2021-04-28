@@ -174,12 +174,23 @@ export default {
 .excess_color {
   color: #ff5658;
 }
+.grid_top {
+  display: flex;
+  margin-top: 20px;
+}
 .grid_title {
   margin-bottom: 10px;
   text-align: left;
   font-size: 18px;
   font-weight: 600;
   color: #424242;
+}
+.excel_btn_box {
+  margin-left: auto;
+  text-align: right;
+}
+.excel_btn_box > span {
+  margin-left: 5px;
 }
 .basicBtn {
   margin-right: 5px;

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="budgetExpenditure_top">
+    <div class="grid_top">
       <div class="grid_title">
         <span>예산 대비 지출</span>
       </div>
-      <div class="icon_box">
+      <div class="pb-2 excel_btn_box">
         <span
           ><b-icon
             icon="circle-fill"
@@ -21,11 +21,14 @@
           ></b-icon
         ></span>
         <span>예산초과</span>
+        <button class="ml-3 basicBtn" @click="excelDownload">
+          엑셀 다운로드
+        </button>
       </div>
     </div>
     <grid
       ref="budgetExpndGrid"
-      style="height: 640px"
+      style="height: 660px"
       class="ag-theme-alpine"
       :gridOptions="gridOptions"
       :columnDefs="columnDefs"
@@ -52,6 +55,7 @@ export default {
       defaultColDef: null,
       getRowStyle: null,
       rowData: [],
+      monthOfYearList: [],
     };
   },
   watch: {
@@ -62,7 +66,7 @@ export default {
         const periodTo = this.$moment(newData.to);
         const diff = periodTo.diff(periodFrom, "months");
         // 예산 대비 지출 기간이 변경되었을때만 재조회
-        if (diff > 0) {
+        if (diff > 2) {
           this.getMonthOfYear();
         }
       },
@@ -126,7 +130,7 @@ export default {
     },
     // 월 목록 조회
     getMonthOfYear() {
-      const monthOfYearList = [];
+      this.monthOfYearList = [];
       const period_from = _.cloneDeep(this.period.from);
       let startDate = null;
       let endDate = null;
@@ -164,19 +168,19 @@ export default {
           endDate: endDate.format("YYYYMMDD"),
           email: this.user.userInfo.email,
         };
-        monthOfYearList.push(obj);
+        this.monthOfYearList.push(obj);
       }
-      console.log("monthOfYearList>>", monthOfYearList);
+      console.log("monthOfYearList>>", this.monthOfYearList);
       // column headers name setting
-      this.setHeaderNames(monthOfYearList);
+      this.setHeaderNames();
       // 예산 대비 지출 목록 조회
-      this.selectBudgetExpenditureList(monthOfYearList);
+      this.selectBudgetExpenditureList();
     },
     // column headers name setting
-    setHeaderNames(monthOfYearList) {
+    setHeaderNames() {
       let columnDefs = this.columnDefs;
 
-      _.forEach(monthOfYearList, function (obj, index) {
+      _.forEach(this.monthOfYearList, function (obj, index) {
         // 첫번째 월과 1월은 연도 표시
         if (index === 0 || obj.month === "01") {
           columnDefs[index + 2].headerName = obj.year + "." + obj.month + " 월";
@@ -188,9 +192,9 @@ export default {
       this.gridApi.setColumnDefs(columnDefs);
     },
     // 예산 대비 지출 목록 조회
-    selectBudgetExpenditureList(monthOfYearList) {
+    selectBudgetExpenditureList() {
       const budgetRequestDto = {
-        periodDtoList: monthOfYearList,
+        periodDtoList: this.monthOfYearList,
       };
       this.$store
         .dispatch("budgetStore/selectBudgetExpenditureList", budgetRequestDto)
@@ -203,18 +207,47 @@ export default {
           console.log(Error);
         });
     },
+    // 엑셀 다운로드
+    excelDownload() {
+      const startDate = this.$moment(this.period.from).format("YYYYMMDD");
+      const endDate = this.$moment(this.period.to).format("YYYYMMDD");
+      const period =
+        this.monthOfYearList[0].year +
+        "년 " +
+        this.monthOfYearList[0].month +
+        "월 ~ " +
+        this.monthOfYearList[11].year +
+        "년 " +
+        this.monthOfYearList[11].month +
+        "월";
+      const excelRequestDto = {
+        budgetRequestDto: {
+          periodDtoList: this.monthOfYearList,
+        },
+        pageName: "BudgetExpenditure",
+        period: period,
+      };
+      console.log("excelRequestDto", excelRequestDto);
+      this.$store
+        .dispatch("excelStore/excelDownload", excelRequestDto)
+        .then((res) => {
+          const fileName =
+            "가계부_예산대비지출_" + startDate + "_" + endDate + ".xlsx";
+          const url = window.URL.createObjectURL(
+            new Blob([res.data], {
+              type: res.headers["content-type"],
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
   },
 };
 </script>
-<style scoped>
-.budgetExpenditure_top {
-  display: flex;
-  margin-top: 30px;
-}
-.icon_box {
-  margin-left: auto;
-}
-.icon_box > span {
-  margin-left: 5px;
-}
-</style>

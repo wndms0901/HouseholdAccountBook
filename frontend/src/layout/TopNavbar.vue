@@ -53,10 +53,11 @@
           </base-dropdown>
           <li class="nav-item">
             <!-- <b-button id="top_btn" variant="outline-primary" class="m-0"> -->
-            <a class="nav-link"
-              ><i class="nc-icon nc-single-02 pr-1" href="#"></i>내정보</a
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="logout"
+              ><i class="nc-icon nc-single-02 pr-1"></i>내정보</a
             >
-
             <!-- </b-button> -->
           </li>
           <li class="nav-item">

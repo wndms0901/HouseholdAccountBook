@@ -25,13 +25,14 @@
         </tr>
       </table>
     </div>
-    <div class="grid_title">
-      <span>카테고리별 예산</span>
+    <div class="grid_top">
+      <div class="grid_title">
+        <span>카테고리별 예산</span>
+      </div>
+      <div class="pb-2 excel_btn_box">
+        <button class="basicBtn" @click="excelDownload">엑셀 다운로드</button>
+      </div>
     </div>
-    <!-- <div
-      style="height: 100%; display: flex; flex-direction: column"
-      class="ag-theme-alpine"
-    > -->
     <grid
       ref="budgetGrid"
       style="height: 490px"
@@ -196,7 +197,7 @@ export default {
         const periodTo = this.$moment(newData.to);
         const diff = periodTo.diff(periodFrom, "months");
         // 예산쓰기 기간이 변경되었을때만 재조회
-        if (diff === 0) {
+        if (diff < 2) {
           this.getBudgetList();
         }
       },
@@ -410,6 +411,67 @@ export default {
     convertStringToNumber(obj) {
       obj.budgetAmount = parseInt(String(obj.budgetAmount).replace(/,/g, ""));
       return obj;
+    },
+    // 엑셀 다운로드
+    excelDownload() {
+      const startDate = this.$moment(this.period.from).format("YYYYMMDD");
+      const endDate = this.$moment(this.period.to).format("YYYYMMDD");
+      const period = startDate
+        .substr(0, 4)
+        .concat(
+          "년",
+          startDate.substr(4, 2),
+          "월",
+          startDate.substr(6, 2),
+          "일 ~ ",
+          endDate.substr(0, 4),
+          "년",
+          endDate.substr(4, 2),
+          "월",
+          endDate.substr(6, 2),
+          "일"
+        );
+      const excelRequestDto = {
+        budgetRequestDto: {
+          budgetDate: this.budgetDate,
+          thisMonthStartDate: this.$moment(this.period.from).format("YYYYMMDD"),
+          thisMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
+          threeMonthStartDate: this.$moment(this.threeMonthStartDate).format(
+            "YYYYMMDD"
+          ),
+          threeMonthEndDate: this.$moment(this.threeMonthEndDate).format(
+            "YYYYMMDD"
+          ),
+          lastMonthStartDate: this.$moment(this.lastMonthStartDate).format(
+            "YYYYMMDD"
+          ),
+          lastMonthEndDate: this.$moment(this.lastMonthEndDate).format(
+            "YYYYMMDD"
+          ),
+          email: this.user.userInfo.email,
+        },
+        pageName: "BudgetWrite",
+        period: period,
+      };
+      this.$store
+        .dispatch("excelStore/excelDownload", excelRequestDto)
+        .then((res) => {
+          const fileName =
+            "가계부_예산내역_" + startDate + "_" + endDate + ".xlsx";
+          const url = window.URL.createObjectURL(
+            new Blob([res.data], {
+              type: res.headers["content-type"],
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
     },
   },
 };

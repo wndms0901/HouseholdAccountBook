@@ -101,7 +101,6 @@ export default {
   },
   beforeCreate() {},
   created() {
-    alert(this.name);
     this.setPeriod();
   },
   mounted() {},

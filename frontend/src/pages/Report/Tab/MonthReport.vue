@@ -223,7 +223,7 @@ export default {
         const periodTo = this.$moment(newData.to);
         const diff = periodTo.diff(periodFrom, "months");
         // 월보고서 기간이 변경되었을때만 재조회
-        if (diff === 0) {
+        if (diff < 2) {
           this.getWeekOfMonth();
         }
       },
