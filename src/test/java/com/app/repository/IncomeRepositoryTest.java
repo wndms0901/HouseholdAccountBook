@@ -23,7 +23,9 @@ public class IncomeRepositoryTest {
     @Test
     public void Income_수정(){
        Income income = incomeRepository.findById(1L).get();
-        IncomeDto incomeDto = IncomeDto.builder().incomeDescription("테스트").memo("메모메모").build();
+        IncomeDto incomeDto = new IncomeDto();
+        incomeDto.setIncomeDescription("테스트");
+        incomeDto.setMemo("메모메모");
        income.update(incomeDto);
        List<Income> all = incomeRepository.findAll();
         assertThat(all.get(0).getIncomeDate()).isEqualTo(income.getIncomeDate());

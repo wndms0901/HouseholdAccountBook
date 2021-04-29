@@ -20,6 +20,22 @@ const excelStore = {
                 }
             );
         },
+        /**
+         * 엑셀 양식 다운로드
+         * @param {*} pageName
+         * @returns
+         */
+        excelFormDownload({ }, pageName) {
+            return ExcelService.excelFormDownload(pageName).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
     }
 }
 

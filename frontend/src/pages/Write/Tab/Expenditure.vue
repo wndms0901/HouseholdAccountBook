@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="pb-2 excel_btn_box">
-      <button class="basicBtn" @click="excelUpload">엑셀 업로드</button>
+      <button class="basicBtn" @click="openExcelUploadModal">
+        엑셀 업로드
+      </button>
       <button class="basicBtn" @click="excelDownload">엑셀 다운로드</button>
     </div>
     <grid
@@ -56,7 +58,11 @@
         <span class="mr-2">지출합계</span>
         <span class="mr-2 expenditure_color">{{ this.totalExpenditure }}</span>
         <button class="saveBtn" @click="onSave">저장</button>
-        <button id="calculate-button" class="calculateBtn" @click="openModal">
+        <button
+          id="calculate-button"
+          class="calculateBtn"
+          @click="openCalculateModal"
+        >
           정산
         </button>
         <!-- <b-tooltip target="calculate-button" class="calculate-button-tooltip"
@@ -65,29 +71,77 @@
         </b-tooltip> -->
       </div>
       <!-- 월시작일 설정 Modal -->
-      <calculateModal v-if="showModal">
+      <calculateModal v-if="showCalculateModal">
+        <!-- top 슬롯 콘텐츠 -->
+        <template slot="top">
+          <span>가계내역 정산하기</span>
+        </template>
+        <!-- /top -->
         <!-- default 슬롯 콘텐츠 -->
         <div>
-          <span>가계내역 정산하기</span>
+          <span
+            >전월이월을 원하는 시점에 생성할 수 있습니다.<br />
+            정산은 한달치만 가능하며, 전월의 잔액을 이달의 시작일로
+            생성합니다.</span
+          >
         </div>
         <!-- /default -->
         <!-- footer 슬롯 콘텐츠 -->
         <template slot="footer">
-          <div>
-            <span
-              >전월이월을 원하는 시점에 생성할 수 있습니다.<br />
-              정산은 한달치만 가능하며, 전월의 잔액을 이달의 시작일로
-              생성합니다.</span
-            >
-          </div>
-          <div class="modalFooterBtn-box mt-2">
-            <button class="basicBtn" @click="onSaveCalculation">정산</button>
-            <button class="basicBtn" @click="closeModal">닫기</button>
+          <div class="modalFooterBtn-box">
+            <button class="primaryBtn" @click="onSaveCalculation">정산</button>
+            <button class="basicBtn" @click="closeCalculateModal">닫기</button>
             <!-- <button class="basicBtn" @click="onSaveStartDate">확인</button> -->
           </div>
         </template>
         <!-- /footer -->
       </calculateModal>
+      <!-- 엑셀 업로드 Modal -->
+      <excelUploadModal v-if="showExcelUploadModal">
+        <!-- top 슬롯 콘텐츠 -->
+        <template slot="top">
+          <span>엑셀 업로드</span>
+        </template>
+        <!-- /top -->
+        <!-- cotent 슬롯 콘텐츠 -->
+        <div class="excel_select_box">
+          <!-- <input type="text" v-model="fileName" readonly /> -->
+          <b-form-file
+            v-model="fileName"
+            browse-text="엑셀선택"
+            placeholder="엑셀 파일을 선택해 주세요."
+          ></b-form-file>
+          <!-- <button class="outlineSecondaryBtn" @click="selectExcel">
+            엑셀선택
+          </button> -->
+          <!-- <input type="file" id="excel-file" style="display: none" /> -->
+          <!-- <input type="text" readonly />&ensp;<button
+            class="outlineSecondaryBtn"
+          >
+            엑셀선택
+          </button> -->
+        </div>
+        <div class="excel_form_box">
+          <img
+            id="excel_logo"
+            src="../../../assets/image/excel.png"
+          />&nbsp;<span>엑셀 양식 다운로드</span>&ensp;
+          <button class="outlineSecondaryBtn" @click="excelFormDownload">
+            지출내역
+          </button>
+        </div>
+        <!-- /cotent -->
+        <!-- footer 슬롯 콘텐츠 -->
+        <template slot="footer">
+          <div class="modalFooterBtn-box">
+            <button class="primaryBtn" @click="excelUpload">엑셀 업로드</button>
+            <button class="basicBtn" @click="closeExcelUploadModal">
+              닫기
+            </button>
+          </div>
+        </template>
+        <!-- /footer -->
+      </excelUploadModal>
     </div>
   </div>
 </template>
@@ -169,9 +223,10 @@ const getDatePicker = () => {
 // }
 import InputCellEditor from "src/components/CellEditor/InputCellEditor";
 import calculateModal from "src/components/Modal/Calculate";
+import excelUploadModal from "src/components/Modal/ExcelUpload";
 export default {
   name: "Expenditure",
-  components: { InputCellEditor, calculateModal },
+  components: { InputCellEditor, calculateModal, excelUploadModal },
   props: {
     user: Object,
     period: Object,
@@ -196,7 +251,9 @@ export default {
       totalCashString: 0,
       totalCardString: 0,
       disabledSelectBtn: true,
-      showModal: false,
+      showCalculateModal: false,
+      showExcelUploadModal: false,
+      fileName: "",
     };
   },
   computed: {
@@ -782,7 +839,30 @@ export default {
       this.$store
         .dispatch("writeStore/saveCalculation", writeRequestDto)
         .then((res) => {
-          this.showModal = false;
+          this.showCalculateModal = false;
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
+    // 엑셀 선택
+    selectExcel() {},
+    // 엑셀 양식 다운로드
+    excelFormDownload() {
+      this.$store
+        .dispatch("excelStore/excelFormDownload", "")
+        .then((res) => {
+          const fileName = "가계부_지출양식.xlsx";
+          const url = window.URL.createObjectURL(
+            new Blob([res.data], {
+              type: res.headers["content-type"],
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
         })
         .catch((Error) => {
           console.log(Error);
@@ -859,11 +939,22 @@ export default {
       this.gridApi.clearFocusedCell();
       this.getTotal();
     },
-    openModal() {
-      this.showModal = true;
+
+    // 월시작일 모달 open
+    openCalculateModal() {
+      this.showCalculateModal = true;
     },
-    closeModal() {
-      this.showModal = false;
+    // 월시작일 모달 close
+    closeCalculateModal() {
+      this.showCalculateModal = false;
+    },
+    // 엑셀 업로드 모달 open
+    openExcelUploadModal() {
+      this.showExcelUploadModal = true;
+    },
+    // 엑셀 업로드 모달 close
+    closeExcelUploadModal() {
+      this.showExcelUploadModal = false;
     },
   },
 };

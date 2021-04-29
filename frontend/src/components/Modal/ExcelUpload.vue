@@ -30,7 +30,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    // background: rgba(0, 0, 0, 0.5);
   }
 
   &-window {
@@ -43,17 +43,14 @@
 
   &-top {
     padding: 8px 15px;
+    border-bottom: 1px solid #babfc7;
     color: #333;
     font-size: 20px;
-    border-bottom: 1px solid #babfc7;
   }
 
   &-content {
-    padding: 10px 20px;
+    padding: 15px;
     border: 0;
-    font-weight: normal;
-    color: #424242;
-    // text-align: center;
   }
 
   &-footer {

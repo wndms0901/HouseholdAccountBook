@@ -18,7 +18,7 @@
         <i class="nc-icon nc-bullet-list-67"></i>
         <p>예산쓰기</p>
       </sidebar-link>
-      <sidebar-link to="/mybook/overview">
+      <!-- <sidebar-link to="/mybook/overview">
         <i class="nc-icon nc-chart-pie-35"></i>
         <p>Dashboard</p>
       </sidebar-link>
@@ -38,22 +38,42 @@
         <i class="nc-icon nc-atom"></i>
         <p>Icons</p>
       </sidebar-link>
-      <!-- <sidebar-link to="/mybook/maps">
+      <sidebar-link to="/mybook/maps">
         <i class="nc-icon nc-pin-3"></i>
         <p>Maps</p>
-      </sidebar-link> -->
+      </sidebar-link>
       <sidebar-link to="/mybook/notifications">
         <i class="nc-icon nc-bell-55"></i>
         <p>Notifications</p>
-      </sidebar-link>
+      </sidebar-link> -->
 
       <!-- <template slot="bottom-links">
-        <sidebar-link class="active"
-                      to="/mybook/upgrade">
+        <sidebar-link class="active" to="/mybook/upgrade">
           <i class="nc-icon nc-alien-33"></i>
           <p>Upgrade to PRO</p>
         </sidebar-link>
       </template> -->
+      <div class="nav_month">
+        <p>이달의 가계</p>
+        <p>2021.03.31 ~ 2021.04.29</p>
+        <div class="nav_month_box">
+          <ul>
+            <div class="nav_month_box_total">
+              <li><span>= 수입 - 지출</span><span>10,000</span></li>
+            </div>
+            <div class="nav_month_box_income">
+              <li><span>+ 수입</span><span>10,000</span></li>
+              <li><span>ㄴ 이달의 수입</span><span>10,000</span></li>
+              <li><span>ㄴ 전월이월</span><span>0</span></li>
+            </div>
+            <div class="nav_month_box_expenditure">
+              <li><span>- 지출</span><span>10,000</span></li>
+              <li><span>ㄴ 현금지출</span><span>10,000</span></li>
+              <li><span>ㄴ 카드지출</span><span>0</span></li>
+            </div>
+          </ul>
+        </div>
+      </div>
     </side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
@@ -95,6 +115,40 @@ export default {
 };
 </script>
 <style>
+.nav_month {
+  margin-top: 30px;
+  padding: 10px 15px 30px 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  /*border-bottom: 1px solid rgba(255, 255, 255, 0.2); */
+}
+.nav_month p:first-child {
+  margin-top: 15px;
+  text-align: center;
+  margin-bottom: 0;
+  font-size: 22px;
+}
+.nav_month p:nth-child(2) {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.nav_month_box {
+  background: rgba(255, 255, 255, 0.2);
+}
+.nav_month_box ul {
+  padding: 0;
+  list-style-type: none;
+}
+.nav_month_box_total {
+  padding: 10px 0px 10px 10px;
+  border-bottom: 1px solid black;
+}
+.nav_month_box_income {
+  padding: 10px 0px 10px 10px;
+  border-bottom: 1px solid black;
+}
+.nav_month_box_expenditure {
+  padding: 10px 0px 10px 10px;
+}
 .date_wrap {
   padding-top: 20px;
   padding-bottom: 10px;
@@ -191,6 +245,21 @@ export default {
 }
 .excel_btn_box > span {
   margin-left: 5px;
+}
+.outlineSecondaryBtn {
+  margin-right: 5px;
+  padding: 2px 8px;
+  border: 1px solid #babfc7;
+  border-radius: 3px;
+  background-color: white;
+}
+.primaryBtn {
+  margin-right: 5px;
+  padding: 2px 8px;
+  border: 1px solid #1953d7;
+  border-radius: 3px;
+  background-color: #1953d7;
+  color: white;
 }
 .basicBtn {
   margin-right: 5px;

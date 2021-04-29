@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+application-aws.properties
 application-db.properties
 application-oauth.properties
 build/

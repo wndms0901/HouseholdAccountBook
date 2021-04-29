@@ -380,6 +380,28 @@ export default {
   margin: 0 6px 0 12px;
   width: 70px;
 }
+.excel_select_box {
+  margin-bottom: 20px;
+  padding-left: 20px;
+  width: 90%;
+  /* text-align: center; */
+}
+.excel_select_box input {
+  cursor: default;
+}
+.excel_form_box {
+  padding-left: 20px;
+  width: 100%;
+}
+.excel_form_box span {
+  vertical-align: middle;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+.excel_form_box button {
+  margin-left: 20px;
+}
 .modalFooterBtn-box {
   width: 100%;
   text-align: center;
@@ -417,6 +439,7 @@ export default {
   font-size: 18px;
   font-weight: bold;
 }
+
 /* tooltip css */
 /* .tooltip .tooltip-inner {
   max-width: 330px !important;

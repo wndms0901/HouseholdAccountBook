@@ -18,6 +18,20 @@ class ExcelService {
                 return response;
             });
     }
+    /**
+     * 엑셀 양식 다운로드
+     * @param {*} pageName
+     * @returns
+     */
+    excelFormDownload(pageName) {
+        return axios
+            .get(API_URL + 'form/download', { params: { pageName: pageName } }
+                , { responseType: 'blob' })
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
 
 }
 
