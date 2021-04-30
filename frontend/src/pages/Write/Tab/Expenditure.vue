@@ -105,21 +105,13 @@
         <!-- /top -->
         <!-- cotent 슬롯 콘텐츠 -->
         <div class="excel_select_box">
-          <!-- <input type="text" v-model="fileName" readonly /> -->
           <b-form-file
-            v-model="fileName"
+            ref="excelForm"
+            v-model="file"
+            accept=".xlsx, .xls"
             browse-text="엑셀선택"
             placeholder="엑셀 파일을 선택해 주세요."
           ></b-form-file>
-          <!-- <button class="outlineSecondaryBtn" @click="selectExcel">
-            엑셀선택
-          </button> -->
-          <!-- <input type="file" id="excel-file" style="display: none" /> -->
-          <!-- <input type="text" readonly />&ensp;<button
-            class="outlineSecondaryBtn"
-          >
-            엑셀선택
-          </button> -->
         </div>
         <div class="excel_form_box">
           <img
@@ -253,7 +245,7 @@ export default {
       disabledSelectBtn: true,
       showCalculateModal: false,
       showExcelUploadModal: false,
-      fileName: "",
+      file: null,
     };
   },
   computed: {
@@ -845,8 +837,6 @@ export default {
           console.log(Error);
         });
     },
-    // 엑셀 선택
-    selectExcel() {},
     // 엑셀 양식 다운로드
     excelFormDownload() {
       this.$store
@@ -869,7 +859,40 @@ export default {
         });
     },
     // 엑셀 업로드
-    excelUpload() {},
+    excelUpload() {
+      if (!this.file) {
+        alert("엑셀파일을 선택해 주세요.");
+      }
+      const fileExtension = this.file.name
+        .split(".")
+        .reverse()[0]
+        .toLowerCase();
+      if (!(fileExtension === "xlsx" || fileExtension === "xls")) {
+        alert(
+          "엑셀 파일은 xlsx, xls인 경우만 업로드가 가능합니다. \n파일을 다시 한번 확인한 후 업로드해 주세요"
+        );
+      } else {
+        const formData = new FormData();
+        const excelRequestDto = {
+          userDto: this.user.userInfo,
+          pageName: "Expenditure",
+          fileNameExtension: fileExtension,
+        };
+        const json = JSON.stringify(excelRequestDto);
+        const blob = new Blob([json], {
+          type: "application/json",
+        });
+
+        formData.append("file", this.file);
+        formData.append("excelRequestDto", blob);
+        this.$store
+          .dispatch("excelStore/excelUpload", formData)
+          .then((res) => {})
+          .catch((Error) => {
+            console.log(Error);
+          });
+      }
+    },
     // 엑셀 다운로드
     excelDownload() {
       const startDate = this.$moment(this.period.from).format("YYYYMMDD");

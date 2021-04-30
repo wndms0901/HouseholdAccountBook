@@ -26,7 +26,7 @@ public class ExpenditureDto {
     private String memo;
     private UserDto userDto;
 
-    @Builder
+   // @Builder
 //    public ExpenditureDto(Long expenditureId, String expenditureDate, String expenditureDescription, int cash, int card, Long accountCategoryId, Long largeCategoryId, Long smallCategoryId, String smallCategoryName, String memo, UserDto userDto) {
 //        this.expenditureId = expenditureId;
 //        this.expenditureDate = expenditureDate;

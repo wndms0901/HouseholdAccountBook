@@ -6,11 +6,11 @@ const excelStore = {
     actions: {
         /**
          * 엑셀 다운로드
-         * @param {*} ExcelRequestDto
+         * @param {*} data
          * @returns 
          */
-        excelDownload({ }, ExcelRequestDto) {
-            return ExcelService.excelDownload(ExcelRequestDto).then(
+        excelDownload({ }, data) {
+            return ExcelService.excelDownload(data).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);
@@ -27,6 +27,22 @@ const excelStore = {
          */
         excelFormDownload({ }, pageName) {
             return ExcelService.excelFormDownload(pageName).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
+         * 엑셀 업로드
+         * @param {*} ExcelRequestDto
+         * @returns 
+         */
+        excelUpload({ }, ExcelRequestDto) {
+            return ExcelService.excelUpload(ExcelRequestDto).then(
                 response => {
                     console.log('response', response);
                     return Promise.resolve(response);

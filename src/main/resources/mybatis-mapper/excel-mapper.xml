@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.ExcelMapper">
+    <resultMap type="com.app.dto.ExpenditureDto" id="expenditureDto">
+        <result column="expenditure_id" property="expenditureId" />
+        <result column="expenditure_date" property="expenditureDate" />
+        <result column="expenditure_description" property="expenditureDescription" />
+        <result column="cash" property="cash" />
+        <result column="card" property="card" />
+        <result column="account_category_id" property="accountCategoryId" />
+        <result column="account_category_name" property="accountCategoryName" />
+        <result column="large_category_id" property="largeCategoryId" />
+        <result column="large_category_name" property="largeCategoryName" />
+        <result column="small_category_id" property="smallCategoryId" />
+        <result column="small_category_name" property="smallCategoryName" />
+        <result column="memo" property="memo" />
+    </resultMap>
+
+    <select id="selectCategoryId" parameterType="com.app.dto.ExpenditureDto" resultMap="expenditureDto">
+        SELECT IFNULL(SUM(i.income_amount),0)
+          FROM income i
+         WHERE i.user_email=#{email}
+           AND i.income_date between #{thisMonthStartDate} AND #{thisMonthEndDate}
+    </select>
+</mapper>

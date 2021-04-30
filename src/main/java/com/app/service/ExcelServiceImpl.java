@@ -1,17 +1,33 @@
 package com.app.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.S3Object;
 import com.app.dto.*;
 import com.app.mapper.WriteMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,12 +36,17 @@ public class ExcelServiceImpl implements ExcelService{
     private final WriteMapper writeMapper;
     private final ReportService reportService;
     private final BudgetService budgetService;
+    @Value("${spring.aws.bucket.name}")
+    private String AWS_BUCKETNAME;
+    @Value("${spring.aws.access.key}")
+    private String AWS_ACCESS_KEY;
+    @Value("${spring.aws.secret.key}")
+    private String AWS_SECRET_KEY;
 
     /**
      * 지출 목록 엑셀 다운로드
      * @param response
      * @param excelRequestDto
-     * @return void
      */
     @Override
     public void excelDownExpenditureList(HttpServletResponse response, ExcelRequestDto excelRequestDto) {
@@ -190,7 +211,6 @@ public class ExcelServiceImpl implements ExcelService{
      * 수입 목록 엑셀 다운로드
      * @param response
      * @param excelRequestDto
-     * @return void
      */
     @Override
     public void excelDownIncomeList(HttpServletResponse response, ExcelRequestDto excelRequestDto) {
@@ -330,7 +350,6 @@ public class ExcelServiceImpl implements ExcelService{
      * 연간 보고서 엑셀 다운로드
      * @param response
      * @param excelRequestDto
-     * @return void
      */
     @Override
     public void excelDownYearReport(HttpServletResponse response, ExcelRequestDto excelRequestDto) {
@@ -503,7 +522,6 @@ public class ExcelServiceImpl implements ExcelService{
      * 예산 목록 엑셀 다운로드
      * @param response
      * @param excelRequestDto
-     * @return void
      */
     @Override
     public void excelDownBudgetList(HttpServletResponse response, ExcelRequestDto excelRequestDto) {
@@ -639,7 +657,6 @@ public class ExcelServiceImpl implements ExcelService{
      * 예산 대비 지출 목록 엑셀 다운로드
      * @param response
      * @param excelRequestDto
-     * @return void
      */
     @Override
     public void excelDownBudgetExpenditureList(HttpServletResponse response, ExcelRequestDto excelRequestDto) {
@@ -788,6 +805,102 @@ public class ExcelServiceImpl implements ExcelService{
             e.printStackTrace();
         }
     }
+    /**
+     * 엑셀 양식 다운로드
+     * @param response
+     * @param pageName
+     */
+    @Override
+    public void excelFormDownload(HttpServletResponse response, String pageName){
+        String file_path = "excel_form/"; // 폴더명
+        String file_name = "expenditure_excel.xlsx"; // 파일명
+        try {
+            AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
+                    .withRegion(Regions.AP_NORTHEAST_2)
+                    .build();
+
+            S3Object s3object = s3.getObject(AWS_BUCKETNAME, file_path+file_name); //#1 - 파일을 다운로드함
+            InputStream inputStream = s3object.getObjectContent();
+            PushbackInputStream pushbackInputStream = new PushbackInputStream(inputStream);
+            // 엑셀 출력
+            Workbook workbook = new XSSFWorkbook(pushbackInputStream);
+            workbook.write(response.getOutputStream());
+            workbook.close();
+        } catch (AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn't process
+            // it, so it returned an error response.
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            // Amazon S3 couldn't be contacted for a response, or the client
+            // couldn't parse the response from Amazon S3.
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 지출 목록 엑셀 업로드
+     * @param excelRequestDto
+     */
+    @Transactional
+    @Override
+    public void excelUploadExpenditureList(ExcelRequestDto excelRequestDto, MultipartFile file){
+        List<ExpenditureDto> dataList = new ArrayList<>();
+        System.out.println("시작>");
+            Workbook workbook = null;
+            try {
+                if ("xlsx".equals(excelRequestDto.getFileNameExtension())) {
+                    workbook = new XSSFWorkbook(file.getInputStream());
+                } else if ("xls".equals(excelRequestDto.getFileNameExtension())) {
+                    workbook = new HSSFWorkbook(file.getInputStream());
+                }
+            }catch (IOException e){
+
+            }
+
+            Sheet worksheet = workbook.getSheetAt(0);
+        System.out.println("row>>" + worksheet.getLastRowNum());
+        System.out.println("row>>" + worksheet.getPhysicalNumberOfRows());
+            for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
+                try {
+                    Row row = worksheet.getRow(i);
+                    ExpenditureDto data = new ExpenditureDto();
+                    Date expenditureDate = row.getCell(0).getDateCellValue();
+                    System.out.println("확인>>" + expenditureDate);
+                    String expenditureDescription = row.getCell(1).getStringCellValue();
+                    System.out.println("확인>" + expenditureDescription);
+                    double cash = row.getCell(2).getNumericCellValue();
+                    System.out.println("확인>>" + cash);
+                    double card =  row.getCell(3).getNumericCellValue();
+                    System.out.println("확인>>" + card);
+                    //String accountCategoryName = row.getCell(4).getStringCellValue()==null?"":row.getCell(4).getStringCellValue();
+                    System.out.println("확인>>" + row.getCell(4).getStringCellValue());
+                    String largeCategoryName = row.getCell(5).getStringCellValue();
+                    System.out.println("확인>>" + largeCategoryName);
+                    String smallCategoryName = row.getCell(6).getStringCellValue();
+                    System.out.println("확인>>" + smallCategoryName);
+                    String memo = row.getCell(7).getStringCellValue();
+                    System.out.println("확인>>" + memo);
+
+
+                    dataList.add(data);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        System.out.println("끝?"+dataList.size());
+    }
+    /**
+     * 수입 목록 엑셀 업로드
+     * @param excelRequestDto
+     */
+    @Transactional
+    @Override
+    public void excelUploadIncomeList(ExcelRequestDto excelRequestDto, MultipartFile file) throws  Exception {
+
+    }
+
     /**
      * 텍스트 셀 스타일 적용
      * @param workbook

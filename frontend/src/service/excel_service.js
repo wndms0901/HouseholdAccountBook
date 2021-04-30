@@ -25,11 +25,31 @@ class ExcelService {
      */
     excelFormDownload(pageName) {
         return axios
-            .get(API_URL + 'form/download', { params: { pageName: pageName } }
-                , { responseType: 'blob' })
+            .get(API_URL + 'form/download', { params: { pageName: pageName }, responseType: 'blob' }
+            )
             .then(response => {
                 console.log('response', response);
-                return response.data;
+                return response;
+            });
+    }
+    /**
+     * 엑셀 업로드
+     * @param {*} data
+     * @returns 
+     */
+    excelUpload(data) {
+        return axios
+            .post(API_URL + 'upload', data,
+                {
+                    headers: {
+                        // "X-AUTH-TOKEN": token,
+                        "Content-Type": `multipart/form-data`,
+                    }
+                }
+            )
+            .then(response => {
+                console.log('response', response);
+                return response;
             });
     }
 

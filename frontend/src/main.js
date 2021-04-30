@@ -21,10 +21,11 @@ import vClickOutside from 'v-click-outside'
 // LightBootstrap plugin
 import LightBootstrap from './light-bootstrap-main'
 // Bootstrap-vue
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import { BootstrapVue, IconsPlugin, BFormFile } from 'bootstrap-vue'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 // router setup
 import routes from './routes/routes'
@@ -55,6 +56,7 @@ Vue.use(VueRouter)
 Vue.use(LightBootstrap)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.component('b-form-file', BFormFile)
 Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 
