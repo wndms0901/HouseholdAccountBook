@@ -87,7 +87,10 @@ public class WriteServiceImpl implements WriteService{
     @Override
     public void saveCalculation(WriteRequestDto writeRequestDto) {
         List<IncomeDto> incomeDtoList = writeMapper.selectCalculationList(writeRequestDto);
-        List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity(writeRequestDto.getUserDto())).collect(Collectors.toList());
+        incomeDtoList.forEach(l -> l.setUserDto(writeRequestDto.getUserDto()));
+        List<Income> insertIncomeDtoList = incomeDtoList.stream()
+                .map(o -> o.toEntity())
+                .collect(Collectors.toList());
         incomeRepository.saveAll(insertIncomeDtoList);
 //        if(incomeDtoList.size()>0){
 //            List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity(writeRequestDto.getUserDto())).collect(Collectors.toList());
@@ -135,7 +138,7 @@ public class WriteServiceImpl implements WriteService{
         // 수입 목록 등록
         if(incomeSaveDto.getInsertIncomeDtoList().size()>0) {
             List<Income> insertIncomeDtoList = incomeSaveDto.getInsertIncomeDtoList().stream()
-                    .map(o -> o.toEntity(incomeSaveDto.getInsertIncomeDtoList().get(0).getUserDto()))
+                    .map(o -> o.toEntity())
                     .collect(Collectors.toList());
             incomeRepository.saveAll(insertIncomeDtoList);
         }

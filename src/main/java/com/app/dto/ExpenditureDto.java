@@ -26,20 +26,22 @@ public class ExpenditureDto {
     private String memo;
     private UserDto userDto;
 
-   // @Builder
-//    public ExpenditureDto(Long expenditureId, String expenditureDate, String expenditureDescription, int cash, int card, Long accountCategoryId, Long largeCategoryId, Long smallCategoryId, String smallCategoryName, String memo, UserDto userDto) {
-//        this.expenditureId = expenditureId;
-//        this.expenditureDate = expenditureDate;
-//        this.expenditureDescription = expenditureDescription;
-//        this.cash = cash;
-//        this.card = card;
-//        this.accountCategoryId = accountCategoryId;
-//        this.largeCategoryId = largeCategoryId;
-//        this.smallCategoryId = smallCategoryId;
-//        this.smallCategoryName = smallCategoryName;
-//        this.memo = memo;
-//        this.userDto = userDto;
-//    }
+    @Builder
+    public ExpenditureDto(Long expenditureId, String expenditureDate, String expenditureDescription, int cash, int card, Long accountCategoryId, String accountCategoryName, Long largeCategoryId, String largeCategoryName, Long smallCategoryId, String smallCategoryName, String memo, UserDto userDto) {
+        this.expenditureId = expenditureId;
+        this.expenditureDate = expenditureDate;
+        this.expenditureDescription = expenditureDescription;
+        this.cash = cash;
+        this.card = card;
+        this.accountCategoryId = accountCategoryId;
+        this.accountCategoryName = accountCategoryName;
+        this.largeCategoryId = largeCategoryId;
+        this.largeCategoryName = largeCategoryName;
+        this.smallCategoryId = smallCategoryId;
+        this.smallCategoryName = smallCategoryName;
+        this.memo = memo;
+        this.userDto = userDto;
+    }
 
     public Expenditure toEntity() {
         User userEntity = userDto==null?null:userDto.toEntity();

@@ -8,8 +8,13 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
+import com.app.domain.Expenditure;
+import com.app.domain.Income;
 import com.app.dto.*;
+import com.app.mapper.ExcelMapper;
 import com.app.mapper.WriteMapper;
+import com.app.repository.ExpenditureRepository;
+import com.app.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -26,14 +31,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ExcelServiceImpl implements ExcelService{
+    private final ExpenditureRepository expenditureRepository;
+    private final IncomeRepository incomeRepository;
     private final WriteMapper writeMapper;
+    private final ExcelMapper excelMapper;
     private final ReportService reportService;
     private final BudgetService budgetService;
     @Value("${spring.aws.bucket.name}")
@@ -813,7 +823,7 @@ public class ExcelServiceImpl implements ExcelService{
     @Override
     public void excelFormDownload(HttpServletResponse response, String pageName){
         String file_path = "excel_form/"; // 폴더명
-        String file_name = "expenditure_excel.xlsx"; // 파일명
+        String file_name = "Expenditure".equals(pageName)? "expenditure_excel.xlsx" : "income_excel.xlsx"; // 파일명
         try {
             AmazonS3 s3 = AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
@@ -845,51 +855,66 @@ public class ExcelServiceImpl implements ExcelService{
      */
     @Transactional
     @Override
-    public void excelUploadExpenditureList(ExcelRequestDto excelRequestDto, MultipartFile file){
-        List<ExpenditureDto> dataList = new ArrayList<>();
+    public void excelUploadExpenditureList(ExcelRequestDto excelRequestDto, MultipartFile file) throws Exception {
+        List<ExpenditureDto> expenditureDtoList = new ArrayList<>();
         System.out.println("시작>");
-            Workbook workbook = null;
-            try {
-                if ("xlsx".equals(excelRequestDto.getFileNameExtension())) {
-                    workbook = new XSSFWorkbook(file.getInputStream());
-                } else if ("xls".equals(excelRequestDto.getFileNameExtension())) {
-                    workbook = new HSSFWorkbook(file.getInputStream());
-                }
-            }catch (IOException e){
-
-            }
-
-            Sheet worksheet = workbook.getSheetAt(0);
+        Workbook workbook = null;
+        if ("xlsx".equals(excelRequestDto.getFileNameExtension())) {
+            workbook = new XSSFWorkbook(file.getInputStream());
+        } else if ("xls".equals(excelRequestDto.getFileNameExtension())) {
+            workbook = new HSSFWorkbook(file.getInputStream());
+        }
+        Sheet worksheet = workbook.getSheetAt(0);
         System.out.println("row>>" + worksheet.getLastRowNum());
         System.out.println("row>>" + worksheet.getPhysicalNumberOfRows());
-            for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
-                try {
-                    Row row = worksheet.getRow(i);
-                    ExpenditureDto data = new ExpenditureDto();
-                    Date expenditureDate = row.getCell(0).getDateCellValue();
-                    System.out.println("확인>>" + expenditureDate);
-                    String expenditureDescription = row.getCell(1).getStringCellValue();
-                    System.out.println("확인>" + expenditureDescription);
-                    double cash = row.getCell(2).getNumericCellValue();
-                    System.out.println("확인>>" + cash);
-                    double card =  row.getCell(3).getNumericCellValue();
-                    System.out.println("확인>>" + card);
-                    //String accountCategoryName = row.getCell(4).getStringCellValue()==null?"":row.getCell(4).getStringCellValue();
-                    System.out.println("확인>>" + row.getCell(4).getStringCellValue());
-                    String largeCategoryName = row.getCell(5).getStringCellValue();
-                    System.out.println("확인>>" + largeCategoryName);
-                    String smallCategoryName = row.getCell(6).getStringCellValue();
-                    System.out.println("확인>>" + smallCategoryName);
-                    String memo = row.getCell(7).getStringCellValue();
-                    System.out.println("확인>>" + memo);
+        for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
+            Row row = worksheet.getRow(i);
+            Date inputDate = row.getCell(0).getDateCellValue();
+            SimpleDateFormat transFormat = new SimpleDateFormat("yyyyMMdd");
+            String expenditureDate = transFormat.format(inputDate);
+            System.out.println("확인>>" + expenditureDate);
+            String expenditureDescription = row.getCell(1).getStringCellValue();
+            System.out.println("확인>" + expenditureDescription);
+            int cash = (int) row.getCell(2).getNumericCellValue();
+            System.out.println("확인>>" + cash);
+            int card = (int) row.getCell(3).getNumericCellValue();
+            System.out.println("확인>>" + card);
+            String accountCategoryName = row.getCell(4).getStringCellValue();
+            System.out.println("확인>>" + accountCategoryName);
+            String largeCategoryName = row.getCell(5).getStringCellValue();
+            largeCategoryName = largeCategoryName.replace('_', '/');
+            System.out.println("확인>>" + largeCategoryName);
+            String smallCategoryName = row.getCell(6).getStringCellValue();
+            smallCategoryName = smallCategoryName.replace('_', '/');
+            System.out.println("확인>>" + smallCategoryName);
+            String memo = row.getCell(7).getStringCellValue();
+            System.out.println("확인>>" + memo);
+            ExpenditureDto dto = ExpenditureDto.builder()
+                    .expenditureDate(expenditureDate)
+                    .expenditureDescription(expenditureDescription)
+                    .cash(cash)
+                    .card(card)
+                    .accountCategoryName(accountCategoryName)
+                    .largeCategoryName(largeCategoryName)
+                    .smallCategoryName(smallCategoryName)
+                    .memo(memo)
+                    .userDto(excelRequestDto.getUserDto())
+                    .build();
 
+            // 카테고리 ID 조회
+            ExpenditureDto category = excelMapper.selectExpenditureExcelUploadCategoryId(dto);
 
-                    dataList.add(data);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        System.out.println("끝?"+dataList.size());
+            // 통장 카테고리 ID
+            dto.setAccountCategoryId(category.getAccountCategoryId());
+            // 대분류 카테고리 ID
+            dto.setLargeCategoryId(category.getLargeCategoryId());
+            // 소분류 카테고리 ID
+            dto.setSmallCategoryId(category.getSmallCategoryId());
+            expenditureDtoList.add(dto);
+        }
+        // 지출 목록 등록
+        List<Expenditure> expenditureList = expenditureDtoList.stream().map(o -> o.toEntity()).collect(Collectors.toList());
+        expenditureRepository.saveAll(expenditureList);
     }
     /**
      * 수입 목록 엑셀 업로드
@@ -898,7 +923,57 @@ public class ExcelServiceImpl implements ExcelService{
     @Transactional
     @Override
     public void excelUploadIncomeList(ExcelRequestDto excelRequestDto, MultipartFile file) throws  Exception {
+        List<IncomeDto> incomeDtoList = new ArrayList<>();
+        System.out.println("시작>");
+        Workbook workbook = null;
+        if ("xlsx".equals(excelRequestDto.getFileNameExtension())) {
+            workbook = new XSSFWorkbook(file.getInputStream());
+        } else if ("xls".equals(excelRequestDto.getFileNameExtension())) {
+            workbook = new HSSFWorkbook(file.getInputStream());
+        }
+        Sheet worksheet = workbook.getSheetAt(0);
+        System.out.println("row>>" + worksheet.getLastRowNum());
+        System.out.println("row>>" + worksheet.getPhysicalNumberOfRows());
+        for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
+            Row row = worksheet.getRow(i);
+            Date inputDate = row.getCell(0).getDateCellValue();
+            SimpleDateFormat transFormat = new SimpleDateFormat("yyyyMMdd");
+            String incomeDate = transFormat.format(inputDate);
+            System.out.println("확인>>" + incomeDate);
+            String incomeDescription = row.getCell(1).getStringCellValue();
+            System.out.println("확인>" + incomeDescription);
+            int incomeAmount = (int) row.getCell(2).getNumericCellValue();
+            System.out.println("확인>>" + incomeAmount);
+            String accountCategoryName = row.getCell(3).getStringCellValue();
+            System.out.println("확인>>" + accountCategoryName);
+            String largeCategoryName = row.getCell(4).getStringCellValue();
+            System.out.println("확인>>" + largeCategoryName);
+            String memo = row.getCell(5).getStringCellValue();
+            System.out.println("확인>>" + memo);
+            IncomeDto dto = IncomeDto.builder()
+                    .incomeDate(incomeDate)
+                    .incomeDescription(incomeDescription)
+                    .incomeAmount(incomeAmount)
+                    .accountCategoryName(accountCategoryName)
+                    .largeCategoryName(largeCategoryName)
+                    .memo(memo)
+                    .userDto(excelRequestDto.getUserDto())
+                    .build();
 
+            // 카테고리 ID 조회
+            ExpenditureDto category = excelMapper.selectIncomeExcelUploadCategoryId(dto);
+
+            // 통장 카테고리 ID
+            dto.setAccountCategoryId(category.getAccountCategoryId());
+            // 대분류 카테고리 ID
+            dto.setLargeCategoryId(category.getLargeCategoryId());
+            incomeDtoList.add(dto);
+        }
+        // 수입 목록 등록
+        List<Income> incomeList = incomeDtoList.stream()
+                .map(o -> o.toEntity())
+                .collect(Collectors.toList());
+        incomeRepository.saveAll(incomeList);
     }
 
     /**

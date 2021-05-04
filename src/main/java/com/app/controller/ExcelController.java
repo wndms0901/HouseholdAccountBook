@@ -72,10 +72,10 @@ public class ExcelController {
                 // 수입 목록 엑셀 업로드
                 excelService.excelUploadIncomeList(excelRequestDto, file);
             }
-            resultMap.put("success", "");
+            resultMap.put("result", "success");
             return new ResponseEntity<>(resultMap, HttpStatus.OK);
         }catch (Exception e){
-            resultMap.put("fail",e.getCause());
+            resultMap.put("result","failure");
             return new ResponseEntity<>(resultMap, HttpStatus.OK);
         }
     }

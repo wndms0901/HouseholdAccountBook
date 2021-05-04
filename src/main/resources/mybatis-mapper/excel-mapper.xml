@@ -19,10 +19,31 @@
         <result column="memo" property="memo" />
     </resultMap>
 
-    <select id="selectCategoryId" parameterType="com.app.dto.ExpenditureDto" resultMap="expenditureDto">
-        SELECT IFNULL(SUM(i.income_amount),0)
-          FROM income i
-         WHERE i.user_email=#{email}
-           AND i.income_date between #{thisMonthStartDate} AND #{thisMonthEndDate}
+    <select id="selectExpenditureExcelUploadCategoryId" parameterType="com.app.dto.ExpenditureDto" resultMap="expenditureDto">
+        SELECT ac.account_category_id
+             , c.large_category_id
+             , c.small_category_id
+          FROM account_category ac
+             , (
+                SELECT lc.large_category_id
+                     , sc.small_category_id
+                  FROM large_category lc
+             INNER JOIN small_category sc
+                    ON lc.large_category_id = sc.large_category_id
+                 WHERE lc.large_category_name = #{largeCategoryName}
+                   AND sc.small_category_name = #{smallCategoryName}
+               ) c
+         WHERE ac.account_category_type = 'WDRL'
+           AND ac.account_category_name = #{accountCategoryName}
+    </select>
+    <select id="selectIncomeExcelUploadCategoryId" parameterType="com.app.dto.IncomeDto" resultMap="expenditureDto">
+        SELECT ac.account_category_id
+             , lc.large_category_id
+          FROM account_category ac
+             , large_category lc
+         WHERE ac.account_category_type = 'DPST'
+           AND ac.account_category_name = #{accountCategoryName}
+           AND lc.category_type = 'INC'
+           AND lc.large_category_name = #{largeCategoryName}
     </select>
 </mapper>

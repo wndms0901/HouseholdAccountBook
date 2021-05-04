@@ -49,7 +49,7 @@ class ExcelService {
             )
             .then(response => {
                 console.log('response', response);
-                return response;
+                return response.data;
             });
     }
 

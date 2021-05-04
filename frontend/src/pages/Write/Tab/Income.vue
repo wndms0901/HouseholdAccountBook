@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="pb-2 excel_btn_box">
-      <button class="basicBtn" @click="excelUpload">엑셀 업로드</button>
+      <button class="basicBtn" @click="openExcelUploadModal">
+        엑셀 업로드
+      </button>
       <button class="basicBtn" @click="excelDownload">엑셀 다운로드</button>
     </div>
     <grid
@@ -45,6 +47,44 @@
         <span class="mr-2 income_color">{{ this.totalIncome }}</span>
         <button class="saveBtn" @click="onSave">저장</button>
       </div>
+      <!-- 엑셀 업로드 Modal -->
+      <excelUploadModal v-if="showExcelUploadModal">
+        <!-- top 슬롯 콘텐츠 -->
+        <template slot="top">
+          <span>엑셀 업로드</span>
+        </template>
+        <!-- /top -->
+        <!-- cotent 슬롯 콘텐츠 -->
+        <div class="excel_select_box">
+          <b-form-file
+            ref="excelForm"
+            v-model="file"
+            accept=".xlsx, .xls"
+            browse-text="엑셀선택"
+            placeholder="엑셀 파일을 선택해 주세요."
+          ></b-form-file>
+        </div>
+        <div class="excel_form_box">
+          <img
+            id="excel_logo"
+            src="../../../assets/image/excel.png"
+          />&nbsp;<span>엑셀 양식 다운로드</span>&ensp;
+          <button class="outlineSecondaryBtn" @click="excelFormDownload">
+            수입내역
+          </button>
+        </div>
+        <!-- /cotent -->
+        <!-- footer 슬롯 콘텐츠 -->
+        <template slot="footer">
+          <div class="modalFooterBtn-box">
+            <button class="primaryBtn" @click="excelUpload">엑셀 업로드</button>
+            <button class="basicBtn" @click="closeExcelUploadModal">
+              닫기
+            </button>
+          </div>
+        </template>
+        <!-- /footer -->
+      </excelUploadModal>
     </div>
   </div>
 </template>
@@ -105,9 +145,10 @@ window.lookupValue = function lookupValue(mappings, key) {
 //   }
 // }
 import InputCellEditor from "src/components/CellEditor/InputCellEditor";
+import excelUploadModal from "src/components/Modal/ExcelUpload";
 export default {
   name: "Income",
-  components: { InputCellEditor },
+  components: { InputCellEditor, excelUploadModal },
   props: {
     user: Object,
     period: Object,
@@ -128,6 +169,8 @@ export default {
       deletedRows: [],
       disabledSelectBtn: true,
       totalIncomeNumber: 0,
+      showExcelUploadModal: false,
+      file: null,
     };
   },
   computed: {
@@ -512,8 +555,73 @@ export default {
           console.log(Error);
         });
     },
+    // 엑셀 양식 다운로드
+    excelFormDownload() {
+      const pageName = "Income";
+      this.$store
+        .dispatch("excelStore/excelFormDownload", pageName)
+        .then((res) => {
+          const fileName = "가계부_수입양식.xlsx";
+          const url = window.URL.createObjectURL(
+            new Blob([res.data], {
+              type: res.headers["content-type"],
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
     // 엑셀 업로드
-    excelUpload() {},
+    excelUpload() {
+      if (!this.file) {
+        alert("엑셀파일을 선택해 주세요.");
+      }
+      const fileExtension = this.file.name
+        .split(".")
+        .reverse()[0]
+        .toLowerCase();
+      if (!(fileExtension === "xlsx" || fileExtension === "xls")) {
+        alert(
+          "엑셀 파일은 xlsx, xls인 경우만 업로드가 가능합니다. \n파일을 다시 한번 확인한 후 업로드해 주세요"
+        );
+      } else {
+        const formData = new FormData();
+        const excelRequestDto = {
+          userDto: this.user.userInfo,
+          pageName: "Income",
+          fileNameExtension: fileExtension,
+        };
+        const json = JSON.stringify(excelRequestDto);
+        const blob = new Blob([json], {
+          type: "application/json",
+        });
+
+        formData.append("file", this.file);
+        formData.append("excelRequestDto", blob);
+        this.$store
+          .dispatch("excelStore/excelUpload", formData)
+          .then((res) => {
+            console.log("결과", res.result);
+            if (res.result === "failure") {
+              alert(
+                "엑셀 업로드에 실패하였습니다. 작성한 내용을 다시 확인해 주세요."
+              );
+            } else {
+              this.showExcelUploadModal = false;
+              this.getIncomeList();
+            }
+          })
+          .catch((Error) => {
+            console.log(Error);
+          });
+      }
+    },
     // 엑셀 다운로드
     excelDownload() {
       const startDate = this.$moment(this.period.from).format("YYYYMMDD");
@@ -582,6 +690,14 @@ export default {
       this.gridApi.deselectAll();
       this.gridApi.clearFocusedCell();
       this.getTotal();
+    },
+    // 엑셀 업로드 모달 open
+    openExcelUploadModal() {
+      this.showExcelUploadModal = true;
+    },
+    // 엑셀 업로드 모달 close
+    closeExcelUploadModal() {
+      this.showExcelUploadModal = false;
     },
   },
 };

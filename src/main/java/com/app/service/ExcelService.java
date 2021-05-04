@@ -45,10 +45,9 @@ public interface ExcelService {
 
     /**
      * 지출 목록 엑셀 업로드
-     *
      * @param excelRequestDto
      */
-    void excelUploadExpenditureList(ExcelRequestDto excelRequestDto, MultipartFile file) ;
+    void excelUploadExpenditureList(ExcelRequestDto excelRequestDto, MultipartFile file) throws Exception;
     /**
      * 수입 목록 엑셀 업로드
      * @param excelRequestDto

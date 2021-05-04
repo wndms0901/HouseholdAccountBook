@@ -839,8 +839,9 @@ export default {
     },
     // 엑셀 양식 다운로드
     excelFormDownload() {
+      const pageName = "Expenditure";
       this.$store
-        .dispatch("excelStore/excelFormDownload", "")
+        .dispatch("excelStore/excelFormDownload", pageName)
         .then((res) => {
           const fileName = "가계부_지출양식.xlsx";
           const url = window.URL.createObjectURL(
@@ -887,7 +888,17 @@ export default {
         formData.append("excelRequestDto", blob);
         this.$store
           .dispatch("excelStore/excelUpload", formData)
-          .then((res) => {})
+          .then((res) => {
+            console.log("결과", res.result);
+            if (res.result === "failure") {
+              alert(
+                "엑셀 업로드에 실패하였습니다. 작성한 내용을 다시 확인해 주세요."
+              );
+            } else {
+              this.showExcelUploadModal = false;
+              this.getExpenditureList();
+            }
+          })
           .catch((Error) => {
             console.log(Error);
           });
