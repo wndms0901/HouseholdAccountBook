@@ -18,6 +18,10 @@
         <i class="nc-icon nc-bullet-list-67"></i>
         <p>예산쓰기</p>
       </sidebar-link>
+      <sidebar-link to="/mybook/user">
+        <i class="nc-icon nc-circle-09"></i>
+        <p>User Profile</p>
+      </sidebar-link>
       <!-- <sidebar-link to="/mybook/overview">
         <i class="nc-icon nc-chart-pie-35"></i>
         <p>Dashboard</p>
@@ -55,21 +59,38 @@
       </template> -->
       <div class="nav_month">
         <p>이달의 가계</p>
-        <p>2021.03.31 ~ 2021.04.29</p>
+        <p>{{ this.period.from }} ~ {{ this.period.to }}</p>
         <div class="nav_month_box">
           <ul>
             <div class="nav_month_box_total">
-              <li><span>= 수입 - 지출</span><span>10,000</span></li>
+              <li>
+                <span>=&ensp;수입 - 지출</span><span>{{ this.total }}</span>
+              </li>
             </div>
             <div class="nav_month_box_income">
-              <li><span>+ 수입</span><span>10,000</span></li>
-              <li><span>ㄴ 이달의 수입</span><span>10,000</span></li>
-              <li><span>ㄴ 전월이월</span><span>0</span></li>
+              <li>
+                <span>+&ensp;&nbsp;수입</span><span>{{ this.income }}</span>
+              </li>
+              <li>
+                <span>ㄴ 이달의 수입</span
+                ><span>{{ this.incomeAmountString }}</span>
+              </li>
+              <li>
+                <span>ㄴ 전월이월</span
+                ><span>{{ this.balanceCarriedForwardString }}</span>
+              </li>
             </div>
             <div class="nav_month_box_expenditure">
-              <li><span>- 지출</span><span>10,000</span></li>
-              <li><span>ㄴ 현금지출</span><span>10,000</span></li>
-              <li><span>ㄴ 카드지출</span><span>0</span></li>
+              <li>
+                <span>-&ensp;&ensp;지출</span
+                ><span>{{ this.expenditure }}</span>
+              </li>
+              <li>
+                <span>ㄴ 현금지출</span><span>{{ this.cashString }}</span>
+              </li>
+              <li>
+                <span>ㄴ 카드지출</span><span>{{ this.cardString }}</span>
+              </li>
             </div>
           </ul>
         </div>
@@ -77,9 +98,8 @@
     </side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
-
-      <dashboard-content @click="toggleSidebar"> </dashboard-content>
-
+      <dashboard-content @click="toggleSidebar" @updateStartDate="setPeriod">
+      </dashboard-content>
       <content-footer></content-footer>
     </div>
   </div>
@@ -99,13 +119,203 @@ export default {
     DashboardContent,
     MobileMenu,
   },
+  data() {
+    return {
+      user: this.$store.state.userStore.initialState.user,
+      period: {
+        from: "",
+        to: "",
+      },
+      incomeAmount: 0,
+      balanceCarriedForward: 0,
+      cash: 0,
+      card: 0,
+    };
+  },
   computed: {
     loggedIn() {
       return this.$store.state.userStore.initialState.status.loggedIn;
     },
+    monthStartDate() {
+      return this.$store.state.userStore.initialState.user.userInfo
+        .monthStartDate;
+    },
+    total() {
+      const total =
+        this.incomeAmount +
+        this.balanceCarriedForward -
+        (this.cash + this.card);
+      return String(total).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    expenditure() {
+      const expenditure = this.cash + this.card;
+      return String(expenditure).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    income() {
+      const income = this.incomeAmount + this.balanceCarriedForward;
+      return String(income).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    incomeAmountString() {
+      return String(this.incomeAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    balanceCarriedForwardString() {
+      return String(this.balanceCarriedForward).replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        ","
+      );
+    },
+    cashString() {
+      return String(this.cash).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    cardString() {
+      return String(this.card).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
   },
-  mounted() {},
+
+  mounted() {
+    this.setPeriod();
+  },
   methods: {
+    // 조회 기간 setting
+    setPeriod() {
+      let today = new Date();
+      const monthStartDate = this.monthStartDate;
+      let periodFrom = null;
+      let periodTo = null;
+
+      if (monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        const month = today.getMonth() - 1;
+        const startLastDate = this.$moment(
+          new Date(today.getFullYear(), month, 1)
+        ).endOf("month")._d;
+        const endLastDate = this.$moment(
+          new Date(today.getFullYear(), month + 1, 1)
+        ).endOf("month")._d;
+
+        periodFrom = new Date(
+          today.getFullYear(),
+          month,
+          startLastDate.getDate()
+        );
+        periodTo = new Date(
+          today.getFullYear(),
+          month + 1,
+          endLastDate.getDate() - 1
+        );
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        const month =
+          parseInt(monthStartDate) > 15
+            ? today.getMonth() - 1
+            : today.getMonth();
+        periodFrom = new Date(today.getFullYear(), month, monthStartDate);
+        periodTo = new Date(today.getFullYear(), month + 1, monthStartDate - 1);
+      }
+      this.period.from = this.$moment(periodFrom).format("YYYY.MM.DD");
+      this.period.to = this.$moment(periodTo).format("YYYY.MM.DD");
+      // 오늘 날짜
+      const currentDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      // 오늘 날짜가 시작일~종료일 사이로 조회되도록 설정
+      if (!(currentDate >= periodFrom && currentDate <= periodTo)) {
+        if (parseInt(monthStartDate) < 16) {
+          this.onPrevMonth(periodFrom, periodTo);
+        } else {
+          this.onNextMonth(periodFrom, periodTo);
+        }
+      }
+      this.getIncomeExpenditureDetail();
+    },
+    onPrevMonth(periodFrom, periodTo) {
+      const isPeriodFromLastDay = this.checkMonthLastDay(periodFrom);
+      const isPeriodtoLastDay = this.checkMonthLastDay(periodTo);
+
+      if (isPeriodFromLastDay) {
+        // 말일인 경우
+        this.period.from = this.$moment(periodFrom)
+          .subtract(1, "months")
+          .endOf("month")
+          .format("YYYY.MM.DD");
+      } else {
+        // 말일이 아닌 경우
+        this.period.from = this.$moment(periodFrom)
+          .subtract(1, "months")
+          .format("YYYY.MM.DD");
+      }
+      if (isPeriodtoLastDay) {
+        this.period.to = this.$moment(periodTo)
+          .subtract(1, "months")
+          .endOf("month")
+          .format("YYYY.MM.DD");
+      } else {
+        this.period.to = this.$moment(periodTo)
+          .subtract(1, "months")
+          .format("YYYY.MM.DD");
+      }
+    },
+    onNextMonth(periodFrom, periodTo) {
+      const isPeriodFromLastDay = this.checkMonthLastDay(periodFrom);
+      const isPeriodtoLastDay = this.checkMonthLastDay(periodTo);
+
+      if (isPeriodFromLastDay) {
+        // 말일인 경우
+        this.period.from = this.$moment(periodFrom)
+          .add(1, "months")
+          .endOf("month")
+          .format("YYYY.MM.DD");
+      } else {
+        // 말일이 아닌 경우
+        this.period.from = this.$moment(periodFrom)
+          .add(1, "months")
+          .format("YYYY.MM.DD");
+      }
+      if (isPeriodtoLastDay) {
+        this.period.to = this.$moment(periodTo)
+          .add(1, "months")
+          .endOf("month")
+          .format("YYYY.MM.DD");
+      } else {
+        this.period.to = this.$moment(periodTo)
+          .add(1, "months")
+          .format("YYYY.MM.DD");
+      }
+    },
+    // 말일 체크
+    checkMonthLastDay(value) {
+      const dt = _.cloneDeep(value);
+      const lastDay = this.$moment(dt).endOf("month")._d;
+      return (
+        parseInt(this.monthStartDate) !== 28 &&
+        dt.getDate() === lastDay.getDate()
+      );
+    },
+    // 수입/지출 상세 조회
+    getIncomeExpenditureDetail() {
+      const startDate = this.period.from;
+      const endDate = this.period.to;
+      const writeRequestDto = {
+        startDate: startDate.replace(/\./g, ""),
+        endDate: endDate.replace(/\./g, ""),
+        userDto: this.user.userInfo,
+      };
+      console.log("writeRequestDto", writeRequestDto);
+      this.$store
+        .dispatch("writeStore/selectIncomeExpenditureDetail", writeRequestDto)
+        .then((res) => {
+          console.log("결과", res.data);
+          this.incomeAmount = res.data.incomeAmount;
+          this.balanceCarriedForward = res.data.balanceCarriedForward;
+          this.cash = res.data.cash;
+          this.card = res.data.card;
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {
         this.$sidebar.displaySidebar(false);
@@ -138,6 +348,13 @@ export default {
   padding: 0;
   list-style-type: none;
 }
+.nav_month_box ul li:first-child span:first-child {
+  font-weight: bold;
+}
+.nav_month_box ul li span:last-child {
+  padding-right: 7px;
+  float: right;
+}
 .nav_month_box_total {
   padding: 10px 0px 10px 10px;
   border-bottom: 1px solid black;
@@ -146,8 +363,14 @@ export default {
   padding: 10px 0px 10px 10px;
   border-bottom: 1px solid black;
 }
+.nav_month_box_income li:first-child span:first-child {
+  color: #89d7ff;
+}
 .nav_month_box_expenditure {
   padding: 10px 0px 10px 10px;
+}
+.nav_month_box_expenditure li:first-child span:first-child {
+  color: #09e76c;
 }
 .date_wrap {
   padding-top: 20px;

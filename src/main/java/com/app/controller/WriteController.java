@@ -17,6 +17,19 @@ public class WriteController {
     private final WriteService writeService;
 
     /**
+     * 수입/지출 상세 조회
+     * @param writeRequestDto
+     * @return ResponseEntity<?>
+     */
+    @PostMapping("/income-expenditure/detail")
+    public ResponseEntity<?> selectIncomeExpenditureDetail(@RequestBody WriteRequestDto writeRequestDto){
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        IncomeExpenditureDetailDto dto = writeService.selectIncomeExpenditureDetail(writeRequestDto);
+        resultMap.put("data", dto);
+        return new ResponseEntity(resultMap, HttpStatus.OK);
+    }
+
+    /**
      * 카테고리 목록 조회
      * @param categoryType
      * @return ResponseEntity<?>

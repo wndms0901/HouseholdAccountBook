@@ -4,6 +4,19 @@ const API_URL = 'http://localhost:8080/write/';
 
 class WriteService {
     /**
+     * 수입/지출 상세 조회
+     * @param {*} writeRequestDto
+     * @returns
+     */
+    selectIncomeExpenditureDetail(writeRequestDto) {
+        return axios
+            .post(API_URL + 'income-expenditure/detail', writeRequestDto)
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
+    /**
      * 카테고리 목록 조회
      * @param {*} categoryType
      * @returns

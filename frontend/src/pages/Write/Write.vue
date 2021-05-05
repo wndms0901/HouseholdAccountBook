@@ -350,6 +350,7 @@ export default {
       this.$store
         .dispatch("userStore/updateMonthStartDate", userDto)
         .then((res) => {
+          this.$emit("updateStartDate");
           this.setPeriod();
         })
         .catch((Error) => {

@@ -7,6 +7,12 @@ import java.util.List;
 
 public interface WriteService {
     /**
+     * 수입/지출 상세 조회
+     * @param writeRequestDto
+     * @return IncomeExpenditureDetailDto
+     */
+    IncomeExpenditureDetailDto selectIncomeExpenditureDetail(WriteRequestDto writeRequestDto);
+    /**
      * 카테고리 목록 조회
      * @param categoryType
      * @return CategoryDto

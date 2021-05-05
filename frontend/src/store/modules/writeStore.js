@@ -4,6 +4,22 @@ const writeStore = {
     namespaced: true,
     actions: {
         /**
+         * 수입/지출 상세 조회
+         * @param {*} writeRequestDto
+         * @returns
+         */
+        selectIncomeExpenditureDetail({ }, writeRequestDto) {
+            return WriteService.selectIncomeExpenditureDetail(writeRequestDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
          * 카테고리 목록 조회
          * @param {*} categoryType
          * @returns

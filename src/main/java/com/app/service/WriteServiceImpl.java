@@ -24,6 +24,16 @@ public class WriteServiceImpl implements WriteService{
     //    private final UserRepository userRepository;
 
     /**
+     * 수입/지출 상세 조회
+     * @param writeRequestDto
+     * @return IncomeExpenditureDetailDto
+     */
+    @Override
+    public IncomeExpenditureDetailDto selectIncomeExpenditureDetail(WriteRequestDto writeRequestDto) {
+        return writeMapper.selectIncomeExpenditureDetail(writeRequestDto);
+    }
+
+    /**
      * 카테고리 목록 조회
      * @param categoryType
      * @return CategoryDto

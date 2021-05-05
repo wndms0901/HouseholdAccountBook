@@ -4,6 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.app.mapper.WriteMapper">
+    <resultMap type="com.app.dto.IncomeExpenditureDetailDto" id="incomeExpenditureDetailDto">
+        <result column="income_amount" property="incomeAmount" />
+        <result column="balance_carried_forward" property="balanceCarriedForward" />
+        <result column="cash" property="cash" />
+        <result column="card" property="card" />
+    </resultMap>
     <resultMap type="com.app.dto.LargeCategoryDto" id="largeCategoryDto">
         <result column="large_category_id" property="largeCategoryId" />
         <result column="large_category_name" property="largeCategoryName" />
@@ -45,6 +51,35 @@
         <result column="memo" property="memo" />
     </resultMap>
 
+    <select id="selectIncomeExpenditureDetail" parameterType="com.app.dto.WriteRequestDto" resultMap="incomeExpenditureDetailDto">
+        SELECT IFNULL(a.income_amount,0) AS income_amount
+             , IFNULL(a.balance_carried_forward,0) AS balance_carried_forward
+             , IFNULL(b.cash,0) AS cash
+             , IFNULL(b.card,0) AS card
+         FROM (
+               SELECT SUM(IF(i.large_category_id=25,0,i.income_amount)) AS income_amount
+                    , SUM(IF(i.large_category_id!=25,0,i.income_amount)) AS balance_carried_forward
+                    , IFNULL(i.user_email, #{userDto.email}) AS user_email
+                 FROM (
+                       SELECT i.large_category_id
+                            , SUM(i.income_amount) AS income_amount
+                            , i.user_email
+                         FROM income i
+                        WHERE i.income_date BETWEEN #{startDate} AND #{endDate}
+                          AND i.user_email=#{userDto.email}
+                     GROUP BY i.large_category_id
+                      ) i
+              ) a
+   INNER JOIN (
+               SELECT SUM(cash) AS cash
+                    , SUM(card) AS card
+                    , IFNULL(e.user_email, #{userDto.email}) AS user_email
+                 FROM expenditure e
+                WHERE e.expenditure_date BETWEEN #{startDate} AND #{endDate}
+                  AND e.user_email=#{userDto.email}
+              ) b
+           ON a.user_email = b.user_email
+    </select>
     <select id="selectLargeCategoryList" parameterType="String" resultMap="largeCategoryDto">
         SELECT lc.large_category_id
              , lc.large_category_name

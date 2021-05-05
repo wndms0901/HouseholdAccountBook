@@ -1,10 +1,16 @@
 <template>
   <transition name="fade" mode="out-in">
-    <router-view></router-view>
+    <router-view @updateStartDate="updateStartDate"></router-view>
   </transition>
 </template>
 <script>
-export default {};
+export default {
+  methods: {
+    updateStartDate() {
+      this.$emit("updateStartDate");
+    },
+  },
+};
 </script>
 <style>
 .fade-enter-active,
