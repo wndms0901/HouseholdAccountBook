@@ -41,8 +41,9 @@
             </a>
           </li>
         </ul> -->
-        <ul class="navbar-nav ml-auto">
-          <base-dropdown title="Dropdown">
+        <div class="topNavBarBox">
+          <ul class="navbar-nav ml-auto">
+            <!-- <base-dropdown title="Dropdown">
             <a class="dropdown-item" href="/mybook/overview">Action</a>
             <a class="dropdown-item" href="#">Another action</a>
             <a class="dropdown-item" href="#">Something</a>
@@ -50,21 +51,29 @@
             <a class="dropdown-item" href="#">Something</a>
             <div class="divider"></div>
             <a class="dropdown-item" href="#">Separated link</a>
-          </base-dropdown>
-          <li class="nav-item">
-            <!-- <b-button id="top_btn" variant="outline-primary" class="m-0"> -->
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" @click="logout"
+          </base-dropdown> -->
+            <li class="nav-item">
+              <!-- <b-button id="top_btn" variant="outline-primary" class="m-0"> -->
+            </li>
+            <li class="nav-item">
+              <router-link to="/mybook/myInfo"
+                ><i class="nc-icon nc-single-02 pr-1"></i
+                ><span>내정보</span></router-link
+              >
+              <!-- <a class="nav-link" href="#" @click="onClickMyInfo"
               ><i class="nc-icon nc-single-02 pr-1"></i>내정보</a
-            >
-            <!-- </b-button> -->
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" @click="logout"
+            > -->
+              <!-- </b-button> -->
+            </li>
+            <li class="nav-item">
+              <router-link to="/mybook/myInfo" @click.native="logout"
+                ><i class="nc-icon nc-button-power pr-1"></i
+                ><span>로그아웃</span></router-link
+              >
+              <!-- <a class="nav-link" href="" @click="logout"
               ><i class="nc-icon nc-button-power pr-1"></i>로그아웃</a
-            >
-            <!-- <b-button
+            > -->
+              <!-- <b-button
               id="top_btn"
               variant="outline-secondary"
               class="m-0"
@@ -72,9 +81,10 @@
             >
 
             </b-button>-->
-            <!-- <a href="/user/login" class="nav-link"> Log out </a> -->
-          </li>
-        </ul>
+              <!-- <a href="/user/login" class="nav-link"> Log out </a> -->
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
@@ -94,6 +104,9 @@ export default {
   },
   mounted() {},
   methods: {
+    onClickMyInfo() {
+      this.$router.push({ path: "myInfo" });
+    },
     logout() {
       console.log(this.$store);
       this.$store.dispatch("userStore/logout");
@@ -118,9 +131,15 @@ export default {
 };
 </script>
 <style scoped>
-#top_btn {
-  padding: 8px 12px 6px;
-  border-width: thin;
+.topNavBarBox ul li {
+  margin-right: 15px;
+}
+.topNavBarBox ul li i {
+  vertical-align: middle;
+  color: #888;
+}
+.topNavBarBox ul li span {
+  color: #888;
 }
 </style>>
 

@@ -1,79 +1,74 @@
 <template>
-  <div>
-    <!-- <b-form @submit="onRegister"> -->
-    <b-row class="m-0" cols="1" cols-sm="1" cols-md="2" cols-lg="2" cols-xl="3">
-      <div id="registerForm">
-        <p class="text-center h1 p-5">회원가입</p>
-        <b-form-group id="user-email" label-for="user-email">
-          <b-form-input
-            class="form-control form-control-lg"
-            id="user-email"
-            v-model="user.email"
-            type="email"
-            placeholder="이메일"
-            required
-          ></b-form-input>
-          <p class="text-danger" v-show="valueCheck.email">
-            올바른 이메일 주소가 아닙니다.
-          </p>
-        </b-form-group>
-        <b-form-group id="user-name" label-for="user-name">
-          <b-form-input
-            class="form-control form-control-lg"
-            id="user-name"
-            v-model="user.name"
-            type="text"
-            placeholder="이름"
-            required
-          ></b-form-input>
-          <p class="text-danger" v-show="valueCheck.name">
-            한글과 영문 대 소문자를 사용하세요. (특수기호, 공백 사용 불가)
-          </p>
-        </b-form-group>
-        <b-form-group id="user-password" label-for="user-password">
-          <b-form-input
-            class="form-control form-control-lg"
-            id="user-password"
-            v-model="user.password"
-            type="password"
-            placeholder="비밀번호"
-            required
-          ></b-form-input>
-          <p class="text-danger" v-show="valueCheck.password">
-            8자리 ~ 20자리 이내로 영문,숫자,특수문자를 혼합하여 입력해주세요.
-          </p>
-        </b-form-group>
-        <b-form-group id="user-password-check" label-for="user-password-check">
-          <b-form-input
-            class="form-control form-control-lg"
-            id="user-password-check"
-            v-model="user.passwordCheck"
-            type="password"
-            placeholder="비밀번호 재확인"
-            required
-          ></b-form-input>
-          <p class="text-danger" v-show="valueCheck.passwordCheck">
-            비밀번호가 일치하지 않습니다.
-          </p>
-        </b-form-group>
-        <b-button
-          type="submit"
-          variant="primary"
-          size="lg"
-          block
-          @click="onRegister"
-          >가입하기</b-button
-        >
-        <div id="loginLink">
-          <p>계정이 있으신가요? <a href="/user/login">로그인</a></p>
-        </div>
-      </div>
-    </b-row>
-    <!-- </b-form> -->
-    <!-- <b-modal id="modal-center" centered hide-backdrop v-model="show" ok-only>
+  <div class="registerForm">
+    <p class="text-center h1 p-5">회원가입</p>
+    <b-form-group id="user-email" label-for="user-email">
+      <b-form-input
+        class="form-control form-control-lg"
+        id="user-email"
+        v-model="user.email"
+        type="email"
+        placeholder="이메일"
+        required
+      ></b-form-input>
+      <p class="text-danger" v-show="valueCheck.email">
+        올바른 이메일 주소가 아닙니다.
+      </p>
+    </b-form-group>
+    <b-form-group id="user-name" label-for="user-name">
+      <b-form-input
+        class="form-control form-control-lg"
+        id="user-name"
+        v-model="user.name"
+        type="text"
+        placeholder="이름"
+        required
+      ></b-form-input>
+      <p class="text-danger" v-show="valueCheck.name">
+        한글과 영문 대 소문자를 사용하세요. (특수기호, 공백 사용 불가)
+      </p>
+    </b-form-group>
+    <b-form-group id="user-password" label-for="user-password">
+      <b-form-input
+        class="form-control form-control-lg"
+        id="user-password"
+        v-model="user.password"
+        type="password"
+        placeholder="비밀번호"
+        required
+      ></b-form-input>
+      <p class="text-danger" v-show="valueCheck.password">
+        8자리 ~ 20자리 이내로 영문,숫자,특수문자를 혼합하여 입력해주세요.
+      </p>
+    </b-form-group>
+    <b-form-group id="user-password-check" label-for="user-password-check">
+      <b-form-input
+        class="form-control form-control-lg"
+        id="user-password-check"
+        v-model="user.passwordCheck"
+        type="password"
+        placeholder="비밀번호 재확인"
+        required
+      ></b-form-input>
+      <p class="text-danger" v-show="valueCheck.passwordCheck">
+        비밀번호가 일치하지 않습니다.
+      </p>
+    </b-form-group>
+    <b-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      block
+      @click="onRegister"
+      >가입하기</b-button
+    >
+    <div id="loginLink">
+      <p>계정이 있으신가요? <a href="/user/login">로그인</a></p>
+    </div>
+  </div>
+  <!-- </b-form> -->
+  <!-- <b-modal id="modal-center" centered hide-backdrop v-model="show" ok-only>
       <p class="my-4">회원가입이 완료 되었습니다.</p>
     </b-modal> -->
-  </div>
 </template>
 <script>
 export default {
@@ -241,10 +236,11 @@ export default {
 };
 </script>
 <style scoped>
-#registerForm {
+.registerForm {
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
+  width: 30%;
 }
 #loginLink {
   margin-top: 50px;
