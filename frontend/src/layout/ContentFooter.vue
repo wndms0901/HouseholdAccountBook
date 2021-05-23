@@ -9,14 +9,16 @@
         </ul>
       </nav> -->
       <div class="copyright text-center">
-        &copy; Coded with
+        Copyright &copy; 2021 Jeong Jueun. All rights reserved.
+        <!-- <img src="../../src/assets/image/github.png" /> -->
+      </div>
+      <!-- &copy; Coded with
         <i class="fa fa-heart heart"></i> by
         <a href="https://binarcode.com" target="_blank">BinarCode</a>. Designed
         by
         <a href="https://www.creative-tim.com/?ref=pdf-vuejs" target="_blank"
           >Creative Tim</a
-        >.
-      </div>
+        >. -->
     </div>
   </footer>
 </template>
@@ -24,4 +26,7 @@
 export default {};
 </script>
 <style>
+/* .copyright img {
+  float: right;
+} */
 </style>

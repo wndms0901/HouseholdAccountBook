@@ -1,7 +1,8 @@
 <template>
-  <div class="wrapper">
+  <!-- <div class="wrapper"> -->
+  <div class="wrapper login_layout">
     <router-view></router-view>
-    <LoginFooter id="login_footer" />
+    <LoginFooter class="login_footer" />
   </div>
   <!-- <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/> -->
@@ -28,11 +29,17 @@ export default {
 </script>
 
 <style>
-#login_footer {
-  width: 100%;
-  height: 10%;
-  position: absolute;
+.login_layout {
+  display: flex;
+  flex-direction: column;
+}
+.login_footer {
   bottom: 0;
+  /* position: relative; */
+  /* width: 100%;
+  height: 10%; */
+  /* position: absolute;
+  bottom: 0; */
   text-align: center;
   background: lightgrey;
   /* border-top: 1px solid #262b35;

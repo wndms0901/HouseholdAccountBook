@@ -70,6 +70,18 @@ public class UserServiceImpl implements UserService{
             optional.get().updateMonthStartDate(userDto.getMonthStartDate());
 
         }
-
+    }
+    /**
+     * 비밀번호 변경
+     * @param userDto
+     * @return UserDto
+     */
+    @Transactional
+    @Override
+    public UserDto updatePassword(User user, UserDto userDto){
+        String email = user.updatePassword(passwordEncoder, userDto.getNewPassword()).getEmail();
+        return UserDto.builder()
+                .email(email)
+                .build();
     }
 }

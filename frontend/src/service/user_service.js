@@ -52,6 +52,19 @@ class UserService {
                 return response;
             });
     }
+    /**
+     * 비밀번호 변경
+     * @param {*} userDto
+     * @returns 
+     */
+    updatePassword(userDto) {
+        return axios
+            .post(API_URL + 'update/password', userDto)
+            .then(response => {
+                console.log('response', response);
+                return response.data;
+            });
+    }
 
 
 }

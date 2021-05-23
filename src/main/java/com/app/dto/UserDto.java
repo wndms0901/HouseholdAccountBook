@@ -13,14 +13,16 @@ public class UserDto {
     private String name;
     private String email;
     private String password;
+    private String newPassword;
     private String monthStartDate;
 
     @Builder
-    public UserDto(Long id, String name, String email, String password, String monthStartDate) {
+    public UserDto(Long id, String name, String email, String password, String newPassword, String monthStartDate) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.newPassword = newPassword;
         this.monthStartDate = monthStartDate;
     }
 

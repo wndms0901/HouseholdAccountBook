@@ -99,5 +99,10 @@ public class User extends BaseTimeEntity {
         return this;
     }
 
+    public User updatePassword(PasswordEncoder passwordEncoder, String newPassword){
+        this.password = passwordEncoder.encode(newPassword);
+        return this;
+    }
+
 
 }

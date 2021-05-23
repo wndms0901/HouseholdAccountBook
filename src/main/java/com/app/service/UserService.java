@@ -29,4 +29,10 @@ public interface UserService {
      * @return void
      */
     void updateMonthStartDate(UserDto userDto);
+    /**
+     * 비밀번호 변경
+     * @param userDto
+     * @return UserDto
+     */
+    UserDto updatePassword(User user, UserDto userDto);
 }

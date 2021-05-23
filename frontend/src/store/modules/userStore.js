@@ -93,7 +93,23 @@ const userStore = {
                     return Promise.reject(error);
                 }
             );
-        }
+        },
+        /**
+         * 비밀번호 변경
+         * @param {*} userDto
+         * @returns
+         */
+        updatePassword({ }, userDto) {
+            return UserService.updatePassword(userDto).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
     }
 }
 

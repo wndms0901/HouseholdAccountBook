@@ -27,22 +27,22 @@ public class UserController {
      */
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody UserDto userDto) {
-         Map<String, Object> resultMap = new HashMap<String, Object>();
-             User user = userService.findByEmail(userDto.getEmail());
-            // 비밀번호 체크
-             boolean checkPw = userService.checkPassword(userDto.getPassword(), user.getPassword());
-             if(!checkPw){
-                 resultMap.put("error","login failed");
-             }else{ // 토큰 생성
-                 String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().getKey());
-                 resultMap.put("token", token);
-                 // 회원 정보
-                 UserDto userInfo = UserDto.builder().email(user.getEmail()).name(user.getName()).monthStartDate(user.getMonthStartDate()).build();
-                 resultMap.put("userInfo", userInfo);
-             }
-
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        // 회원조회
+        User user = userService.findByEmail(userDto.getEmail());
+        // 비밀번호 체크
+        boolean checkPw = userService.checkPassword(userDto.getPassword(), user.getPassword());
+        if(!checkPw){
+            resultMap.put("error", "login failed");
+        }else{ // 토큰 생성
+            String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().getKey());
+            resultMap.put("token", token);
+            // 회원 정보
+            UserDto userInfo = UserDto.builder().email(user.getEmail()).name(user.getName()).monthStartDate(user.getMonthStartDate()).build();
+            resultMap.put("userInfo", userInfo);
+        }
          return new ResponseEntity(resultMap, HttpStatus.OK);
-                //return new ResponseEntity(HttpStatus.OK);
+         //return new ResponseEntity(HttpStatus.OK);
 //        User user = securityUserDetailsService.loadUserByUsername(user.get("email"))
 //                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 //        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
@@ -78,5 +78,24 @@ public class UserController {
     public ResponseEntity<?> updateMonthStartDate(@RequestBody UserDto userDto) {
         userService.updateMonthStartDate(userDto);
         return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 변경
+     * @param userDto
+     * @return ResponseEntity<?>
+     */
+    @PostMapping("update/password")
+    public ResponseEntity<?> updatePassword(@RequestBody UserDto userDto) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        // 회원조회
+        User user = userService.findByEmail(userDto.getEmail());
+        // 비밀번호 체크
+        boolean checkPw = userService.checkPassword(userDto.getPassword(), user.getPassword());
+        if(!checkPw){ // 비밀번호 일치x
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }else{ // 비밀번호 일치o
+            return new ResponseEntity<>(userService.updatePassword(user, userDto), HttpStatus.OK);
+        }
     }
 }

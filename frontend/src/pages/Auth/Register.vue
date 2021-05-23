@@ -241,6 +241,7 @@ export default {
   margin-right: auto;
   padding: 20px;
   width: 30%;
+  min-height: calc(100% - 80px);
 }
 #loginLink {
   margin-top: 50px;

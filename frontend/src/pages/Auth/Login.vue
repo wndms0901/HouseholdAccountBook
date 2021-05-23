@@ -1,6 +1,6 @@
 <template>
   <div class="loginForm">
-    <p class="text-center h1 p-5">Sign In</p>
+    <p class="text-center h1 p-5">가계부</p>
     <b-form-group id="input-group-1" label-for="input-1">
       <b-form-input
         class="form-control form-control-lg"
@@ -38,7 +38,8 @@
     >
     <div class="py-3">
       <b-link class="pr-3" href="/user/register">회원가입</b-link>
-      <b-link href="#foo">비밀번호 찾기</b-link>
+      <b-link class="pr-3" href="#">비밀번호 찾기</b-link>
+      <b-link href="#" @click="onTestLogin">테스트 계정</b-link>
     </div>
     <hr />
     <div>
@@ -125,10 +126,11 @@ export default {
           }
         );
       }
-
       //event.preventDefault();
       //alert(JSON.stringify(this.form));
     },
+    // 테스트 계정으로 로그인
+    onTestLogin() {},
   },
 };
 </script>
@@ -138,6 +140,8 @@ export default {
   margin-right: auto;
   padding: 20px;
   width: 30%;
+  min-height: calc(100% - 80px);
+  /* height: inherit; */
 }
 ul {
   list-style-type: none;
