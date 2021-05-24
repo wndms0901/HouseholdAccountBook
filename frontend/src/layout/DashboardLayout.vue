@@ -2,7 +2,7 @@
   <div class="wrapper">
     <side-bar>
       <!-- <mobile-menu slot="content"></mobile-menu> -->
-      <sidebar-link to="/mybook/write">
+      <sidebar-link to="/mybook/write" :link="write" @onclickLink="onclickLink">
         <!-- <i class="nc-icon nc-chart-pie-35"></i> -->
         <b-icon
           icon="pencil-square"
@@ -10,18 +10,26 @@
         ></b-icon>
         <p>쓰기</p>
       </sidebar-link>
-      <sidebar-link to="/mybook/report">
+      <sidebar-link
+        to="/mybook/report"
+        :link="report"
+        @onclickLink="onclickLink"
+      >
         <i class="nc-icon nc-notes"></i>
         <p>보고서</p>
       </sidebar-link>
-      <sidebar-link to="/mybook/budget">
+      <sidebar-link
+        to="/mybook/budget"
+        :link="budget"
+        @onclickLink="onclickLink"
+      >
         <i class="nc-icon nc-bullet-list-67"></i>
         <p>예산쓰기</p>
       </sidebar-link>
-      <sidebar-link to="/mybook/user">
-        <i class="nc-icon nc-circle-09"></i>
-        <p>User Profile</p>
-      </sidebar-link>
+      <!-- <sidebar-link to="/mybook/typography">
+        <i class="nc-icon nc-paper-2"></i>
+        <p>Typography</p>
+      </sidebar-link> -->
       <!-- <sidebar-link to="/mybook/overview">
         <i class="nc-icon nc-chart-pie-35"></i>
         <p>Dashboard</p>
@@ -50,7 +58,6 @@
         <i class="nc-icon nc-bell-55"></i>
         <p>Notifications</p>
       </sidebar-link> -->
-
       <!-- <template slot="bottom-links">
         <sidebar-link class="active" to="/mybook/upgrade">
           <i class="nc-icon nc-alien-33"></i>
@@ -97,7 +104,7 @@
       </div>
     </side-bar>
     <div class="main-panel">
-      <top-navbar></top-navbar>
+      <top-navbar :pageName="pageName"></top-navbar>
       <dashboard-content @click="toggleSidebar" @updateStartDate="setPeriod">
       </dashboard-content>
       <content-footer></content-footer>
@@ -126,6 +133,16 @@ export default {
         from: "",
         to: "",
       },
+      write: {
+        name: "쓰기",
+      },
+      report: {
+        name: "보고서",
+      },
+      budget: {
+        name: "예산쓰기",
+      },
+      pageName: "쓰기",
       incomeAmount: 0,
       balanceCarriedForward: 0,
       cash: 0,
@@ -176,6 +193,10 @@ export default {
     this.setPeriod();
   },
   methods: {
+    // 메뉴 click시 topNavbar 페이지명 변경
+    onclickLink(pageName) {
+      this.pageName = pageName;
+    },
     // 조회 기간 setting
     setPeriod() {
       let today = new Date();
@@ -325,6 +346,9 @@ export default {
 };
 </script>
 <style>
+.defaultTab a {
+  color: black;
+}
 .nav_month {
   margin-top: 30px;
   padding: 10px 15px 30px 15px;

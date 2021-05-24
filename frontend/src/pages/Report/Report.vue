@@ -49,11 +49,15 @@
         </div>
       </div>
       <div class="tabs" style="width: 100%">
-        <b-tabs v-model="tabIndex" content-class="mt-3">
-          <b-tab title="월보고서">
+        <b-tabs
+          active-nav-item-class="font-weight-bold text-primary"
+          content-class="mt-3"
+          v-model="tabIndex"
+        >
+          <b-tab title-item-class="defaultTab" title="월보고서">
             <monthReport :user="user" :period="period"></monthReport>
           </b-tab>
-          <b-tab title="연간보고서">
+          <b-tab title-item-class="defaultTab" title="연간보고서">
             <yearReport
               :user="user"
               :period="period"

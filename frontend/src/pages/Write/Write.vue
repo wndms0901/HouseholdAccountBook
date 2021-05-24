@@ -82,8 +82,15 @@
         <!-- /footer -->
       </setStartDateModal>
       <div class="tabs" style="width: 100%">
-        <b-tabs v-model="tabIndex" content-class="mt-3">
-          <b-tab title="지출" @click="onClickExpenditure"
+        <b-tabs
+          active-nav-item-class="font-weight-bold text-primary"
+          content-class="mt-3"
+          v-model="tabIndex"
+        >
+          <b-tab
+            title-item-class="defaultTab"
+            title="지출"
+            @click="onClickExpenditure"
             ><expenditure
               ref="expenditureTab"
               :user="user"
@@ -91,10 +98,12 @@
               :monthStartDate="monthStartDate"
             ></expenditure
           ></b-tab>
-          <b-tab title="수입" @click="onClickIncome"
+          <b-tab
+            title-item-class="defaultTab"
+            title="수입"
+            @click="onClickIncome"
             ><income ref="incomeTab" :user="user" :period="period"></income
           ></b-tab>
-          <b-tab title="달력"></b-tab>
         </b-tabs>
       </div>
     </div>

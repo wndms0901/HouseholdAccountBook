@@ -51,6 +51,25 @@ public class UserController {
 //        return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
                }
     /**
+     * 테스트 계정 로그인
+     * @return ResponseEntity<?>
+     */
+    @GetMapping("login/test-id")
+    public ResponseEntity<?> testIdLogin() {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        String email = "test@test.com";
+        // 회원조회
+        User user = userService.findByEmail(email);
+        // 토큰 생성
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().getKey());
+        resultMap.put("token", token);
+        // 회원 정보
+        UserDto userInfo = UserDto.builder().email(user.getEmail()).name(user.getName()).monthStartDate(user.getMonthStartDate()).build();
+        resultMap.put("userInfo", userInfo);
+        return new ResponseEntity(resultMap, HttpStatus.OK);
+    }
+
+    /**
      * 회원등록
      * @param userDto
      * @return ResponseEntity<?>
@@ -67,6 +86,26 @@ public class UserController {
 //        role.setUser(user);
         userService.registerUser(user);
         return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+    /**
+     * 회원등록 확인
+     * @param email
+     * @return ResponseEntity<?>
+     */
+    @GetMapping("register/check")
+    public ResponseEntity<?> selectRegisterCheck(@RequestParam String email) {
+        User user = userService.findByEmail(email);
+        return new ResponseEntity(UserDto.builder().email(user.getEmail()).build(), HttpStatus.OK);
+    }
+    /**
+     * 임시 비밀번호 이메일 전송
+     * @param email
+     * @return ResponseEntity<?>
+     */
+    @GetMapping("send/password-reset")
+    public ResponseEntity<?> sendPasswordResetEmail(@RequestParam String email) {
+        userService.sendPasswordResetEmail(email);
+        return new ResponseEntity("success", HttpStatus.OK);
     }
 
     /**

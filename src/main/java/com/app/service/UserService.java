@@ -1,6 +1,7 @@
 package com.app.service;
 
 import com.app.domain.user.User;
+import com.app.dto.EmailDto;
 import com.app.dto.UserDto;
 
 public interface UserService {
@@ -35,4 +36,16 @@ public interface UserService {
      * @return UserDto
      */
     UserDto updatePassword(User user, UserDto userDto);
+    /**
+     * 임시 비밀번호 이메일 전송
+     * @param email
+     * @return EmailDto
+     */
+    void sendPasswordResetEmail(String email);
+    /**
+     * 이메일 내용 설정
+     * @param userDto
+     * @return EmailDto
+     */
+    EmailDto setEmailContent(UserDto userDto);
 }

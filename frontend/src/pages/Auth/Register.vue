@@ -55,6 +55,7 @@
     </b-form-group>
     <b-button
       type="submit"
+      class="btn-fill"
       variant="primary"
       size="lg"
       block
@@ -62,7 +63,10 @@
       >가입하기</b-button
     >
     <div id="loginLink">
-      <p>계정이 있으신가요? <a href="/user/login">로그인</a></p>
+      <p>
+        계정이 있으신가요?
+        <b-link href="#" @click="onclickLogin">로그인</b-link>
+      </p>
     </div>
   </div>
   <!-- </b-form> -->
@@ -231,6 +235,10 @@ export default {
             console.log(Error);
           });
       }
+    },
+    // 로그인 link click
+    onclickLogin() {
+      this.$router.push("/user/login");
     },
   },
 };

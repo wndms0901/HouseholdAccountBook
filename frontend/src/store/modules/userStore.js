@@ -62,6 +62,22 @@ const userStore = {
             commit('logout');
         },
         /**
+         * 테스트 계정 로그인
+         * @returns
+         */
+        testIdLogin({ commit }) {
+            return UserService.testIdLogin().then(
+                user => {
+                    commit('loginSuccess', user);
+                    return Promise.resolve(user);
+                },
+                error => {
+                    commit('loginFailure');
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
          * 회원등록
          * @param {*} user
          * @returns
@@ -74,6 +90,38 @@ const userStore = {
                 },
                 error => {
                     commit('registerFailure');
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
+         * 회원등록 확인
+         * @param {*} email
+         * @returns
+         */
+        selectRegisterCheck({ }, email) {
+            return UserService.selectRegisterCheck(email).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            );
+        },
+        /**
+         * 임시 비밀번호 이메일 전송
+         * @param {*} email
+         * @returns
+         */
+        sendPasswordResetEmail({ }, email) {
+            return UserService.sendPasswordResetEmail(email).then(
+                response => {
+                    console.log('response', response);
+                    return Promise.resolve(response);
+                },
+                error => {
                     return Promise.reject(error);
                 }
             );

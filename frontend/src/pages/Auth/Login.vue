@@ -33,13 +33,24 @@
         비밀번호를 입력해주세요.
       </p>
     </b-form-group>
-    <b-button type="submit" variant="primary" size="lg" block @click="onLogin"
-      >로그인</b-button
+    <b-button
+      type="submit"
+      class="btn-fill"
+      variant="primary"
+      size="lg"
+      block
+      @click="onLogin"
+      ><span>로그인</span></b-button
     >
     <div class="py-3">
-      <b-link class="pr-3" href="/user/register">회원가입</b-link>
-      <b-link class="pr-3" href="#">비밀번호 찾기</b-link>
-      <b-link href="#" @click="onTestLogin">테스트 계정</b-link>
+      <b-link class="pr-3" href="#" @click="onclickRegister">회원가입</b-link>
+      <b-link class="pr-3" href="#" @click="openPasswordFindModal"
+        >비밀번호 찾기</b-link
+      >
+      <b-link href="#" id="test-login" @click="onTestLogin">테스트 계정</b-link>
+      <b-tooltip target="test-login" triggers="hover" variant="dark">
+        테스트 계정으로 로그인할 수 있습니다.
+      </b-tooltip>
     </div>
     <hr />
     <div>
@@ -57,24 +68,69 @@
         </li>
       </ul>
     </div>
+    <!-- 비밀번호 찾기 Modal -->
+    <passwordFind v-if="showPasswordFindModal">
+      <!-- top 슬롯 콘텐츠 -->
+      <template slot="top">
+        <span>비밀번호 재설정</span>
+      </template>
+      <!-- /top -->
+      <!-- cotent 슬롯 콘텐츠 -->
+      <div class="text-center" v-show="modalContent1">
+        <input
+          type="email"
+          ref="emailModal"
+          v-model="email"
+          placeholder="이메일을 입력하세요."
+          @keyup.enter="onclickSearch"
+        />
+        <button class="primaryBtn ml-1" @click="onclickSearch">검색</button>
+      </div>
+      <div class="text-center" v-show="modalContent2">
+        <input type="radio" checked="checked" />&ensp;<span
+          >{{ email }}(으)로 이메일 보내기</span
+        >
+        <button class="primaryBtn ml-3" @click="sendPasswordResetEmail">
+          다음
+        </button>
+      </div>
+      <div class="text-center" v-show="modalContent3">
+        <span
+          >{{ email }}(으)로 임시 비밀번호가 발송되었습니다.<br />임시
+          비밀번호로 로그인 후 내정보에서 비밀번호를 변경해 주세요.</span
+        >
+      </div>
+      <!-- /cotent -->
+      <!-- footer 슬롯 콘텐츠 -->
+      <template slot="footer">
+        <button class="basicBtn" @click="closePasswordFindModal">닫기</button>
+      </template>
+      <!-- /footer -->
+    </passwordFind>
   </div>
 </template>
 
 <script>
+import passwordFind from "src/components/Modal/PasswordFind";
 export default {
   name: "Login",
-  components: {},
+  components: { passwordFind },
   data() {
     return {
       user: {
         email: "",
         password: "",
       },
+      email: "",
       valueCheck: {
         email: false,
         password: false,
       },
       showLoginFailMsg: false,
+      showPasswordFindModal: false,
+      modalContent1: true,
+      modalContent2: false,
+      modalContent3: false,
     };
   },
   computed: {
@@ -129,8 +185,78 @@ export default {
       //event.preventDefault();
       //alert(JSON.stringify(this.form));
     },
+    // 회원가입 click
+    onclickRegister() {
+      this.$router.push("/user/register");
+    },
+    // 비밀번호 찾기 모달 open
+    openPasswordFindModal() {
+      this.showPasswordFindModal = true;
+      this.modalContent1 = true;
+      this.modalContent2 = false;
+      this.modalContent3 = false;
+      this.email = "";
+    },
+    // 비밀번호 찾기 모달 close
+    closePasswordFindModal() {
+      this.showPasswordFindModal = false;
+      this.modalContent1 = true;
+      this.modalContent2 = false;
+      this.modalContent3 = false;
+      this.email = "";
+    },
+    // 비밀번호 찾기 모달 찾기 버튼 click
+    onclickSearch() {
+      if (this.email) {
+        // 회원 등록 확인
+        this.$store
+          .dispatch("userStore/selectRegisterCheck", this.email)
+          .then((res) => {
+            if (res.email) {
+              this.modalContent1 = false;
+              this.modalContent2 = true;
+              this.modalContent3 = false;
+            } else {
+              alert("입력하신 이메일을 찾을 수 없습니다.");
+              this.$refs.emailModal.focus();
+            }
+          })
+          .catch((Error) => {
+            console.log(Error);
+          });
+      } else {
+        alert("이메일을 입력해 주세요.");
+      }
+    },
+    // 임시 비밀번호 이메일 전송
+    sendPasswordResetEmail() {
+      if (this.email === "test@test.com") {
+        alert("테스트 계정은 비밀번호 재설정이 불가능합니다.");
+      } else {
+        this.$store
+          .dispatch("userStore/sendPasswordResetEmail", this.email)
+          .then(() => {
+            this.modalContent1 = false;
+            this.modalContent2 = false;
+            this.modalContent3 = true;
+          })
+          .catch((Error) => {
+            console.log(Error);
+          });
+      }
+    },
     // 테스트 계정으로 로그인
-    onTestLogin() {},
+    onTestLogin() {
+      this.$store
+        .dispatch("userStore/testIdLogin")
+        .then(() => {
+          // 쓰기 화면으로 이동
+          this.$router.push("/");
+        })
+        .catch((Error) => {
+          console.log(Error);
+        });
+    },
   },
 };
 </script>

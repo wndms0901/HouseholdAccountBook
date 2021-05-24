@@ -1,8 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <!-- <a class="navbar-brand" href="#">Dashboard</a>
-      <button
+      <h4 class="m-0 font-weight-bold">{{ pageName }}</h4>
+      <!-- <a class="navbar-brand" href="#">Dashboard</a> -->
+      <!-- <button
         type="button"
         class="navbar-toggler navbar-toggler-right"
         :class="{ toggled: $sidebar.showSidebar }"
@@ -56,7 +57,10 @@
               <!-- <b-button id="top_btn" variant="outline-primary" class="m-0"> -->
             </li>
             <li class="nav-item">
-              <router-link to="/mybook/myInfo"
+              <router-link
+                class="text-decoration-none"
+                to="/mybook/myInfo"
+                @click.native="onClickMyInfo"
                 ><i class="nc-icon nc-single-02 pr-1"></i
                 ><span>내정보</span></router-link
               >
@@ -66,7 +70,10 @@
               <!-- </b-button> -->
             </li>
             <li class="nav-item">
-              <router-link to="/mybook/myInfo" @click.native="logout"
+              <router-link
+                class="text-decoration-none"
+                to="/mybook/myInfo"
+                @click.native="logout"
                 ><i class="nc-icon nc-button-power pr-1"></i
                 ><span>로그아웃</span></router-link
               >
@@ -91,6 +98,9 @@
 </template>
 <script>
 export default {
+  props: {
+    pageName: String,
+  },
   computed: {
     routeName() {
       const { name } = this.$route;
@@ -105,7 +115,8 @@ export default {
   mounted() {},
   methods: {
     onClickMyInfo() {
-      this.$router.push({ path: "myInfo" });
+      this.pageName = "내정보";
+      // this.$router.push({ path: "myInfo" });
     },
     logout() {
       console.log(this.$store);

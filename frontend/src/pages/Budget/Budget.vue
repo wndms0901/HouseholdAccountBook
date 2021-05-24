@@ -48,15 +48,19 @@
           </div>
         </div>
         <div class="tabs" style="width: 100%">
-          <b-tabs v-model="tabIndex" content-class="mt-3">
-            <b-tab title="예산쓰기"
+          <b-tabs
+            active-nav-item-class="font-weight-bold text-primary"
+            content-class="mt-3"
+            v-model="tabIndex"
+          >
+            <b-tab title-item-class="defaultTab" title="예산쓰기"
               ><budgetWrite
                 :user="user"
                 :period="period"
                 :monthStartDate="monthStartDate"
               ></budgetWrite
             ></b-tab>
-            <b-tab title="예산 대비 지출"
+            <b-tab title-item-class="defaultTab" title="예산 대비 지출"
               ><budgetExpenditure
                 :user="user"
                 :period="period"
