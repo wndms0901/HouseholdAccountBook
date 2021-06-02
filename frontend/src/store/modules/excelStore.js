@@ -51,7 +51,7 @@ const excelStore = {
                     return Promise.reject(error);
                 }
             );
-        },
+        }
     }
 }
 

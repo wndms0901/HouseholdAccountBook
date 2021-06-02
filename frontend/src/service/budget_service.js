@@ -6,7 +6,7 @@ class BudgetService {
     /**
      * 예산 목록 조회
      * @param {*} BudgetRequestDto
-     * @returns 
+     * @returns
      */
     selectBudgetList(BudgetRequestDto) {
         return axios
@@ -19,7 +19,7 @@ class BudgetService {
     /**
      * 예산 목록 저장
      * @param {*} BudgetDto
-     * @returns 
+     * @returns
      */
     saveBudgetList(BudgetDto) {
         return axios
@@ -32,7 +32,7 @@ class BudgetService {
     /**
      * 예산 대비 지출 목록 조회
      * @param {*} BudgetRequestDto
-     * @returns 
+     * @returns
      */
     selectBudgetExpenditureList(BudgetRequestDto) {
         return axios

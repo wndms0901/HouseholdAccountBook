@@ -226,6 +226,7 @@ export default {
   },
   data() {
     return {
+      gridApi: null,
       gridOptions: null,
       columnDefs: null,
       defaultColDef: null,
@@ -246,6 +247,7 @@ export default {
       showCalculateModal: false,
       showExcelUploadModal: false,
       file: null,
+      originRowData: [],
     };
   },
   computed: {
@@ -293,7 +295,6 @@ export default {
       },
     },
   },
-  beforeCreate() {},
   created() {
     // 카테고리 목록 조회
     this.getCategoryList();
@@ -588,47 +589,6 @@ export default {
         memo: "",
       };
       defaultRow.push(emptyRow);
-      // const today = new Date();
-      // const expenditureDate =
-      //   String(today.getFullYear()) +
-      //   "." +
-      //   ("0" + (today.getMonth() + 1)).slice(-2) +
-      //   "." +
-      //   ("0" + today.getDate()).slice(-2);
-      // const rows = [
-      //   {
-      //     expenditureId: "",
-      //     expenditureDate: expenditureDate,
-      //     expenditureDescription: "",
-      //     cash: "0",
-      //     card: "0",
-      //     accountCategory: {
-      //       accountCategoryId: 1,
-      //       accountCategoryName: "선택없음",
-      //     },
-      //     largeCategory: {
-      //       largeCategoryId: 1,
-      //       largeCategoryName: "미분류",
-      //     },
-      //     // accountCategoryId: 1,
-      //     // largeCategoryId: 1,
-      //     smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
-      //     memo: "",
-      //   },
-      //   {
-      //     expenditureId: "",
-      //     expenditureDate: "",
-      //     expenditureDescription: "",
-      //     cash: "",
-      //     card: "",
-      //     accountCategory: " ",
-      //     largeCategory: " ",
-      //     // accountCategoryId: " ",
-      //     //largeCategoryId: " ",
-      //     smallCategory: " ",
-      //     memo: "",
-      //   },
-      // ];
       this.gridApi.applyTransaction({
         add: defaultRow,
         addIndex: rowData.length,
@@ -637,9 +597,11 @@ export default {
         rowIndex: rowData.length,
         colKey: "expenditureDescription",
       });
+      this.originRowData = _.cloneDeep(this.$refs.expenditureGrid.getRowData());
       this.gridApi.sizeColumnsToFit();
       this.getTotal();
     },
+    // 현금, 카드 합계
     getTotal() {
       const rowData = _.cloneDeep(this.$refs.expenditureGrid.getRowData());
       rowData.pop();
@@ -674,7 +636,9 @@ export default {
     onRowClick(event) {
       if (event.data.expenditureDate === "") {
         const columnData = this.gridApi.getFocusedCell();
+        this.gridApi.clearFocusedCell();
         const rowData = this.$refs.expenditureGrid.getRowData();
+        console.log("row", JSON.stringify(rowData));
         const defaultRow = _.cloneDeep(this.defaultRow);
         // const today = new Date();
         // const expenditureDate =

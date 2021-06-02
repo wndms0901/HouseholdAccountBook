@@ -34,7 +34,7 @@ const reportStore = {
                     return Promise.reject(error);
                 }
             );
-        },
+        }
     }
 }
 

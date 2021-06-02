@@ -115,7 +115,7 @@ const writeStore = {
                     return Promise.reject(error);
                 }
             );
-        },
+        }
 
     }
 }

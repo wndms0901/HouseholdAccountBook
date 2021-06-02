@@ -50,7 +50,7 @@ const budgetStore = {
                     return Promise.reject(error);
                 }
             );
-        },
+        }
 
     }
 }

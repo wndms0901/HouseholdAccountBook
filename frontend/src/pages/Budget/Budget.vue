@@ -52,9 +52,11 @@
             active-nav-item-class="font-weight-bold text-primary"
             content-class="mt-3"
             v-model="tabIndex"
+            v-on:activate-tab="tabActivated"
           >
             <b-tab title-item-class="defaultTab" title="예산쓰기"
               ><budgetWrite
+                ref="budgetWriteTab"
                 :user="user"
                 :period="period"
                 :monthStartDate="monthStartDate"
@@ -103,12 +105,74 @@ export default {
       },
     },
   },
-  beforeCreate() {},
+  // 다른 route로 이동할 경우 호출됨
+  beforeRouteLeave(to, from, next) {
+    let isGridUpdate = false;
+    if (this.tabIndex === 0) {
+      // 예산쓰기 grid 변경사항 체크
+      this.$refs.budgetWriteTab.gridApi.clearFocusedCell();
+      const currentRowData = this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData();
+      if (
+        JSON.stringify(currentRowData) !==
+        JSON.stringify(this.$refs.budgetWriteTab.originRowData)
+      ) {
+        isGridUpdate = true;
+      }
+    }
+    if (isGridUpdate) {
+      if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+        next();
+      }
+    } else {
+      next();
+    }
+  },
   created() {
     this.setPeriod();
   },
-  mounted() {},
+  mounted() {
+    // beforeunload 이벤트 등록
+    window.addEventListener("beforeunload", this.unLoadEvent);
+  },
+  beforeDestroy() {
+    // 등록된 이벤트 리스너를 제거
+    window.removeEventListener("beforeunload", this.unLoadEvent);
+  },
   methods: {
+    unLoadEvent(event) {
+      if (this.tabIndex === 0) {
+        // 예산쓰기 grid 변경사항 체크
+        this.$refs.budgetWriteTab.gridApi.clearFocusedCell();
+        const currentRowData = this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData();
+        if (
+          JSON.stringify(currentRowData) ===
+          JSON.stringify(this.$refs.budgetWriteTab.originRowData)
+        )
+          return;
+      }
+      event.preventDefault();
+      event.returnValue = "";
+    },
+    // tab click
+    tabActivated(newTabIndex, oldTabIndex, event) {
+      if (oldTabIndex === 0) {
+        // 예산 대비 지출 tab click
+        this.$refs.budgetWriteTab.gridApi.clearFocusedCell();
+        const currentRowData = _.cloneDeep(
+          this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData()
+        );
+        // 예산쓰기 grid 변경사항 체크
+        if (
+          JSON.stringify(currentRowData) ===
+          JSON.stringify(this.$refs.budgetWriteTab.originRowData)
+        ) {
+          return;
+        }
+        if (!confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+          event.preventDefault();
+        }
+      }
+    },
     // 조회 기간 setting
     setPeriod() {
       let today = new Date();

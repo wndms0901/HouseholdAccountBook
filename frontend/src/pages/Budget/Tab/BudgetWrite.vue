@@ -67,6 +67,7 @@ export default {
   },
   data() {
     return {
+      gridApi: null,
       defaultColDef: null,
       columnDefs: null,
       rowData: [],
@@ -79,6 +80,7 @@ export default {
       totalBudgetNumber: 0,
       threeMonthAverageExpenditureNumber: 0,
       lastMonthExpenditureNumber: 0,
+      originRowData: [],
     };
   },
   computed: {
@@ -381,6 +383,7 @@ export default {
           // 카테고리별 예산 grid
           this.rowData = res.data.budgetListDtoList;
           this.gridApi.setRowData(res.data.budgetListDtoList);
+          this.originRowData = _.cloneDeep(res.data.budgetListDtoList);
         })
         .catch((Error) => {
           console.log(Error);
@@ -501,7 +504,7 @@ export default {
 }
 .budgetWrite_top > table tr td {
   /* border: 1px solid lightgrey; */
-  padding: 8px 0px 8px 12px;
+  padding: 8px 0px 8px 5px;
   color: #424242;
   font-weight: bold;
 }

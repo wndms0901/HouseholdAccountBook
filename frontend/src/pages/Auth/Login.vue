@@ -52,22 +52,6 @@
         테스트 계정으로 로그인할 수 있습니다.
       </b-tooltip>
     </div>
-    <hr />
-    <div>
-      <p class="text-center h2 p-2">간편 로그인</p>
-      <ul>
-        <li>
-          <a href="#google">
-            <img id="google_logo" src="../../assets/image/google.png" />
-          </a>
-        </li>
-        <li>
-          <a href="#naver">
-            <img id="naver_logo" src="../../assets/image/naver.png" />
-          </a>
-        </li>
-      </ul>
-    </div>
     <!-- 비밀번호 찾기 Modal -->
     <passwordFind v-if="showPasswordFindModal">
       <!-- top 슬롯 콘텐츠 -->

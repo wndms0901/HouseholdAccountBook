@@ -36,9 +36,9 @@ Vue.prototype.$Axios = axios;
 import store from './store'
 
 // ag-Grid
-import { AgGridVue } from "ag-grid-vue";
-import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
-import "../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css";
+import { AgGridVue } from 'ag-grid-vue'
+import '../node_modules/ag-grid-community/dist/styles/ag-grid.css'
+import '../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css'
 Vue.component('grid', AgGridVue)
 
 // vue-google-charts
@@ -64,7 +64,7 @@ Vue.use(VueMoment)
 const router = new VueRouter({
   mode: 'history',
   routes, // short for routes: routes
-  linkActiveClass: 'nav-item active',
+  linkActiveClass: 'nav-item active'
   scrollBehavior: (to) => {
     if (to.hash) {
       return { selector: to.hash }

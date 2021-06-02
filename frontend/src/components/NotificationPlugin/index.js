@@ -1,4 +1,4 @@
-import Notifications from './Notifications.vue';
+import Notifications from './Notifications.vue'
 
 const NotificationStore = {
   state: [], // here the notifications will be added

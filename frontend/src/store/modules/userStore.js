@@ -157,7 +157,7 @@ const userStore = {
                     return Promise.reject(error);
                 }
             );
-        },
+        }
     }
 }
 

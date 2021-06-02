@@ -86,6 +86,7 @@
           active-nav-item-class="font-weight-bold text-primary"
           content-class="mt-3"
           v-model="tabIndex"
+          v-on:activate-tab="tabActivated"
         >
           <b-tab
             title-item-class="defaultTab"
@@ -151,14 +152,135 @@ export default {
       };
     },
   },
-  beforeCreate() {},
+  // 다른 route로 이동할 경우 호출됨
+  beforeRouteLeave(to, from, next) {
+    let currentRowData = null;
+    let isGridUpdate = false;
+    if (this.tabIndex === 0) {
+      // 지출 grid 변경사항 체크
+      this.$refs.expenditureTab.gridApi.clearFocusedCell();
+      currentRowData = this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
+      _.forEach(currentRowData, function (row, index) {
+        row.expenditureDescription = row.expenditureDescription || "";
+        row.memo = row.memo || "";
+      });
+      if (
+        currentRowData.length !== this.$refs.expenditureTab.originRowData.length
+      ) {
+        isGridUpdate = true;
+      } else if (
+        JSON.stringify(currentRowData) !==
+        JSON.stringify(this.$refs.expenditureTab.originRowData)
+      ) {
+        isGridUpdate = true;
+      }
+    } else {
+      // 수입 grid 변경사항 체크
+      this.$refs.incomeTab.gridApi.clearFocusedCell();
+      currentRowData = this.$refs.incomeTab.$refs.incomeGrid.getRowData();
+      _.forEach(currentRowData, function (row, index) {
+        row.incomeDescription = row.incomeDescription || "";
+        row.memo = row.memo || "";
+      });
+      if (currentRowData.length !== this.$refs.incomeTab.originRowData.length) {
+        isGridUpdate = true;
+      } else if (
+        JSON.stringify(currentRowData) !==
+        JSON.stringify(this.$refs.incomeTab.originRowData)
+      ) {
+        isGridUpdate = true;
+      }
+    }
+    if (isGridUpdate) {
+      if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+        next();
+      }
+    } else {
+      next();
+    }
+  },
   created() {
     this.setPeriod();
   },
   mounted() {
-    //  this.user = this.$store.state.initialState.user;
+    // beforeunload 이벤트 등록
+    window.addEventListener("beforeunload", this.unLoadEvent);
+  },
+  beforeDestroy() {
+    // 등록된 이벤트 리스너를 제거
+    window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    unLoadEvent(event) {
+      let currentRowData = null;
+      if (this.tabIndex === 0) {
+        // 지출 grid 변경사항 체크
+        this.$refs.expenditureTab.gridApi.clearFocusedCell();
+        currentRowData = this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
+        _.forEach(currentRowData, function (row, index) {
+          row.expenditureDescription = row.expenditureDescription || "";
+          row.memo = row.memo || "";
+        });
+        if (
+          JSON.stringify(currentRowData) ===
+          JSON.stringify(this.$refs.expenditureTab.originRowData)
+        )
+          return;
+      } else {
+        // 수입 grid 변경사항 체크
+        this.$refs.incomeTab.gridApi.clearFocusedCell();
+        currentRowData = this.$refs.incomeTab.$refs.incomeGrid.getRowData();
+        _.forEach(currentRowData, function (row, index) {
+          row.incomeDescription = row.incomeDescription || "";
+          row.memo = row.memo || "";
+        });
+        if (
+          JSON.stringify(currentRowData) ===
+          JSON.stringify(this.$refs.incomeTab.originRowData)
+        )
+          return;
+      }
+
+      event.preventDefault();
+      event.returnValue = "";
+    },
+    // tab click
+    tabActivated(newTabIndex, oldTabIndex, event) {
+      let currentRowData = null;
+      if (oldTabIndex === 0) {
+        // 수입 tab click
+        this.$refs.expenditureTab.gridApi.clearFocusedCell();
+        currentRowData = this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
+        _.forEach(currentRowData, function (row, index) {
+          row.expenditureDescription = row.expenditureDescription || "";
+          row.memo = row.memo || "";
+        });
+
+        // 지출 grid 변경사항 체크
+        if (
+          JSON.stringify(currentRowData) ===
+          JSON.stringify(this.$refs.expenditureTab.originRowData)
+        )
+          return;
+      } else {
+        // 지출 tab click
+        this.$refs.incomeTab.gridApi.clearFocusedCell();
+        currentRowData = this.$refs.incomeTab.$refs.incomeGrid.getRowData();
+        _.forEach(currentRowData, function (row, index) {
+          row.incomeDescription = row.incomeDescription || "";
+          row.memo = row.memo || "";
+        });
+        // 수입 grid 변경사항 체크
+        if (
+          JSON.stringify(currentRowData) ===
+          JSON.stringify(this.$refs.incomeTab.originRowData)
+        )
+          return;
+      }
+      if (!confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+        event.preventDefault();
+      }
+    },
     // 조회 기간 setting
     setPeriod() {
       let today = new Date();
@@ -262,27 +384,6 @@ export default {
       } else {
         this.period.to = this.$moment(this.period.to).subtract(1, "months")._d;
       }
-
-      // const periodFrom = _.cloneDeep(this.period.from);
-      // const periodTo = _.cloneDeep(this.period.to);
-      // const startLastDate = this.$moment(periodFrom).endOf("month")._d;
-      // const endLastDate = this.$moment(periodTo).endOf("month")._d;
-      // //const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // // 말일 체크
-      // if (periodFrom.getDate() === startLastDate.getDate()) {
-      //   this.period.from = this.$moment(this.period.from)
-      //     .subtract(1, "months")
-      //     .endOf("month")._d;
-      //   this.period.to = this.$moment(this.period.from)
-      //     .add(1, "months")
-      //     .endOf("month")._d;
-      // } else {
-      //   this.period.from = this.$moment(periodFrom).subtract(1, "months")._d;
-      // }
-      // // period.to setting
-      // this.period.to = this.$moment(this.period.from)
-      //   .add(1, "months")
-      //   .subtract(1, "days")._d;
     },
     onNextMonth() {
       const isPeriodFromLastDay = this.checkMonthLastDay(this.period.from);
@@ -304,21 +405,6 @@ export default {
       } else {
         this.period.to = this.$moment(this.period.to).add(1, "months")._d;
       }
-
-      // const periodFrom = _.cloneDeep(this.period.from);
-      // const lastDay = this.$moment(periodFrom).endOf("month")._d;
-      // // 말일 체크
-      // if (periodFrom.getDate() === lastDay.getDate()) {
-      //   this.period.from = this.$moment(this.period.from)
-      //     .add(1, "months")
-      //     .endOf("month")._d;
-      // } else {
-      //   this.period.from = this.$moment(periodFrom).add(1, "months")._d;
-      // }
-      // // period.to setting
-      // this.period.to = this.$moment(this.period.from)
-      //   .add(1, "months")
-      //   .subtract(1, "days")._d;
     },
     // 말일 체크
     checkMonthLastDay(value) {

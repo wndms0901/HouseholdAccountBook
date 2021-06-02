@@ -11,5 +11,5 @@ export default {
   },
   unbind: function (el) {
     document.body.removeEventListener('click', el.clickOutsideEvent)
-  },
+  }
 }

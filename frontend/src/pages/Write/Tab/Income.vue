@@ -155,6 +155,7 @@ export default {
   },
   data() {
     return {
+      gridApi: null,
       gridOptions: null,
       columnDefs: null,
       defaultColDef: null,
@@ -171,6 +172,7 @@ export default {
       totalIncomeNumber: 0,
       showExcelUploadModal: false,
       file: null,
+      originRowData: [],
     };
   },
   computed: {
@@ -449,6 +451,7 @@ export default {
         rowIndex: rowData.length,
         colKey: "incomeDescription",
       });
+      this.originRowData = _.cloneDeep(this.$refs.incomeGrid.getRowData());
       this.gridApi.sizeColumnsToFit();
       this.getTotal();
     },
