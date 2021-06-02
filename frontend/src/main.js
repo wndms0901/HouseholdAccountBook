@@ -64,7 +64,7 @@ Vue.use(VueMoment)
 const router = new VueRouter({
   mode: 'history',
   routes, // short for routes: routes
-  linkActiveClass: 'nav-item active'
+  linkActiveClass: 'nav-item active',
   scrollBehavior: (to) => {
     if (to.hash) {
       return { selector: to.hash }
