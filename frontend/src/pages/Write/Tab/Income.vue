@@ -451,7 +451,12 @@ export default {
         rowIndex: rowData.length,
         colKey: "incomeDescription",
       });
-      this.originRowData = _.cloneDeep(this.$refs.incomeGrid.getRowData());
+      let originRowData = _.cloneDeep(this.$refs.incomeGrid.getRowData());
+      _.forEach(originRowData, function (row, index) {
+        row.incomeDescription = row.incomeDescription || "";
+        row.memo = row.memo || "";
+      });
+      this.originRowData = originRowData;
       this.gridApi.sizeColumnsToFit();
       this.getTotal();
     },
@@ -508,6 +513,16 @@ export default {
       var rowCount = event.api.getSelectedNodes().length;
       this.disabledSelectBtn = rowCount === 0;
     },
+    toast(toaster, msg) {
+      this.$bvToast.toast(msg, {
+        toaster: toaster,
+        bodyClass: "text-center font-weight-bold",
+        solid: true,
+        variant: "primary",
+        autoHideDelay: 1000,
+        noCloseButton: true,
+      });
+    },
     // 수입 목록 저장
     onSave() {
       this.gridApi.clearFocusedCell();
@@ -552,6 +567,7 @@ export default {
       this.$store
         .dispatch("writeStore/saveIncomeList", incomeSaveDto)
         .then((res) => {
+          this.toast("b-toaster-bottom-center", "저장되었습니다.");
           this.getIncomeList();
         })
         .catch((Error) => {

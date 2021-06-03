@@ -1,114 +1,111 @@
 <template>
-  <div class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="date_wrap">
-          <div class="date_picker_box">
-            <button class="prevMonthBtn" @click="onPrevMonth">
-              <b-icon
-                icon="chevron-left"
-                variant="dark"
-                style="vertical-align: middle"
-              ></b-icon></button
-            >&nbsp;
-            <datepicker
-              ref="periodFrom"
-              :format="'yyyy.MM.dd'"
-              v-model="period.from"
-              input-class="datepickerInput"
-              :language="ko"
-              @closed="onCloseStartDate"
-            ></datepicker>
-            <span
-              class="calendarIconBox"
-              @click="onClickPeriodFromCalendar"
-              @blur="onBlurCalendar"
-              tabindex="0"
-              ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
-            >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
-            <datepicker
-              ref="periodTo"
-              :format="'yyyy.MM.dd'"
-              v-model="period.to"
-              input-class="datepickerInput"
-              :disabledDates="disabledDates"
-              :language="ko"
-            ></datepicker>
-            <span
-              class="calendarIconBox"
-              @click="onClickPeriodToCalendar"
-              @blur="onBlurCalendar"
-              tabindex="0"
-              ><b-icon class="calendarIcon" icon="calendar3"></b-icon
-            ></span>
-            &nbsp;
-            <button class="nextMonthBtn" @click="onNextMonth">
-              <b-icon
-                icon="chevron-right"
-                variant="dark"
-                style="vertical-align: middle"
-              ></b-icon>
-            </button>
-            <button class="startDateBtn" @click="openModal">월시작일</button>
-          </div>
+  <!-- <div class="content"> -->
+  <div class="container-fluid">
+    <div class="row">
+      <div class="date_wrap">
+        <div class="date_picker_box">
+          <button class="prevMonthBtn" @click="onPrevMonth">
+            <b-icon
+              icon="chevron-left"
+              variant="dark"
+              style="vertical-align: middle"
+            ></b-icon></button
+          >&nbsp;
+          <datepicker
+            ref="periodFrom"
+            :format="'yyyy.MM.dd'"
+            v-model="period.from"
+            input-class="datepickerInput"
+            :language="ko"
+            @closed="onCloseStartDate"
+          ></datepicker>
+          <span
+            class="calendarIconBox"
+            @click="onClickPeriodFromCalendar"
+            @blur="onBlurCalendar"
+            tabindex="0"
+            ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
+          >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
+          <datepicker
+            ref="periodTo"
+            :format="'yyyy.MM.dd'"
+            v-model="period.to"
+            input-class="datepickerInput"
+            :disabledDates="disabledDates"
+            :language="ko"
+          ></datepicker>
+          <span
+            class="calendarIconBox"
+            @click="onClickPeriodToCalendar"
+            @blur="onBlurCalendar"
+            tabindex="0"
+            ><b-icon class="calendarIcon" icon="calendar3"></b-icon
+          ></span>
+          &nbsp;
+          <button class="nextMonthBtn" @click="onNextMonth">
+            <b-icon
+              icon="chevron-right"
+              variant="dark"
+              style="vertical-align: middle"
+            ></b-icon>
+          </button>
+          <button class="startDateBtn" @click="openModal">월시작일</button>
         </div>
-      </div>
-      <!-- 월시작일 설정 Modal -->
-      <setStartDateModal v-click-outside="onClickOutside" v-if="showModal">
-        <!-- default 슬롯 콘텐츠 -->
-        <div>
-          <strong>월 시작일 설정</strong>
-          <b-form-select
-            class="selectBox"
-            v-model="monthStartDate"
-            :options="options"
-            size="sm"
-          ></b-form-select>
-          <span>(이달 1일 ~ 이달 말일)</span>
-        </div>
-        <!-- /default -->
-        <!-- footer 슬롯 콘텐츠 -->
-        <template slot="footer">
-          <div>
-            <span
-              >월 시작일로 지정한 날부터 한달이 시작되어 가계부가
-              계산됩니다.</span
-            >
-          </div>
-          <div class="modalFooterBtn-box">
-            <button class="basicBtn" @click="onSaveStartDate">확인</button>
-          </div>
-        </template>
-        <!-- /footer -->
-      </setStartDateModal>
-      <div class="tabs" style="width: 100%">
-        <b-tabs
-          active-nav-item-class="font-weight-bold text-primary"
-          content-class="mt-3"
-          v-model="tabIndex"
-          v-on:activate-tab="tabActivated"
-        >
-          <b-tab
-            title-item-class="defaultTab"
-            title="지출"
-            @click="onClickExpenditure"
-            ><expenditure
-              ref="expenditureTab"
-              :user="user"
-              :period="period"
-              :monthStartDate="monthStartDate"
-            ></expenditure
-          ></b-tab>
-          <b-tab
-            title-item-class="defaultTab"
-            title="수입"
-            @click="onClickIncome"
-            ><income ref="incomeTab" :user="user" :period="period"></income
-          ></b-tab>
-        </b-tabs>
       </div>
     </div>
+    <!-- 월시작일 설정 Modal -->
+    <setStartDateModal v-click-outside="onClickOutside" v-if="showModal">
+      <!-- default 슬롯 콘텐츠 -->
+      <div>
+        <strong>월 시작일 설정</strong>
+        <b-form-select
+          class="selectBox"
+          v-model="monthStartDate"
+          :options="options"
+          size="sm"
+        ></b-form-select>
+        <span>(이달 1일 ~ 이달 말일)</span>
+      </div>
+      <!-- /default -->
+      <!-- footer 슬롯 콘텐츠 -->
+      <template slot="footer">
+        <div>
+          <span
+            >월 시작일로 지정한 날부터 한달이 시작되어 가계부가
+            계산됩니다.</span
+          >
+        </div>
+        <div class="modalFooterBtn-box">
+          <button class="basicBtn" @click="onSaveStartDate">확인</button>
+        </div>
+      </template>
+      <!-- /footer -->
+    </setStartDateModal>
+    <div class="tabs" style="width: 100%">
+      <b-tabs
+        active-nav-item-class="font-weight-bold text-primary"
+        content-class="mt-3"
+        v-model="tabIndex"
+        v-on:activate-tab="tabActivated"
+      >
+        <b-tab
+          title-item-class="defaultTab"
+          title="지출"
+          @click="onClickExpenditure"
+          ><expenditure
+            ref="expenditureTab"
+            :user="user"
+            :period="period"
+            :monthStartDate="monthStartDate"
+          ></expenditure
+        ></b-tab>
+        <b-tab title-item-class="defaultTab" title="수입" @click="onClickIncome"
+          ><income ref="incomeTab" :user="user" :period="period"></income
+        ></b-tab>
+      </b-tabs>
+    </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <script>

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../util/axios';
 
 const API_URL = 'http://localhost:8080/report/';
 

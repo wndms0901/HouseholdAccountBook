@@ -389,6 +389,16 @@ export default {
           console.log(Error);
         });
     },
+    toast(toaster, msg) {
+      this.$bvToast.toast(msg, {
+        toaster: toaster,
+        bodyClass: "text-center font-weight-bold",
+        solid: true,
+        variant: "primary",
+        autoHideDelay: 1000,
+        noCloseButton: true,
+      });
+    },
     // 저장
     onSave() {
       this.gridApi.clearFocusedCell();
@@ -404,6 +414,7 @@ export default {
       this.$store
         .dispatch("budgetStore/saveBudgetList", budgetDto)
         .then((res) => {
+          this.toast("b-toaster-bottom-center", "저장되었습니다.");
           this.getBudgetList();
         })
         .catch((Error) => {

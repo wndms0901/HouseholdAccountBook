@@ -48,6 +48,9 @@ import VueGoogleCharts from 'vue-google-charts'
 import 'lodash'
 // vue-moment
 import VueMoment from 'vue-moment'
+// vue-spinner
+import FadeLoader from 'vue-spinner/src/FadeLoader.vue'
+Vue.component('fade-loader', FadeLoader)
 
 import './registerServiceWorker'
 // plugin setup
@@ -84,12 +87,18 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['Login', 'Register'];
   const authRequired = !publicPages.includes(to.name);
   const loginCheck = localStorage.getItem('user');
-  console.log('loginCheck', loginCheck);
-  if (authRequired && !loginCheck) {
-    router.push({ path: '/user/login' });
-  } else {
-    next();
-  }
+  store.commit('loadingStore/startSpinner');
+  setTimeout(() => {
+    if (authRequired && !loginCheck) {
+      router.push({ path: '/user/login' });
+    } else {
+      next();
+    }
+  }, 500);
+})
+
+router.afterEach((to, from) => {
+  store.commit('loadingStore/endSpinner');
 })
 
 /* eslint-disable no-new */

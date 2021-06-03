@@ -2,8 +2,15 @@
   <!-- <div class="wrapper"> -->
   <div class="wrapper login_layout">
     <router-view></router-view>
+    <div class="loader" v-show="$store.state.loadingStore.LoadingStatus">
+      <fade-loader
+        :loading="$store.state.loadingStore.LoadingStatus"
+        :color="'#3472F7'"
+      ></fade-loader>
+    </div>
     <LoginFooter class="login_footer" />
   </div>
+
   <!-- <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/> -->
 </template>
@@ -11,20 +18,17 @@
 <script>
 import LoginFooter from "./LoginFooter.vue";
 
-//import HelloWorld from './components/HelloWorld.vue'
-
 export default {
   name: "App",
   components: {
     LoginFooter,
-    //HelloWorld
   },
   date() {
     return {};
   },
   computed: {},
-  mounted() {},
   created() {},
+  mounted() {},
 };
 </script>
 

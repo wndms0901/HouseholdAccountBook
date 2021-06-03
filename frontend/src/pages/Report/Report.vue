@@ -1,73 +1,73 @@
 <template>
-  <div class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="date_wrap">
-          <div class="date_picker_box">
-            <button class="prevMonthBtn" @click="onPrevMonth">
-              <b-icon
-                icon="chevron-left"
-                variant="dark"
-                style="vertical-align: middle"
-              ></b-icon></button
-            >&nbsp;
-            <datepicker
-              ref="periodFrom"
-              :format="'yyyy.MM.dd'"
-              v-model="period.from"
-              input-class="datepickerInput"
-              minimum-view="month"
-              :language="ko"
-              @closed="onCloseStartDate"
-            ></datepicker>
-            <span
-              class="calendarIconBox"
-              @click="onClickPeriodFromCalendar"
-              @blur="onBlurCalendar"
-              tabindex="0"
-              ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
-            >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
-            <datepicker
-              :format="'yyyy.MM.dd'"
-              v-model="period.to"
-              input-class="datepickerInput_disabled"
-              minimum-view="month"
-              :language="ko"
-              disabled
-            ></datepicker
-            ><span class="calendarIconBox_disabled"
-              ><b-icon class="calendarIcon" icon="calendar3"></b-icon
-            ></span>
-            &nbsp;<button class="nextMonthBtn" @click="onNextMonth">
-              <b-icon
-                icon="chevron-right"
-                variant="dark"
-                style="vertical-align: middle"
-              ></b-icon>
-            </button>
-          </div>
+  <!-- <div class="content"> -->
+  <div class="container-fluid">
+    <div class="row">
+      <div class="date_wrap">
+        <div class="date_picker_box">
+          <button class="prevMonthBtn" @click="onPrevMonth">
+            <b-icon
+              icon="chevron-left"
+              variant="dark"
+              style="vertical-align: middle"
+            ></b-icon></button
+          >&nbsp;
+          <datepicker
+            ref="periodFrom"
+            :format="'yyyy.MM.dd'"
+            v-model="period.from"
+            input-class="datepickerInput"
+            minimum-view="month"
+            :language="ko"
+            @closed="onCloseStartDate"
+          ></datepicker>
+          <span
+            class="calendarIconBox"
+            @click="onClickPeriodFromCalendar"
+            @blur="onBlurCalendar"
+            tabindex="0"
+            ><b-icon class="calendarIcon" icon="calendar3"></b-icon></span
+          >&ensp; <span style="font-size: 1.5em">-</span>&ensp;
+          <datepicker
+            :format="'yyyy.MM.dd'"
+            v-model="period.to"
+            input-class="datepickerInput_disabled"
+            minimum-view="month"
+            :language="ko"
+            disabled
+          ></datepicker
+          ><span class="calendarIconBox_disabled"
+            ><b-icon class="calendarIcon" icon="calendar3"></b-icon
+          ></span>
+          &nbsp;<button class="nextMonthBtn" @click="onNextMonth">
+            <b-icon
+              icon="chevron-right"
+              variant="dark"
+              style="vertical-align: middle"
+            ></b-icon>
+          </button>
         </div>
       </div>
-      <div class="tabs" style="width: 100%">
-        <b-tabs
-          active-nav-item-class="font-weight-bold text-primary"
-          content-class="mt-3"
-          v-model="tabIndex"
-        >
-          <b-tab title-item-class="defaultTab" title="월보고서">
-            <monthReport :user="user" :period="period"></monthReport>
-          </b-tab>
-          <b-tab title-item-class="defaultTab" title="연간보고서">
-            <yearReport
-              :user="user"
-              :period="period"
-              :monthStartDate="monthStartDate"
-            ></yearReport>
-          </b-tab>
-        </b-tabs>
-      </div>
+    </div>
+    <div class="tabs" style="width: 100%">
+      <b-tabs
+        active-nav-item-class="font-weight-bold text-primary"
+        content-class="mt-3"
+        v-model="tabIndex"
+      >
+        <b-tab title-item-class="defaultTab" title="월보고서">
+          <monthReport :user="user" :period="period"></monthReport>
+        </b-tab>
+        <b-tab title-item-class="defaultTab" title="연간보고서">
+          <yearReport
+            :user="user"
+            :period="period"
+            :monthStartDate="monthStartDate"
+          ></yearReport>
+        </b-tab>
+      </b-tabs>
     </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <script>

@@ -597,7 +597,12 @@ export default {
         rowIndex: rowData.length,
         colKey: "expenditureDescription",
       });
-      this.originRowData = _.cloneDeep(this.$refs.expenditureGrid.getRowData());
+      let originRowData = _.cloneDeep(this.$refs.expenditureGrid.getRowData());
+      _.forEach(originRowData, function (row, index) {
+        row.expenditureDescription = row.expenditureDescription || "";
+        row.memo = row.memo || "";
+      });
+      this.originRowData = originRowData;
       this.gridApi.sizeColumnsToFit();
       this.getTotal();
     },
@@ -684,6 +689,16 @@ export default {
       var rowCount = event.api.getSelectedNodes().length;
       this.disabledSelectBtn = rowCount === 0;
     },
+    toast(toaster, msg) {
+      this.$bvToast.toast(msg, {
+        toaster: toaster,
+        bodyClass: "text-center font-weight-bold",
+        solid: true,
+        variant: "primary",
+        autoHideDelay: 1000,
+        noCloseButton: true,
+      });
+    },
     // 지출 목록 저장
     onSave() {
       this.gridApi.clearFocusedCell();
@@ -736,6 +751,7 @@ export default {
       this.$store
         .dispatch("writeStore/saveExpenditureList", expenditureSaveDto)
         .then((res) => {
+          this.toast("b-toaster-bottom-center", "저장되었습니다.");
           this.getExpenditureList();
         })
         .catch((Error) => {
@@ -795,6 +811,10 @@ export default {
       this.$store
         .dispatch("writeStore/saveCalculation", writeRequestDto)
         .then((res) => {
+          this.toast(
+            "b-toaster-bottom-center",
+            "수입으로 전월 잔액이 생성되었습니다."
+          );
           this.showCalculateModal = false;
         })
         .catch((Error) => {

@@ -6,12 +6,16 @@
     :data-image="backgroundImage"
   >
     <div class="sidebar-wrapper">
-      <div class="logo">
-        <a href="#" class="simple-text logo__container">
+      <div class="logo pt-3 pb-3">
+        <a
+          href="javascript:void(0);"
+          class="simple-text logo__container"
+          readonly
+        >
           <div class="logo-img">
-            <img src="img/vue-logo.png" alt="" />
+            <img src="../../assets/image/logo.png" alt="logo" />
           </div>
-          {{ title }}
+          <span>{{ title }}</span>
         </a>
       </div>
 
@@ -117,5 +121,12 @@ export default {
 }
 .sidebar .sidebar-wrapper .logo .logo__container {
   padding-left: 10px;
+}
+.logo a:hover {
+  text-decoration: none;
+  cursor: default;
+}
+.logo a span {
+  font-size: 2.2em;
 }
 </style>
