@@ -27,6 +27,9 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     error => {
+        if (error.response.status === 403) {
+            store.dispatch("userStore/logout");
+        }
         store.commit('loadingStore/endSpinner');
         return Promise.reject(error);
     }

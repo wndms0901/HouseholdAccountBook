@@ -119,9 +119,9 @@ export default {
       // this.$router.push({ path: "myInfo" });
     },
     logout() {
-      console.log(this.$store);
-      this.$store.dispatch("userStore/logout");
-      this.$router.replace("/user");
+      this.$emit("logout");
+      // this.$store.dispatch("userStore/logout");
+      // this.$router.replace("/user");
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);

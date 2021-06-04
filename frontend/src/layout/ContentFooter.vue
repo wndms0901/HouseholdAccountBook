@@ -1,24 +1,15 @@
 <template>
   <footer class="footer">
     <div class="container-fluid">
-      <!-- <nav>
-        <ul class="footer-menu">
-          <li>
-            <router-link :to="{path:'/admin'}">Dashboard</router-link>
-          </li>
-        </ul>
-      </nav> -->
       <div class="copyright text-center">
-        Copyright &copy; 2021 Jeong Jueun. All rights reserved.
-        <!-- <img src="../../src/assets/image/github.png" /> -->
+        <span>Copyright &copy; 2021 Jeong Jueun. All rights reserved.</span>
+        <a
+          href="https://github.com/wndms0901/HouseholdAccountBook"
+          target="_blank"
+        >
+          <img src="../assets/image/github.png" alt="GitHub"
+        /></a>
       </div>
-      <!-- &copy; Coded with
-        <i class="fa fa-heart heart"></i> by
-        <a href="https://binarcode.com" target="_blank">BinarCode</a>. Designed
-        by
-        <a href="https://www.creative-tim.com/?ref=pdf-vuejs" target="_blank"
-          >Creative Tim</a
-        >. -->
     </div>
   </footer>
 </template>
@@ -26,7 +17,10 @@
 export default {};
 </script>
 <style>
-/* .copyright img {
+.copyright img {
+  position: relative;
+  bottom: 5px;
   float: right;
-} */
+  opacity: 0.8;
+}
 </style>

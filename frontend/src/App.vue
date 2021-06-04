@@ -1,11 +1,16 @@
 <template>
-  <div :class="{ 'nav-open': $sidebar.showSidebar }">
-    <notifications></notifications>
+  <div>
+    <!-- <div :class="{ 'nav-open': $sidebar.showSidebar }"> -->
+    <!-- <notifications></notifications> -->
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+window.onunload = () => {
+  // Clear the local storage
+  window.localStorage.clear();
+};
 export default {};
 </script>
 <style lang="scss">

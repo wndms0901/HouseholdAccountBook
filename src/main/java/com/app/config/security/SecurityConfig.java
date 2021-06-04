@@ -41,31 +41,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 X
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
-                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile", "/user/login").permitAll()
+                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile", "/user/login/**", "/user/register/**", "/user/send/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().permitAll() // 나머지 요청은 권한 필요x
-                //.anyRequest().authenticated() // 나머지 요청은 권한 필요
-                .and()
-                // 인증 오류 발생 시 처리를 위한 핸들러 추가
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
+                .anyRequest().authenticated() // 나머지 요청은 권한 필요
+                //.anyRequest().permitAll() // 나머지 요청은 권한 필요x
                 .and()
                 // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter에서 인증 및 권한처리
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-        //http
-                //.csrf().disable()
-                //.headers().frameOptions().disable()
-                //.and()
-                //.authorizeRequests()
-                //.antMatchers( "/login","/css/**", "/images/**", "/js/**", "/profile").permitAll()
-                //.anyRequest().authenticated()
-                //.and()
-                //.formLogin().loginPage("/login").defaultSuccessUrl("/loginSuccess",  true)
-                //.and()
-                //.logout().logoutSuccessUrl("/");
-//                .and()
-//                .oauth2Login()
-//                .userInfoEndpoint()
-//                .userService(customOAuth2UserService);
+                // 인증 오류 발생 시 처리를 위한 핸들러 추가
+                //.exceptionHandling()
+                // 인증 실패시 처리
+                //.authenticationEntryPoint(authenticationEntryPoint);
     }
 }

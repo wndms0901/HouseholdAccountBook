@@ -104,7 +104,7 @@
       </div>
     </side-bar>
     <div class="main-panel">
-      <top-navbar :pageName="pageName"></top-navbar>
+      <top-navbar :pageName="pageName" @logout="logout"></top-navbar>
       <dashboard-content @click="toggleSidebar" @updateStartDate="setPeriod">
       </dashboard-content>
       <content-footer></content-footer>
@@ -147,6 +147,7 @@ export default {
       balanceCarriedForward: 0,
       cash: 0,
       card: 0,
+      isLogOut: false,
     };
   },
   computed: {
@@ -188,7 +189,16 @@ export default {
       return String(this.card).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
-
+  watch: {
+    loggedIn: {
+      handler(newData) {
+        if (!newData && !this.isLogOut) {
+          alert("계정 권한이 유효하지 않습니다.\n다시 로그인 해주세요.");
+          this.$router.replace("/user");
+        }
+      },
+    },
+  },
   mounted() {
     this.setPeriod();
   },
@@ -336,6 +346,12 @@ export default {
         .catch((Error) => {
           console.log(Error);
         });
+    },
+    // 로그아웃 click
+    logout() {
+      this.isLogOut = true;
+      this.$store.dispatch("userStore/logout");
+      this.$router.replace("/user");
     },
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {

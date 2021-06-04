@@ -3,6 +3,8 @@ package com.app.config.jwt;
 import com.app.service.SecurityUserDetailsService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -29,6 +30,8 @@ public class JwtTokenProvider {
     private long tokenValidTime = 1 * 60 * 1000L;
 
     private final SecurityUserDetailsService securityUserDetailsService;
+
+    private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     // 객체 초기화, secretKey를 Base64로 인코딩
    // @PostConstruct
@@ -74,19 +77,35 @@ public class JwtTokenProvider {
         return getClaimsFromJwtToken(token).getBody().getSubject();
     }
 
-    // Request의 Header에서 token 값을 가져옴. "X-AUTH-TOKEN" : "TOKEN값'
+    // Request의 Header에서 token 값을 가져옴. "Authorization" : "TOKEN값'
     public String resolveJwtToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
+        return request.getHeader("Authorization");
     }
 
     // 토큰의 유효성 + 만료일자 확인
     public boolean isTokenValid(String token) {
         try {
-            Jws<Claims> claims = getClaimsFromJwtToken(token);
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
+            Jwts.parserBuilder()
+                    .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            logger.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            logger.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            logger.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalStateException e) {
+            logger.info("JWT 토큰이 잘못되었습니다.");
         }
+        return false;
+//        try {
+//            Jws<Claims> claims = getClaimsFromJwtToken(token);
+//            return !claims.getBody().getExpiration().before(new Date());
+//        } catch (Exception e) {
+//            return false;
+//        }
     }
     private Jws<Claims> getClaimsFromJwtToken(String token) throws JwtException{
         return Jwts.parserBuilder()

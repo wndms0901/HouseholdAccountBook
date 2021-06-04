@@ -1,5 +1,4 @@
 <template>
-  <!-- <div class="wrapper"> -->
   <div class="wrapper login_layout">
     <router-view></router-view>
     <div class="loader" v-show="$store.state.loadingStore.LoadingStatus">
@@ -8,11 +7,8 @@
         :color="'#3472F7'"
       ></fade-loader>
     </div>
-    <LoginFooter class="login_footer" />
+    <LoginFooter />
   </div>
-
-  <!-- <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/> -->
 </template>
 
 <script>
@@ -34,10 +30,11 @@ export default {
 
 <style>
 .login_layout {
-  display: flex;
   flex-direction: column;
 }
 .login_footer {
+  padding: 20px;
+  height: 60px;
   bottom: 0;
   /* position: relative; */
   /* width: 100%;
@@ -45,8 +42,20 @@ export default {
   /* position: absolute;
   bottom: 0; */
   text-align: center;
-  background: lightgrey;
+  vertical-align: bottom;
+  opacity: 0.75;
+  background: #000;
+  color: #fff;
+  /* background: lightgrey; */
   /* border-top: 1px solid #262b35;
   background: #31323a; */
+}
+
+.login_footer img {
+  position: relative;
+  bottom: 8px;
+  float: right;
+  background: #fff;
+  border-radius: 20px;
 }
 </style>

@@ -250,7 +250,7 @@ export default {
   margin-right: auto;
   padding: 20px;
   width: 30%;
-  min-height: calc(100% - 80px);
+  min-height: calc(100% - 60px);
   /* height: inherit; */
 }
 ul {
