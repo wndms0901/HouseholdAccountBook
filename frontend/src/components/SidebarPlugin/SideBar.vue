@@ -100,7 +100,8 @@ export default {
   computed: {
     sidebarStyle() {
       return {
-        backgroundImage: `url(${this.backgroundImage})`,
+        // backgroundImage: `url(${this.backgroundImage})`,
+        opacity: 0.95,
       };
     },
   },

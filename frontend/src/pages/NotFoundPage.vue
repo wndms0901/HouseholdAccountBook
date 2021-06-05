@@ -1,66 +1,66 @@
 <template>
-  <div class="contact-us full-screen">
-    <nav class="navbar navbar-ct-default" role="navigation-demo">
-      <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example-2">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <router-link :to="{path:'/'}" class="navbar-brand">Site title</router-link>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="navigation-example-2">
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <router-link :to="{path:'/'}">Home</router-link>
-            </li>
-          </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-      </div>
-      <!-- /.container-->
-    </nav>
-    <div class="wrapper wrapper-full-page section content">
-      <div class="">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center">
-              <h2 class="title text-danger">404 Not Found</h2>
-              <h2 class="title">Oops! It seems that this page does not exist.</h2>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="error_wrapper">
+    <div class="error_status"><span>4</span><span>0</span><span>4</span></div>
+    <div class="error_msg">
+      <p>PAGE NOT FOUND</p>
+      <p>요청한 페이지를 찾을 수 없습니다.</p>
+      <b-button
+        class="btn-fill"
+        variant="primary"
+        size="lg"
+        block
+        @click="goBack"
+        >이전페이지</b-button
+      >
     </div>
-    <footer class="footer-demo">
-      <div class="container">
-        <nav class="pull-left">
-          <ul>
-            <li>
-              <router-link :to="{path:'/'}">Home</router-link>
-            </li>
-            <li>
-              <router-link :to="{path:'/register'}">Register</router-link>
-            </li>
-          </ul>
-        </nav>
-        <div class="copyright text-center">
-          &copy; Coded with
-          <i class="fa fa-heart heart"></i> by
-          <a href="https://binarcode.com" target="_blank">BinarCode</a>.
-          Designed by <a href="https://www.creative-tim.com/?ref=pdf-vuejs" target="_blank">Creative Tim</a>.
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
 <script>
-  export default {}
-
+export default {
+  computed: {
+    loggedIn() {
+      return this.$store.state.userStore.initialState.status.loggedIn;
+    },
+  },
+  methods: {
+    goBack() {
+      if (!this.loggedIn) {
+        this.$router.push({ path: "/user/login" });
+      } else {
+        this.$router.go(-1);
+      }
+    },
+  },
+};
 </script>
+<style>
+.error_wrapper {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: -50px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.error_wrapper p {
+  font-size: 2em;
+}
+.error_status {
+  font-size: 15em;
+}
+.error_status span:nth-child(2) {
+  color: #3472f7;
+}
+.error_msg {
+  position: relative;
+  text-align: center;
+  top: -50px;
+}
+.error_msg button {
+  margin-top: 50px;
+}
+</style>

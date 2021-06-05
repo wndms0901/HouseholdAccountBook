@@ -28,7 +28,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 
 // router setup
-import routes from './routes/routes'
+import router from './routes/index'
 // Axios
 import axios from 'axios'
 Vue.prototype.$Axios = axios;
@@ -55,7 +55,7 @@ Vue.component('fade-loader', FadeLoader)
 import './registerServiceWorker'
 // plugin setup
 Vue.use(vClickOutside)
-Vue.use(VueRouter)
+//Vue.use(VueRouter)
 Vue.use(LightBootstrap)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
@@ -63,43 +63,7 @@ Vue.component('b-form-file', BFormFile)
 Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 
-// configure router
-const router = new VueRouter({
-  mode: 'history',
-  routes, // short for routes: routes
-  linkActiveClass: 'nav-item active',
-  scrollBehavior: (to) => {
-    if (to.hash) {
-      return { selector: to.hash }
-    } else {
-      return { x: 0, y: 0 }
-    }
-  }
-})
 
-// 네비게이션 가드 : 뷰 라우터로 특정 URL에 접근할 때 해당 URL의 접근을 막는 방법
-// 애플리케이션 전역에서 동작하는 전역 가드
-// to : 이동할 URL 정보가 담긴 라우터 객체
-// from : 현재 URL 정보가 담긴 라우터 객체
-// next : to에서 지정한 URL로 이동하기 위해 반드시 호출해야하는 함수
-// next 호출전까지는 대기 상태에서 머물기 때문에 화면전환이 이루어지지 않음.
-router.beforeEach((to, from, next) => {
-  const publicPages = ['Login', 'Register'];
-  const authRequired = !publicPages.includes(to.name);
-  const loginCheck = localStorage.getItem('user');
-  store.commit('loadingStore/startSpinner');
-  setTimeout(() => {
-    if (authRequired && !loginCheck) {
-      router.push({ path: '/user/login' });
-    } else {
-      next();
-    }
-  }, 500);
-})
-
-router.afterEach((to, from) => {
-  store.commit('loadingStore/endSpinner');
-})
 
 /* eslint-disable no-new */
 new Vue({

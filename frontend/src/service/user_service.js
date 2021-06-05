@@ -15,7 +15,6 @@ class UserService {
                 password: user.password
             })
             .then(response => {
-                console.log('response', response);
                 if (response.data.token) {
                     localStorage.setItem('user', JSON.stringify(response.data));
                 }
@@ -39,7 +38,6 @@ class UserService {
         return axios
             .get(API_URL + 'login/test-id')
             .then(response => {
-                console.log('response', response);
                 if (response.data.token) {
                     localStorage.setItem('user', JSON.stringify(response.data));
                 }

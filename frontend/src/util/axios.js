@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '../store/index'
+import router from '../routes/index'
 
 /* axios 인스턴스를 생성 */
 const axiosInstance = axios.create({
@@ -29,6 +30,10 @@ axiosInstance.interceptors.response.use(
     error => {
         if (error.response.status === 403) {
             store.dispatch("userStore/logout");
+        }
+        if (error.response.status === 500) {
+            alert();
+            router.replace("/error");
         }
         store.commit('loadingStore/endSpinner');
         return Promise.reject(error);
