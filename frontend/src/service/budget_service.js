@@ -12,7 +12,6 @@ class BudgetService {
         return axios
             .post(API_URL + 'list', BudgetRequestDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -25,7 +24,6 @@ class BudgetService {
         return axios
             .post(API_URL + 'save', BudgetDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -38,7 +36,6 @@ class BudgetService {
         return axios
             .post(API_URL + 'expenditure/list', BudgetRequestDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }

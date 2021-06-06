@@ -368,11 +368,9 @@ export default {
         ),
         email: this.user.userInfo.email,
       };
-      console.log("budgetRequestDto", budgetRequestDto);
       this.$store
         .dispatch("budgetStore/selectBudgetList", budgetRequestDto)
         .then((res) => {
-          console.log("결과>", res.data);
           // 이번달 수입 합계
           this.totalIncomeNumber = res.data.totalIncome;
           // 3개월 간 평균 지출

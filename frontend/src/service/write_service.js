@@ -12,7 +12,6 @@ class WriteService {
         return axios
             .post(API_URL + 'income-expenditure/detail', writeRequestDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -25,7 +24,6 @@ class WriteService {
         return axios
             .get(API_URL + 'category/list', { params: { categoryType: categoryType } })
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -44,7 +42,6 @@ class WriteService {
                 }
             })
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -57,7 +54,6 @@ class WriteService {
         return axios
             .post(API_URL + 'expenditure/save', ExpenditureSaveDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -70,7 +66,6 @@ class WriteService {
         return axios
             .post(API_URL + 'calculation/save', WriteRequestDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -90,7 +85,6 @@ class WriteService {
                 }
             })
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -103,7 +97,6 @@ class WriteService {
         return axios
             .post(API_URL + 'income/save', IncomeSaveDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }

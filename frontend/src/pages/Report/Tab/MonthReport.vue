@@ -297,7 +297,6 @@ export default {
       const startDate = _.cloneDeep(startWeekTo).add(1, "days");
       const endDate = _.cloneDeep(endWeekFrom).subtract(1, "days");
       const diff = endDate.diff(startDate, "days") + 1;
-      console.log(diff / 7);
       for (let i = 0; i < diff / 7; i++) {
         const weekTo = _.cloneDeep(endDate).subtract(i * 7, "days");
         const weekFrom = _.cloneDeep(weekTo).subtract(6, "days");
@@ -348,9 +347,8 @@ export default {
             // 전 달의 1일
             const firstDayLastMonth = this.$moment(from).startOf("month")._d;
             // 전 달 1일이 포함된 주의 목요일
-            const firstDayLastMonthThu = this.$moment(
-              firstDayLastMonth
-            ).isoWeekday(4)._d;
+            const firstDayLastMonthThu =
+              this.$moment(firstDayLastMonth).isoWeekday(4)._d;
             // 전달 첫번째 주가 전전달의 마지막 주일때
             if (
               firstDayLastMonth.getMonth() !== firstDayLastMonthThu.getMonth()
@@ -394,11 +392,9 @@ export default {
         lastMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
         periodDtoList: weekOfMonthList,
       };
-      console.log("reportRequestDto>>", reportRequestDto);
       this.$store
         .dispatch("reportStore/selectMonthReport", reportRequestDto)
         .then((res) => {
-          console.log("결과>", res.data);
           // 수입/지출 합계, 지난달 일평균
           this.totalExpenditureNumber = res.data.totalExpenditure;
           this.totalIncomeNumber = res.data.totalIncome;

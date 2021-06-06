@@ -11,7 +11,6 @@ const budgetStore = {
         selectBudgetList({ }, BudgetRequestDto) {
             return BudgetService.selectBudgetList(BudgetRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -27,7 +26,6 @@ const budgetStore = {
         saveBudgetList({ }, BudgetDto) {
             return BudgetService.saveBudgetList(BudgetDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -43,7 +41,6 @@ const budgetStore = {
         selectBudgetExpenditureList({ }, BudgetRequestDto) {
             return BudgetService.selectBudgetExpenditureList(BudgetRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {

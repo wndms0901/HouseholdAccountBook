@@ -372,8 +372,6 @@ export default {
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("출금>", this.accountCategory);
-          console.log("출금>>", params.value);
           return params.value.accountCategoryName;
           //return this.accountCategory[params.value];
         },
@@ -394,8 +392,6 @@ export default {
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("대분류>", this.largeCategory);
-          console.log("대분류>>", params.value);
           return params.value.largeCategoryName;
           //return this.largeCategory[params.value];
         },
@@ -405,20 +401,13 @@ export default {
         field: "smallCategory",
         cellEditor: "agSelectCellEditor",
         cellEditorParams: (params) => {
-          console.log(
-            "소분류",
-            this.smallCategory[params.data.largeCategory.largeCategoryId]
-          );
           return {
-            values: this.smallCategory[
-              params.data.largeCategory.largeCategoryId
-            ],
+            values:
+              this.smallCategory[params.data.largeCategory.largeCategoryId],
           };
         },
         // convert code to value
         valueFormatter: (params) => {
-          console.log("소분류>", this.smallCategory);
-          console.log("소분류>>", params);
           return params.value.smallCategoryName;
         },
       },
@@ -432,7 +421,6 @@ export default {
     };
 
     this.isRowSelectable = (rowNode) => {
-      console.log("rowNode", rowNode);
       return rowNode.data.expenditureDate === "" ? false : true;
     };
   },
@@ -449,7 +437,6 @@ export default {
     // grid cell 값 변경
     onCellValueChanged(params) {
       const colId = params.column.getId();
-      console.log("onCellValueChanged", params);
       if (colId === "largeCategory") {
         params.api.startEditingCell({
           rowIndex: params.rowIndex,
@@ -464,7 +451,6 @@ export default {
       this.$store
         .dispatch("writeStore/selectCategoryList", this.categoryType)
         .then((res) => {
-          console.log("getCategoryList", res.data);
           // 출금통장 카테고리 목록
           this.accountCategory = res.data.accountCategoryDtoList;
           // let arry = [];
@@ -528,11 +514,9 @@ export default {
         endDate: this.$moment(this.period.to).format("YYYYMMDD"),
         email: this.user.userInfo.email,
       };
-      console.log("params>", params);
       this.$store
         .dispatch("writeStore/selectExpenditureList", params)
         .then((res) => {
-          console.log("getExpenditureList", res.data);
           this.gridApi.clearFocusedCell();
           // 날짜 형식 setting
           _.forEach(res.data, function (row, index) {
@@ -643,7 +627,6 @@ export default {
         const columnData = this.gridApi.getFocusedCell();
         this.gridApi.clearFocusedCell();
         const rowData = this.$refs.expenditureGrid.getRowData();
-        console.log("row", JSON.stringify(rowData));
         const defaultRow = _.cloneDeep(this.defaultRow);
         // const today = new Date();
         // const expenditureDate =
@@ -747,7 +730,6 @@ export default {
       );
       // 삭제 rows
       expenditureSaveDto.deleteExpenditureDtoList = this.deletedRows;
-      console.log("expenditureSaveDto", expenditureSaveDto);
       this.$store
         .dispatch("writeStore/saveExpenditureList", expenditureSaveDto)
         .then((res) => {
@@ -807,7 +789,6 @@ export default {
         userDto: this.user.userInfo,
       };
 
-      console.log("writeRequestDto", writeRequestDto);
       this.$store
         .dispatch("writeStore/saveCalculation", writeRequestDto)
         .then((res) => {
@@ -873,7 +854,6 @@ export default {
         this.$store
           .dispatch("excelStore/excelUpload", formData)
           .then((res) => {
-            console.log("결과", res.result);
             if (res.result === "failure") {
               alert(
                 "엑셀 업로드에 실패하였습니다. 작성한 내용을 다시 확인해 주세요."

@@ -143,10 +143,8 @@ export default {
     onLogin() {
       this.validationCheck();
       if (this.user.email && this.user.password) {
-        console.log(this.$store);
         this.$store.dispatch("userStore/login", this.user).then(
           (data) => {
-            console.log(data);
             if (data.error) {
               // 로그인 실패
               this.user.password = "";
@@ -157,13 +155,7 @@ export default {
               this.$router.push("/");
             }
           },
-          (error) => {
-            // this.message =
-            //   (error.response && error.response.data) ||
-            //   error.message ||
-            //   error.toString();
-            console.log(error);
-          }
+          (error) => {}
         );
       }
       //event.preventDefault();

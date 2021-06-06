@@ -223,7 +223,6 @@ export default {
       this.$store
         .dispatch("reportStore/selectYearReport", reportRequestDto)
         .then((res) => {
-          console.log("결과>", res.data);
           const totalIncome = _.filter(res.data, {
             largeCategoryId: "",
           });
@@ -262,7 +261,6 @@ export default {
         pageName: "YearReport",
         period: period,
       };
-      console.log("excelRequestDto", excelRequestDto);
       this.$store
         .dispatch("excelStore/excelDownload", excelRequestDto)
         .then((res) => {

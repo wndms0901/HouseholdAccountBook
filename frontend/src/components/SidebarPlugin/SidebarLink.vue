@@ -32,13 +32,10 @@ export default {
       default: "router-link",
     },
   },
-  mounted() {
-    console.log("this", this.link);
-  },
+  mounted() {},
   methods: {
     hideSidebar() {
       this.$emit("onclickLink", this.link.name);
-      console.log("$attrs", this.link);
       if (
         this.autoClose &&
         this.$sidebar &&

@@ -11,7 +11,6 @@ const writeStore = {
         selectIncomeExpenditureDetail({ }, writeRequestDto) {
             return WriteService.selectIncomeExpenditureDetail(writeRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -27,7 +26,6 @@ const writeStore = {
         selectCategoryList({ }, categoryType) {
             return WriteService.selectCategoryList(categoryType).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -43,7 +41,6 @@ const writeStore = {
         selectExpenditureList({ }, writeRequestDto) {
             return WriteService.selectExpenditureList(writeRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -59,7 +56,6 @@ const writeStore = {
         saveExpenditureList({ }, ExpenditureSaveDto) {
             return WriteService.saveExpenditureList(ExpenditureSaveDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -75,7 +71,6 @@ const writeStore = {
         saveCalculation({ }, WriteRequestDto) {
             return WriteService.saveCalculation(WriteRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -92,7 +87,6 @@ const writeStore = {
         selectIncomeList({ }, writeRequestDto) {
             return WriteService.selectIncomeList(writeRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -108,7 +102,6 @@ const writeStore = {
         saveIncomeList({ }, IncomeSaveDto) {
             return WriteService.saveIncomeList(IncomeSaveDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {

@@ -333,11 +333,9 @@ export default {
         endDate: endDate.replace(/\./g, ""),
         userDto: this.user.userInfo,
       };
-      console.log("writeRequestDto", writeRequestDto);
       this.$store
         .dispatch("writeStore/selectIncomeExpenditureDetail", writeRequestDto)
         .then((res) => {
-          console.log("결과", res.data);
           this.incomeAmount = res.data.incomeAmount;
           this.balanceCarriedForward = res.data.balanceCarriedForward;
           this.cash = res.data.cash;
@@ -351,7 +349,7 @@ export default {
     logout() {
       this.isLogOut = true;
       this.$store.dispatch("userStore/logout");
-      this.$router.replace("/user");
+      this.$router.push("/user/login");
     },
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {

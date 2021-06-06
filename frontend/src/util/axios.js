@@ -12,7 +12,9 @@ axiosInstance.interceptors.request.use(
         if (store.state.userStore.initialState.user) {
             config.headers.Authorization = store.state.userStore.initialState.user.token;
         }
-        store.commit('loadingStore/startSpinner');
+        if (!store.state.loadingStore.LoadingDisable) {
+            store.commit('loadingStore/startSpinner');
+        }
         return config;
     },
     error => {
@@ -28,12 +30,11 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     error => {
+        console.log(error.response);
         if (error.response.status === 403) {
             store.dispatch("userStore/logout");
-        }
-        if (error.response.status === 500) {
-            alert();
-            router.replace("/error");
+        } else {
+            router.push({ path: '/error', query: { status: error.response.status, statusText: error.response.statusText } });
         }
         store.commit('loadingStore/endSpinner');
         return Promise.reject(error);

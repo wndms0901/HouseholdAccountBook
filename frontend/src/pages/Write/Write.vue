@@ -127,8 +127,8 @@ export default {
       },
       tabIndex: 0,
       showModal: false,
-      monthStartDate: this.$store.state.userStore.initialState.user.userInfo
-        .monthStartDate,
+      monthStartDate:
+        this.$store.state.userStore.initialState.user.userInfo.monthStartDate,
     };
   },
   computed: {
@@ -156,7 +156,8 @@ export default {
     if (this.tabIndex === 0) {
       // 지출 grid 변경사항 체크
       this.$refs.expenditureTab.gridApi.clearFocusedCell();
-      currentRowData = this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
+      currentRowData =
+        this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
       _.forEach(currentRowData, function (row, index) {
         row.expenditureDescription = row.expenditureDescription || "";
         row.memo = row.memo || "";
@@ -213,7 +214,8 @@ export default {
       if (this.tabIndex === 0) {
         // 지출 grid 변경사항 체크
         this.$refs.expenditureTab.gridApi.clearFocusedCell();
-        currentRowData = this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
+        currentRowData =
+          this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
         _.forEach(currentRowData, function (row, index) {
           row.expenditureDescription = row.expenditureDescription || "";
           row.memo = row.memo || "";
@@ -247,7 +249,8 @@ export default {
       if (oldTabIndex === 0) {
         // 수입 tab click
         this.$refs.expenditureTab.gridApi.clearFocusedCell();
-        currentRowData = this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
+        currentRowData =
+          this.$refs.expenditureTab.$refs.expenditureGrid.getRowData();
         _.forEach(currentRowData, function (row, index) {
           row.expenditureDescription = row.expenditureDescription || "";
           row.memo = row.memo || "";
@@ -438,7 +441,6 @@ export default {
         email: this.user.userInfo.email,
         monthStartDate: this.monthStartDate,
       };
-      console.log("userDto", userDto);
       this.$store
         .dispatch("userStore/updateMonthStartDate", userDto)
         .then((res) => {

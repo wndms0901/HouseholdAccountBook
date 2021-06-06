@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router';
 import store from '../store'
+import cookies from 'vue-cookies'
 
 import DashboardLayout from '../layout/DashboardLayout.vue'
 import LoginLayout from '../layout/LoginLayout.vue'
 // GeneralViews
-import NotFound from '../pages/NotFoundPage.vue'
+import ErrorPage from '../pages/ErrorPage.vue'
 
 // Admin pages
 import Write from 'src/pages/Write/Write.vue'
@@ -102,7 +103,7 @@ const routes = [
     children: [{ path: 'login', name: 'Login', component: Login },
     { path: 'register', name: 'Register', component: Register }]
   },
-  { path: '*', name: 'Error', component: NotFound }
+  { path: '*', name: 'Error', component: ErrorPage }
 ]
 
 // configure router
@@ -128,10 +129,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const publicPages = ['Login', 'Register'];
   const authRequired = !publicPages.includes(to.name);
-  const loginCheck = localStorage.getItem('user');
-  console.log('loginCheck', loginCheck);
-  console.log('to', to);
-  console.log('from', from);
+  const loginCheck = cookies.get("user");
   setTimeout(() => {
     if (authRequired && !loginCheck && to.name !== "Error") {
       router.push({ path: '/user/login' });

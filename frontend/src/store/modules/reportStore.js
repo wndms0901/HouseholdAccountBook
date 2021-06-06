@@ -11,7 +11,6 @@ const reportStore = {
         selectMonthReport({ }, ReportRequestDto) {
             return ReportService.selectMonthReport(ReportRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -27,7 +26,6 @@ const reportStore = {
         selectYearReport({ }, ReportRequestDto) {
             return ReportService.selectYearReport(ReportRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {

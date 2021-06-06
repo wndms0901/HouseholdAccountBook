@@ -14,9 +14,9 @@
 
  */
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import App from './App.vue'
 import vClickOutside from 'v-click-outside'
+import VueCookies from 'vue-cookies'
 
 // LightBootstrap plugin
 import LightBootstrap from './light-bootstrap-main'
@@ -25,7 +25,6 @@ import { BootstrapVue, IconsPlugin, BFormFile } from 'bootstrap-vue'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
 
 // router setup
 import router from './routes/index'
@@ -55,7 +54,7 @@ Vue.component('fade-loader', FadeLoader)
 import './registerServiceWorker'
 // plugin setup
 Vue.use(vClickOutside)
-//Vue.use(VueRouter)
+Vue.use(VueCookies)
 Vue.use(LightBootstrap)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
@@ -63,7 +62,8 @@ Vue.component('b-form-file', BFormFile)
 Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 
-
+// set default config
+Vue.$cookies.config(60 * 60 * 2, '', '', true)
 
 /* eslint-disable no-new */
 new Vue({

@@ -12,7 +12,6 @@ const excelStore = {
         excelDownload({ }, data) {
             return ExcelService.excelDownload(data).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -28,7 +27,6 @@ const excelStore = {
         excelFormDownload({ }, pageName) {
             return ExcelService.excelFormDownload(pageName).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -44,7 +42,6 @@ const excelStore = {
         excelUpload({ }, ExcelRequestDto) {
             return ExcelService.excelUpload(ExcelRequestDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {

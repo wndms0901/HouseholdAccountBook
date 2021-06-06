@@ -129,11 +129,14 @@ export default {
           this.valueCheck.emailFormat = true;
           this.valueCheck.emailExistence = false;
         } else {
+          // 로딩 비활성화
+          this.$store.commit("loadingStore/disableLoading");
           // 이메일 중복확인
           this.$store
             .dispatch("userStore/selectRegisterCheck", this.user.email)
             .then((res) => {
-              console.log("res", res);
+              // 로딩 활성화
+              this.$store.commit("loadingStore/enableLoading");
               if (res.email) {
                 this.valueCheck.emailBlank = false;
                 this.valueCheck.emailFormat = false;

@@ -1,6 +1,7 @@
 
 const state = {
-    LoadingStatus: false
+    LoadingStatus: false,
+    LoadingDisable: false
 };
 
 const loadingStore = {
@@ -12,7 +13,13 @@ const loadingStore = {
         },
         endSpinner(state) {
             state.LoadingStatus = false;
-        }
+        },
+        disableLoading(state) {
+            state.LoadingDisable = true;
+        },
+        enableLoading(state) {
+            state.LoadingDisable = false;
+        },
     },
 }
 

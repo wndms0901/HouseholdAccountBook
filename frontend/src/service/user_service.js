@@ -1,4 +1,5 @@
-import axios from '../util/axios';
+import axios from '../util/axios'
+import cookies from 'vue-cookies'
 
 const API_URL = 'http://localhost:8080/user/';
 
@@ -16,7 +17,7 @@ class UserService {
             })
             .then(response => {
                 if (response.data.token) {
-                    localStorage.setItem('user', JSON.stringify(response.data));
+                    cookies.set("user", response.data);
                 }
 
                 return response.data;
@@ -28,7 +29,7 @@ class UserService {
      * @returns
      */
     logout() {
-        localStorage.removeItem('user');
+        cookies.remove("user");
     }
     /**
      * 테스트 계정 로그인
@@ -39,9 +40,8 @@ class UserService {
             .get(API_URL + 'login/test-id')
             .then(response => {
                 if (response.data.token) {
-                    localStorage.setItem('user', JSON.stringify(response.data));
+                    cookies.set("user", response.data);
                 }
-
                 return response.data;
             });
     }
@@ -62,7 +62,6 @@ class UserService {
         return axios
             .get(API_URL + 'register/check', { params: { email: email } })
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -75,7 +74,6 @@ class UserService {
         return axios
             .get(API_URL + 'send/password-reset', { params: { email: email } })
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -88,7 +86,6 @@ class UserService {
         return axios
             .post(API_URL + 'update/month-start-date', userDto)
             .then(response => {
-                console.log('response', response);
                 return response;
             });
     }
@@ -101,7 +98,6 @@ class UserService {
         return axios
             .post(API_URL + 'update/password', userDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }

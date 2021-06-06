@@ -316,13 +316,10 @@ export default {
     };
 
     this.isRowSelectable = (rowNode) => {
-      console.log("rowNode", rowNode);
       return rowNode.data.incomeDate === "" ? false : true;
     };
   },
-  mounted() {
-    // this.getIncomeList();
-  },
+  mounted() {},
   methods: {
     onGridReady(params) {
       this.gridApi = params.api;
@@ -342,7 +339,6 @@ export default {
       this.$store
         .dispatch("writeStore/selectCategoryList", this.categoryType)
         .then((res) => {
-          console.log("getCategoryList", res.data);
           // 입금통장 카테고리 목록
           this.accountCategory = res.data.accountCategoryDtoList;
           // 대분류 카테고리 목록
@@ -352,44 +348,6 @@ export default {
           console.log(Error);
         });
     },
-    // // 입금통장 카테고리 목록 조회
-    // getAccountCategoryList() {
-    //   this.$store
-    //     .dispatch(
-    //       "commonStore/selectAccountCtgryList",
-    //       this.accountCategoryType
-    //     )
-    //     .then((res) => {
-    //       // {id:name} 형식으로 만들기
-    //       let tmp = {};
-    //       _.forEach(res.data, function (obj) {
-    //         let accountCategoryId = String(obj.accountCategoryId);
-    //         tmp[accountCategoryId] = obj.accountCategoryName;
-    //       });
-    //       this.accountCategory = tmp;
-    //     })
-    //     .catch((Error) => {
-    //       console.log(Error);
-    //     });
-    // },
-    // // 대분류 카테고리 목록 조회
-    // getLargeCategoryList() {
-    //   this.$store
-    //     .dispatch("commonStore/selectLargeCtgryList", this.categoryType)
-    //     .then((res) => {
-    //       console.log("getLargeCategoryList", res.data);
-    //       // {id:name} 형식으로 만들기
-    //       let tmp = {};
-    //       _.forEach(res.data, function (obj) {
-    //         let largeCategoryId = String(obj.largeCategoryId);
-    //         tmp[largeCategoryId] = obj.largeCategoryName;
-    //       });
-    //       this.largeCategory = tmp;
-    //     })
-    //     .catch((Error) => {
-    //       console.log(Error);
-    //     });
-    // },
     // 수입 목록 조회
     getIncomeList() {
       this.gridApi.clearFocusedCell();
@@ -404,7 +362,6 @@ export default {
       this.$store
         .dispatch("writeStore/selectIncomeList", params)
         .then((res) => {
-          console.log("getIncomeList", res.data);
           // 날짜 형식 setting
           _.forEach(res.data, function (row, index) {
             const year = row.incomeDate.substr(0, 4);
@@ -563,7 +520,6 @@ export default {
       incomeSaveDto.updateIncomeDtoList = _.filter(rowData, "incomeId");
       // 삭제 rows
       incomeSaveDto.deleteIncomeDtoList = this.deletedRows;
-      console.log("incomeSaveDto", incomeSaveDto);
       this.$store
         .dispatch("writeStore/saveIncomeList", incomeSaveDto)
         .then((res) => {
@@ -626,7 +582,6 @@ export default {
         this.$store
           .dispatch("excelStore/excelUpload", formData)
           .then((res) => {
-            console.log("결과", res.result);
             if (res.result === "failure") {
               alert(
                 "엑셀 업로드에 실패하였습니다. 작성한 내용을 다시 확인해 주세요."

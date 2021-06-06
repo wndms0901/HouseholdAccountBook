@@ -14,7 +14,6 @@ class ExcelService {
                 responseType: "blob",
             })
             .then(response => {
-                console.log('response', response);
                 return response;
             });
     }
@@ -28,7 +27,6 @@ class ExcelService {
             .get(API_URL + 'form/download', { params: { pageName: pageName }, responseType: 'blob' }
             )
             .then(response => {
-                console.log('response', response);
                 return response;
             });
     }
@@ -42,13 +40,11 @@ class ExcelService {
             .post(API_URL + 'upload', data,
                 {
                     headers: {
-                        // "X-AUTH-TOKEN": token,
                         "Content-Type": `multipart/form-data`,
                     }
                 }
             )
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }

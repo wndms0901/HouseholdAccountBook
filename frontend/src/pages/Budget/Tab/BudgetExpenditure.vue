@@ -170,7 +170,6 @@ export default {
         };
         this.monthOfYearList.push(obj);
       }
-      console.log("monthOfYearList>>", this.monthOfYearList);
       // column headers name setting
       this.setHeaderNames();
       // 예산 대비 지출 목록 조회
@@ -199,7 +198,6 @@ export default {
       this.$store
         .dispatch("budgetStore/selectBudgetExpenditureList", budgetRequestDto)
         .then((res) => {
-          console.log("결과>", res.data);
           this.gridApi.setRowData(res.data);
           this.gridApi.sizeColumnsToFit();
         })
@@ -227,7 +225,6 @@ export default {
         pageName: "BudgetExpenditure",
         period: period,
       };
-      console.log("excelRequestDto", excelRequestDto);
       this.$store
         .dispatch("excelStore/excelDownload", excelRequestDto)
         .then((res) => {

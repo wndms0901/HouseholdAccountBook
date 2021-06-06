@@ -12,7 +12,6 @@ class ReportService {
         return axios
             .post(API_URL + 'month', ReportRequestDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
@@ -25,13 +24,10 @@ class ReportService {
         return axios
             .post(API_URL + 'year', ReportRequestDto)
             .then(response => {
-                console.log('response', response);
                 return response.data;
             });
     }
 
 }
-
-
 
 export default new ReportService();

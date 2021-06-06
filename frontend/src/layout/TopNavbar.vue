@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <h4 class="m-0 font-weight-bold">{{ pageName }}</h4>
+      <h4 class="m-0 font-weight-bold">{{ title }}</h4>
       <!-- <a class="navbar-brand" href="#">Dashboard</a> -->
       <!-- <button
         type="button"
@@ -102,26 +102,29 @@ export default {
     pageName: String,
   },
   computed: {
-    routeName() {
-      const { name } = this.$route;
-      return this.capitalizeFirstLetter(name);
+    // routeName() {
+    //   const { name } = this.$route;
+    //   return this.capitalizeFirstLetter(name);
+    // },
+  },
+  watch: {
+    pageName() {
+      this.title = this.pageName;
     },
   },
   data() {
     return {
+      title: "",
       activeNotifications: false,
     };
   },
   mounted() {},
   methods: {
     onClickMyInfo() {
-      this.pageName = "내정보";
-      // this.$router.push({ path: "myInfo" });
+      this.title = "내정보";
     },
     logout() {
       this.$emit("logout");
-      // this.$store.dispatch("userStore/logout");
-      // this.$router.replace("/user");
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);

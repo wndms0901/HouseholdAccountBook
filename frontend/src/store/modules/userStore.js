@@ -1,6 +1,7 @@
 import UserService from '../../service/user_service'
+import cookies from 'vue-cookies'
 
-const user = JSON.parse(localStorage.getItem('user'));
+const user = cookies.get('user');
 const initialState = user
     ? { initialState: { status: { loggedIn: true }, user } }
     : {
@@ -31,7 +32,6 @@ const userStore = {
         },
         updateMonthStartDate(state, userDto) {
             state.initialState.user.userInfo.monthStartDate = userDto.monthStartDate;
-            console.log('state.initialState.user.userInfo.monthStartDate', state.initialState.user.userInfo.monthStartDate);
         }
     },
     actions: {
@@ -102,7 +102,6 @@ const userStore = {
         selectRegisterCheck({ }, email) {
             return UserService.selectRegisterCheck(email).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -118,7 +117,6 @@ const userStore = {
         sendPasswordResetEmail({ }, email) {
             return UserService.sendPasswordResetEmail(email).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
@@ -150,7 +148,6 @@ const userStore = {
         updatePassword({ }, userDto) {
             return UserService.updatePassword(userDto).then(
                 response => {
-                    console.log('response', response);
                     return Promise.resolve(response);
                 },
                 error => {
