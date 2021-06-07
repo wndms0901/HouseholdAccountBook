@@ -1,0 +1,23 @@
+language: java
+jdk:
+  - openjdk8
+
+branched:
+  only:
+    - master
+
+# Travis CI 서비의 Home
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+script: "./gradlew clean build"
+
+before_install:
+  - chmod +x gradlew
+
+# CI 실행 완료 시 메일로 알람
+notifications:
+  email:
+    recipients:
+      cherry25987@gmail.com
