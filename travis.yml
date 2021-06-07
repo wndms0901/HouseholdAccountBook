@@ -1,0 +1,47 @@
+language: java
+jdk:
+  - openjdk8
+
+branched:
+  only:
+    - master
+
+# Travis CI 서비의 Home
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+script: "./gradlew clean build"
+
+before_deploy:
+  - zip -r HouseholdAccountBook *
+  - mkdir -p deploy
+  - mv HouseholdAccountBook.zip deploy/HouseholdAccountBook.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
+    bucket: spring-boot2-build # S3 버킷
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private # zip 파일 접근을 private으로
+    local_dir: deploy # before_deploy에서 생성한 디렉토리
+    wait_until-deployed: true
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
+    bucket: spring-boot2-build # S3 버킷
+    key: HouseholdAccountBook.zip # 빌드 파일을 압축해서 전달
+    bundle_type: zip # 압축 확장자
+    application: household-account-book # 웹 콘솔에서 등록한 CodeDeploy 애플리케이션
+    deployment_group: household-account-book-group # 웹 콘솔에서 등록한 CodeDeploy 배포 그룹
+    region: ap-northeast-2
+    wait_until-deployed: true
+
+# CI 실행 완료 시 메일로 알람
+notifications:
+  email:
+    recipients:
+      cherry25987@gmail.com
