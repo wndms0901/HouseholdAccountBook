@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 X
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
-                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile", "/user/login/**", "/user/register/**", "/user/send/**").permitAll()
+                .antMatchers("/**", "/css/**", "/images/**", "/js/**", "/img/**", "/font/**", "/profile", "/user/login/**", "/user/register/**", "/user/send/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // 나머지 요청은 권한 필요
                 //.anyRequest().permitAll() // 나머지 요청은 권한 필요x
