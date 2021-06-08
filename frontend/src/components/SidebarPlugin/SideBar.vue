@@ -65,10 +65,6 @@ export default {
         return acceptedValues.indexOf(value) !== -1;
       },
     },
-    backgroundImage: {
-      type: String,
-      default: "img/sidebar-5.jpg",
-    },
     activeColor: {
       type: String,
       default: "success",
@@ -100,7 +96,6 @@ export default {
   computed: {
     sidebarStyle() {
       return {
-        // backgroundImage: `url(${this.backgroundImage})`,
         opacity: 0.95,
       };
     },
