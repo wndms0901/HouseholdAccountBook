@@ -16,10 +16,10 @@ import java.util.List;
 public class User extends BaseTimeEntity {
 
     @Id
-    @Column(name = "user_email")
+    @Column(name = "user_email", columnDefinition = "varchar(255) binary")
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255) binary")
     private String name;
 
     @Column(nullable = false)

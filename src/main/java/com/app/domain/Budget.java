@@ -4,6 +4,8 @@ import com.app.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -30,6 +32,7 @@ public class Budget extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_email")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
 

@@ -26,12 +26,13 @@ public class UserRepositoryTest {
        // Role role = Role.builder().roleName(RoleName.USER).build();
 
         String name = "이름";
-        String email = "test@test.com";
+        String email = "test123@test.com";
         String password = "123";
         User user = User.builder()
                 .name(name)
                 .email(email)
                 .password(password)
+                .monthStartDate("1")
                 .role(Role.USER)
                 .build();
 
@@ -40,9 +41,14 @@ public class UserRepositoryTest {
 
         // when
         List<User> userList = userRepository.findAll();
-
+        int index = 0;
+        for(int i=0; i<userList.size(); i++){
+            if(userList.get(i).getEmail().equals(email)){
+                index=i;
+            }
+        }
         // then
-        User result = userList.get(0);
+        User result = userList.get(index);
         assertThat(result.getEmail()).isEqualTo(email);
         assertThat(result.getName()).isEqualTo(name);
         assertThat(result.getMonthStartDate()).isEqualTo("1");

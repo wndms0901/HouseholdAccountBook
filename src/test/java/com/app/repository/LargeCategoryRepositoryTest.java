@@ -31,7 +31,7 @@ public class LargeCategoryRepositoryTest {
         List<LargeCategory> largeCategoryList = largeCategoryRepository.findAll();
 
         // then
-        LargeCategory result = largeCategoryList.get(0);
+        LargeCategory result = largeCategoryList.get(1);
         assertThat(result.getCategoryType()).isEqualTo(type);
         assertThat(result.getLargeCategoryName()).isEqualTo(name);
     }

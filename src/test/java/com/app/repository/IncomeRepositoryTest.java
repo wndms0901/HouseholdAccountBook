@@ -26,8 +26,10 @@ public class IncomeRepositoryTest {
         IncomeDto incomeDto = new IncomeDto();
         incomeDto.setIncomeDescription("테스트");
         incomeDto.setMemo("메모메모");
+        incomeDto.setIncomeDate("20210301");
        income.update(incomeDto);
        List<Income> all = incomeRepository.findAll();
+
         assertThat(all.get(0).getIncomeDate()).isEqualTo(income.getIncomeDate());
 //        assertThat(all.get(0).getCreatedDate()).isEqualTo(income.getCreatedDate());
 //        assertThat(all.get(0).getModifiedDate()).isEqualTo(income.getModifiedDate());
