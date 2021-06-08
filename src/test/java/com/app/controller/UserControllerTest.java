@@ -30,16 +30,16 @@ public class UserControllerTest {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
-    @Test
-    public void loginTokenTest() throws Exception {
-        // given
-        UserDto userResponseDto = UserDto.builder().email("test@test.com1").password("test123!").build();
-        String url = "http://localhost:" + port + "/user/login";
-
-        // when
-        ResponseEntity<?> responseEntity = testRestTemplate.postForEntity(url, userResponseDto, Object.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-    }
+//    @Test
+//    public void loginTokenTest() throws Exception {
+//        // given
+//        UserDto userResponseDto = UserDto.builder().email("test@test.com1").password("test123!").build();
+//        String url = "http://localhost:" + port + "/user/login";
+//
+//        // when
+//        ResponseEntity<?> responseEntity = testRestTemplate.postForEntity(url, userResponseDto, Object.class);
+//        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//
+//    }
 
 }

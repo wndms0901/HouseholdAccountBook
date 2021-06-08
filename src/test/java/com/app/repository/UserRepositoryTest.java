@@ -20,38 +20,38 @@ public class UserRepositoryTest {
 //        userRepository.deleteAll();
 //    }
 
-    @Test
-    public void 회원등록_불러오기(){
-        // given
-       // Role role = Role.builder().roleName(RoleName.USER).build();
-
-        String name = "이름";
-        String email = "test123@test.com";
-        String password = "123";
-        User user = User.builder()
-                .name(name)
-                .email(email)
-                .password(password)
-                .monthStartDate("1")
-                .role(Role.USER)
-                .build();
-
-        //role.setUser(user);
-        userRepository.save(user);
-
-        // when
-        List<User> userList = userRepository.findAll();
-        int index = 0;
-        for(int i=0; i<userList.size(); i++){
-            if(userList.get(i).getEmail().equals(email)){
-                index=i;
-            }
-        }
-        // then
-        User result = userList.get(index);
-        assertThat(result.getEmail()).isEqualTo(email);
-        assertThat(result.getName()).isEqualTo(name);
-        assertThat(result.getMonthStartDate()).isEqualTo("1");
-    }
+//    @Test
+//    public void 회원등록_불러오기(){
+//        // given
+//       // Role role = Role.builder().roleName(RoleName.USER).build();
+//
+//        String name = "이름";
+//        String email = "test123@test.com";
+//        String password = "123";
+//        User user = User.builder()
+//                .name(name)
+//                .email(email)
+//                .password(password)
+//                .monthStartDate("1")
+//                .role(Role.USER)
+//                .build();
+//
+//        //role.setUser(user);
+//        userRepository.save(user);
+//
+//        // when
+//        List<User> userList = userRepository.findAll();
+//        int index = 0;
+//        for(int i=0; i<userList.size(); i++){
+//            if(userList.get(i).getEmail().equals(email)){
+//                index=i;
+//            }
+//        }
+//        // then
+//        User result = userList.get(index);
+//        assertThat(result.getEmail()).isEqualTo(email);
+//        assertThat(result.getName()).isEqualTo(name);
+//        assertThat(result.getMonthStartDate()).isEqualTo("1");
+//    }
 
 }
