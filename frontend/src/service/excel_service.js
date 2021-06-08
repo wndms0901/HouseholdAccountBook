@@ -1,6 +1,5 @@
 import axios from '../util/axios';
-
-const API_URL = 'http://localhost:8080/excel/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/excel/';
 
 class ExcelService {
     /**

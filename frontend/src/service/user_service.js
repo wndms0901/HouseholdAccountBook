@@ -1,7 +1,7 @@
 import axios from '../util/axios'
 import cookies from 'vue-cookies'
 
-const API_URL = 'http://localhost:8080/user/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/user/';
 
 class UserService {
     /**

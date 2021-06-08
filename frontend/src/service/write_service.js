@@ -1,6 +1,6 @@
 import axios from '../util/axios';
 
-const API_URL = 'http://localhost:8080/write/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/write/';
 
 class WriteService {
     /**

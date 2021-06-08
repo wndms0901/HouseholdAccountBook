@@ -1,6 +1,5 @@
 import axios from '../util/axios';
-
-const API_URL = 'http://localhost:8080/report/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/report/';
 
 class ReportService {
     /**
