@@ -130,10 +130,14 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['Login', 'Register'];
   const authRequired = !publicPages.includes(to.name);
   const loginCheck = cookies.get("user");
+  console.log('authRequired', authRequired);
+  console.log('loginCheck', loginCheck);
   setTimeout(() => {
     if (authRequired && !loginCheck && to.name !== "Error") {
+      console.log('>>LOGIN');
       router.push({ path: '/user/login' });
     } else {
+      console.log('>>MAIN');
       store.commit('loadingStore/startSpinner');
       next();
     }

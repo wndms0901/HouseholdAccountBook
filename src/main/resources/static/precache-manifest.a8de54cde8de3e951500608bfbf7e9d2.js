@@ -1,10 +1,10 @@
 self.__precacheManifest = [
   {
-    "revision": "97e624cf6733849cae8e",
+    "revision": "fa5dded6a9b8308d37a2",
     "url": "/css/app.a69b5d96.css"
   },
   {
-    "revision": "97e624cf6733849cae8e",
+    "revision": "fa5dded6a9b8308d37a2",
     "url": "/js/app.js"
   },
   {
@@ -40,12 +40,16 @@ self.__precacheManifest = [
     "url": "/index.html"
   },
   {
+    "revision": "d41d8cd98f00b204e9800998ecf8427e",
+    "url": "/.gitkeep"
+  },
+  {
     "revision": "9fa6864053c36c4c36aae21114c0760c",
     "url": "/img/favicon.png"
   },
   {
-    "revision": "d41d8cd98f00b204e9800998ecf8427e",
-    "url": "/.gitkeep"
+    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
+    "url": "/robots.txt"
   },
   {
     "revision": "0a337c37f03c0462996b7b03758fa72b",
@@ -54,9 +58,5 @@ self.__precacheManifest = [
   {
     "revision": "d27fbc90c2e644dfdc9765640dc713b9",
     "url": "/img/mask.png"
-  },
-  {
-    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
-    "url": "/robots.txt"
   }
 ];
