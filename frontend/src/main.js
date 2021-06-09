@@ -63,7 +63,7 @@ Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 
 // set default config
-Vue.$cookies.config(60 * 60 * 2, '', '', true)
+//Vue.$cookies.config(60 * 60 * 2, '', '', true)
 
 /* eslint-disable no-new */
 new Vue({
