@@ -40,8 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable() // 폼 기반 인증 비활성화
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 X
                 .and()
-                .requiresChannel().anyRequest().requiresSecure()
-                .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers("/**", "/css/**", "/images/**", "/js/**", "/img/**", "/font/**", "/profile", "/user/login/**", "/user/login", "/user/register/**", "/user/send/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
