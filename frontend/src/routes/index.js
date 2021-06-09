@@ -130,6 +130,8 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['Login', 'Register'];
   const authRequired = !publicPages.includes(to.name);
   const loginCheck = cookies.get("user");
+  console.log('from', from);
+  console.log('to', to);
   console.log('authRequired', authRequired);
   console.log('loginCheck', loginCheck);
   setTimeout(() => {
