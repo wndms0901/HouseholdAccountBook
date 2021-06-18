@@ -18,10 +18,10 @@ public class Budget extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long budgetId;
 
-    @Column(nullable = false)
-    private int budgetAmount;
+    @Column(nullable = false, columnDefinition = "bigint(20)")
+    private Long budgetAmount;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "char(6)")
     private String budgetDate;
 
 //    @Column(nullable = false)
@@ -37,14 +37,14 @@ public class Budget extends BaseTimeEntity {
 
 
     @Builder
-    public Budget(int budgetAmount, String budgetDate, User user, Long largeCategoryId) {
+    public Budget(Long budgetAmount, String budgetDate, User user, Long largeCategoryId) {
         this.budgetAmount = budgetAmount;
         this.budgetDate = budgetDate;
         this.user = user;
         this.largeCategoryId = largeCategoryId;
     }
 
-    public Budget update(int budgetAmount) {
+    public Budget update(Long budgetAmount) {
         this.budgetAmount = budgetAmount;
         return this;
     }

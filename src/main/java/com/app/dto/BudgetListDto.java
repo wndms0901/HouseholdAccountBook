@@ -19,7 +19,7 @@ public class BudgetListDto {
 
     public Budget saveExpenditureBudget(UserDto userDto){
         return Budget.builder()
-                .budgetAmount(Integer.parseInt(budgetAmount))
+                .budgetAmount(Long.parseLong(budgetAmount))
                 .budgetDate(budgetDate)
                 .largeCategoryId(largeCategoryId)
                 .user(userDto.toEntity())

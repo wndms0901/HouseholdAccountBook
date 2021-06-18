@@ -18,7 +18,7 @@ public class AccountCategory extends BaseTimeEntity {
     @Column(nullable = false)
     private String accountCategoryName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "char(4)")
     private String accountCategoryType;
 
     @Builder

@@ -19,20 +19,17 @@ public class Expenditure extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long expenditureId;
 
-//    @Column(nullable = false)
-//    private String email;
-
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "char(8)")
     private String expenditureDate;
 
     @Column(nullable = false)
     private String expenditureDescription;
 
-    @Column(nullable = false)
-    private int cash;
+    @Column(nullable = false, columnDefinition = "bigint(20)")
+    private Long cash;
 
-    @Column(nullable = false)
-    private int card;
+    @Column(nullable = false, columnDefinition = "bigint(20)")
+    private Long card;
 
     private Long accountCategoryId;
 
@@ -50,7 +47,7 @@ public class Expenditure extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public Expenditure(User user, String expenditureDate, String expenditureDescription, int cash, int card, Long accountCategoryId, Long largeCategoryId, Long smallCategoryId, String memo) {
+    public Expenditure(User user, String expenditureDate, String expenditureDescription, Long cash, Long card, Long accountCategoryId, Long largeCategoryId, Long smallCategoryId, String memo) {
         this.user = user;
         this.expenditureDate = expenditureDate;
         this.expenditureDescription = expenditureDescription;
@@ -71,7 +68,6 @@ public class Expenditure extends BaseTimeEntity {
         this.largeCategoryId = expenditureDto.getLargeCategoryId();
         this.smallCategoryId = expenditureDto.getSmallCategoryId();
         this.memo = expenditureDto.getMemo();
-        //return this;
     }
 
 }

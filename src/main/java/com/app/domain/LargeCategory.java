@@ -20,6 +20,7 @@ public class LargeCategory extends BaseTimeEntity {
     @Column(nullable = false)
     private String largeCategoryName;
 
+    @Column(nullable = false, columnDefinition = "char(3)")
     private String categoryType;
 
     @OneToMany(mappedBy = "largeCategory")

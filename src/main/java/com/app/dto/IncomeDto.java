@@ -15,7 +15,7 @@ public class IncomeDto {
     private Long incomeId;
     private String incomeDate;
     private String incomeDescription;
-    private int incomeAmount;
+    private Long incomeAmount;
     private Long accountCategoryId;
     private String accountCategoryName;
     private Long largeCategoryId;
@@ -24,7 +24,7 @@ public class IncomeDto {
     private UserDto userDto;
 
     @Builder
-    public IncomeDto(Long incomeId, String incomeDate, String incomeDescription, int incomeAmount, Long accountCategoryId, String accountCategoryName, Long largeCategoryId, String largeCategoryName, String memo, UserDto userDto) {
+    public IncomeDto(Long incomeId, String incomeDate, String incomeDescription, Long incomeAmount, Long accountCategoryId, String accountCategoryName, Long largeCategoryId, String largeCategoryName, String memo, UserDto userDto) {
         this.incomeId = incomeId;
         this.incomeDate = incomeDate;
         this.incomeDescription = incomeDescription;

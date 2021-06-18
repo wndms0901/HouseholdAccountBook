@@ -25,7 +25,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(insertable=false, nullable = false, columnDefinition = "varchar(30) default '1'")
+    @Column(insertable=false, nullable = false, columnDefinition = "varchar(4) default '1'")
     private String monthStartDate;
 
     @Enumerated(EnumType.STRING)
@@ -43,9 +43,6 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Income> incomeList = new ArrayList<Income>();
-
-//    @OneToMany(mappedBy = "user")
-//    private List<IncomeBudget> incomeBudgetList = new ArrayList<IncomeBudget>();
 
     @Builder
     public User(String name, String email, String password, String monthStartDate, Role role) {
@@ -90,10 +87,6 @@ public class User extends BaseTimeEntity {
         return incomeList;
     }
 
-//    public List<IncomeBudget> getIncomeBudgetList() {
-//        return incomeBudgetList;
-//    }
-
     public User encodePassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(this.password);
         return this;
@@ -103,6 +96,5 @@ public class User extends BaseTimeEntity {
         this.password = passwordEncoder.encode(newPassword);
         return this;
     }
-
 
 }

@@ -15,8 +15,8 @@ public class ExpenditureDto {
     private Long expenditureId;
     private String expenditureDate;
     private String expenditureDescription;
-    private int cash;
-    private int card;
+    private Long cash;
+    private Long card;
     private Long accountCategoryId;
     private String accountCategoryName;
     private Long largeCategoryId;
@@ -27,7 +27,7 @@ public class ExpenditureDto {
     private UserDto userDto;
 
     @Builder
-    public ExpenditureDto(Long expenditureId, String expenditureDate, String expenditureDescription, int cash, int card, Long accountCategoryId, String accountCategoryName, Long largeCategoryId, String largeCategoryName, Long smallCategoryId, String smallCategoryName, String memo, UserDto userDto) {
+    public ExpenditureDto(Long expenditureId, String expenditureDate, String expenditureDescription, Long cash, Long card, Long accountCategoryId, String accountCategoryName, Long largeCategoryId, String largeCategoryName, Long smallCategoryId, String smallCategoryName, String memo, UserDto userDto) {
         this.expenditureId = expenditureId;
         this.expenditureDate = expenditureDate;
         this.expenditureDescription = expenditureDescription;

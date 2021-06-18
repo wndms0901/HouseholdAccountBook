@@ -71,7 +71,7 @@ public class BudgetServiceImpl implements BudgetService {
             );
             if (budget.isPresent()) {
                 // 지출 예산 수정
-                budget.get().update(Integer.parseInt(dto.getBudgetAmount()));
+                budget.get().update(Long.parseLong(dto.getBudgetAmount()));
             } else{
                 // 지출 예산 등록
                 dto.setBudgetDate(budgetDto.getBudgetDate());

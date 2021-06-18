@@ -19,23 +19,19 @@ public class Income extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long incomeId;
 
-//    @Column(nullable = false)
-//    private String email;
-
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "char(8)")
     private String incomeDate;
 
     @Column(nullable = false)
     private String incomeDescription;
 
-    @Column(nullable = false)
-    private int incomeAmount;
+    @Column(nullable = false, columnDefinition = "bigint(20)")
+    private Long incomeAmount;
 
     private Long accountCategoryId;
 
     @Column(nullable = false)
     private Long largeCategoryId;
-
 
     private String memo;
 
@@ -45,7 +41,7 @@ public class Income extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public Income(User user, String incomeDescription, int incomeAmount, String incomeDate, Long accountCategoryId, Long largeCategoryId, String memo) {
+    public Income(User user, String incomeDescription, Long incomeAmount, String incomeDate, Long accountCategoryId, Long largeCategoryId, String memo) {
         this.user = user;
         this.incomeDescription = incomeDescription;
         this.incomeAmount = incomeAmount;
@@ -62,7 +58,6 @@ public class Income extends BaseTimeEntity {
         this.accountCategoryId = incomeDto.getAccountCategoryId();
         this.largeCategoryId = incomeDto.getLargeCategoryId();
         this.memo = incomeDto.getMemo();
-        //return this;
     }
 
 }
