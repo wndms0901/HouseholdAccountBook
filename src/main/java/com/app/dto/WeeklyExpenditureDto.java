@@ -9,5 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class WeeklyExpenditureDto {
     private String weekList;
-    private int weeklyExpenditure;
+    private Long weeklyExpenditure;
 }

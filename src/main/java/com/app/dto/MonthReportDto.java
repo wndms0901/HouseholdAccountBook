@@ -11,15 +11,15 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class MonthReportDto {
-    private int totalExpenditure;
-    private int totalIncome;
-    private int dailyAverageLastMonth;
+    private Long totalExpenditure;
+    private Long totalIncome;
+    private Long dailyAverageLastMonth;
     private List<WeeklyExpenditureDto> weeklyExpenditureDtoList;
     private List<CategoryStatisticsDto> categoryStatisticsDtoList;
     private List<DailyExpenditureDto> dailyExpenditureDtoList;
 
     @Builder
-    public MonthReportDto(int totalExpenditure, int totalIncome, int dailyAverageLastMonth, List<WeeklyExpenditureDto> weeklyExpenditureDtoList, List<CategoryStatisticsDto> categoryStatisticsDtoList, List<DailyExpenditureDto> dailyExpenditureDtoList) {
+    public MonthReportDto(Long totalExpenditure, Long totalIncome, Long dailyAverageLastMonth, List<WeeklyExpenditureDto> weeklyExpenditureDtoList, List<CategoryStatisticsDto> categoryStatisticsDtoList, List<DailyExpenditureDto> dailyExpenditureDtoList) {
         this.totalExpenditure = totalExpenditure;
         this.totalIncome = totalIncome;
         this.dailyAverageLastMonth = dailyAverageLastMonth;

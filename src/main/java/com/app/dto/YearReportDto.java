@@ -11,22 +11,22 @@ import lombok.Setter;
 public class YearReportDto {
     private String largeCategoryId;
     private String largeCategoryName;
-    private int firstMonth;
-    private int secondMonth;
-    private int thirdMonth;
-    private int fourthMonth;
-    private int fifthMonth;
-    private int sixthMonth;
-    private int seventhMonth;
-    private int eighthMonth;
-    private int ninthMonth;
-    private int tenthMonth;
-    private int eleventhMonth;
-    private int twelfthMonth;
-    private int total;
+    private Long firstMonth;
+    private Long secondMonth;
+    private Long thirdMonth;
+    private Long fourthMonth;
+    private Long fifthMonth;
+    private Long sixthMonth;
+    private Long seventhMonth;
+    private Long eighthMonth;
+    private Long ninthMonth;
+    private Long tenthMonth;
+    private Long eleventhMonth;
+    private Long twelfthMonth;
+    private Long total;
 
     @Builder
-    public YearReportDto(String largeCategoryId, String largeCategoryName, int firstMonth, int secondMonth, int thirdMonth, int fourthMonth, int fifthMonth, int sixthMonth, int seventhMonth, int eighthMonth, int ninthMonth, int tenthMonth, int eleventhMonth, int twelfthMonth) {
+    public YearReportDto(String largeCategoryId, String largeCategoryName, Long firstMonth, Long secondMonth, Long thirdMonth, Long fourthMonth, Long fifthMonth, Long sixthMonth, Long seventhMonth, Long eighthMonth, Long ninthMonth, Long tenthMonth, Long eleventhMonth, Long twelfthMonth) {
         this.largeCategoryId = largeCategoryId;
         this.largeCategoryName = largeCategoryName;
         this.firstMonth = firstMonth;

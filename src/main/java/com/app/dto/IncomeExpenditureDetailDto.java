@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class IncomeExpenditureDetailDto {
-    private int incomeAmount;
-    private int balanceCarriedForward;
-    private int cash;
-    private int card;
+    private Long incomeAmount;
+    private Long balanceCarriedForward;
+    private Long cash;
+    private Long card;
 }

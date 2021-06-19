@@ -11,11 +11,10 @@ import lombok.Setter;
 public class BudgetListDto {
     private Long largeCategoryId;
     private String largeCategoryName;
-    //private Long expenditurebudgetId;
     private String budgetAmount;
     private String budgetDate;
-    private int expenditureAmount;
-    private int total;
+    private Long expenditureAmount;
+    private Long total;
 
     public Budget saveExpenditureBudget(UserDto userDto){
         return Budget.builder()

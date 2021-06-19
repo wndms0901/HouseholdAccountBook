@@ -11,5 +11,5 @@ public class CategoryStatisticsDto {
     private Long largeCategoryId;
     private String largeCategoryName;
     private String categoryType;
-    private int totalCategory;
+    private Long totalCategory;
 }

@@ -875,9 +875,9 @@ public class ExcelServiceImpl implements ExcelService{
             System.out.println("확인>>" + expenditureDate);
             String expenditureDescription = row.getCell(1).getStringCellValue();
             System.out.println("확인>" + expenditureDescription);
-            int cash = (int) row.getCell(2).getNumericCellValue();
+            Long cash = Double.valueOf(row.getCell(2).getNumericCellValue()).longValue();
             System.out.println("확인>>" + cash);
-            int card = (int) row.getCell(3).getNumericCellValue();
+            Long card = Double.valueOf(row.getCell(3).getNumericCellValue()).longValue();
             System.out.println("확인>>" + card);
             String accountCategoryName = row.getCell(4).getStringCellValue();
             System.out.println("확인>>" + accountCategoryName);
@@ -942,7 +942,7 @@ public class ExcelServiceImpl implements ExcelService{
             System.out.println("확인>>" + incomeDate);
             String incomeDescription = row.getCell(1).getStringCellValue();
             System.out.println("확인>" + incomeDescription);
-            int incomeAmount = (int) row.getCell(2).getNumericCellValue();
+            Long incomeAmount = Double.valueOf( row.getCell(2).getNumericCellValue()).longValue();
             System.out.println("확인>>" + incomeAmount);
             String accountCategoryName = row.getCell(3).getStringCellValue();
             System.out.println("확인>>" + accountCategoryName);

@@ -10,5 +10,5 @@ import lombok.Setter;
 public class MonthIncomeExpenditureDto {
     private String largeCategoryId;
     private String largeCategoryName;
-    private int total;
+    private Long total;
 }
