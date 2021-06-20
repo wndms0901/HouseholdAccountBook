@@ -525,6 +525,7 @@ export default {
         .then((res) => {
           this.toast("b-toaster-bottom-center", "저장되었습니다.");
           this.getIncomeList();
+          this.$emit("getIncomeExpenditureDetail");
         })
         .catch((Error) => {
           console.log(Error);

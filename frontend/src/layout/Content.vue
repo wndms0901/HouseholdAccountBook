@@ -1,7 +1,6 @@
 <template>
-  <!-- <transition name="fade" mode="out-in"> -->
   <div class="content">
-    <router-view @updateStartDate="updateStartDate"></router-view>
+    <router-view @updateStartDate="updateStartDate" @getIncomeExpenditureDetail="getIncomeExpenditureDetail"></router-view>
     <div class="loader" v-show="$store.state.loadingStore.LoadingStatus">
       <fade-loader
         :loading="$store.state.loadingStore.LoadingStatus"
@@ -9,13 +8,16 @@
       ></fade-loader>
     </div>
   </div>
-  <!-- </transition> -->
 </template>
 <script>
 export default {
   methods: {
     updateStartDate() {
       this.$emit("updateStartDate");
+    },
+    // 수입/지출 상세 조회
+    getIncomeExpenditureDetail(){
+      this.$emit("getIncomeExpenditureDetail");
     },
   },
 };

@@ -97,10 +97,11 @@
             :user="user"
             :period="period"
             :monthStartDate="monthStartDate"
+           @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
           ></expenditure
         ></b-tab>
         <b-tab title-item-class="defaultTab" title="수입" @click="onClickIncome"
-          ><income ref="incomeTab" :user="user" :period="period"></income
+          ><income ref="incomeTab" :user="user" :period="period" @getIncomeExpenditureDetail="getIncomeExpenditureDetail"></income
         ></b-tab>
       </b-tabs>
     </div>
@@ -450,6 +451,10 @@ export default {
         .catch((Error) => {
           console.log(Error);
         });
+    },
+    // 수입/지출 상세 조회
+      getIncomeExpenditureDetail(){
+      this.$emit("getIncomeExpenditureDetail");
     },
   },
 };

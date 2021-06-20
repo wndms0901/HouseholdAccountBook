@@ -1,9 +1,7 @@
 <template>
   <div class="wrapper">
     <side-bar>
-      <!-- <mobile-menu slot="content"></mobile-menu> -->
       <sidebar-link to="/mybook/write" :link="write" @onclickLink="onclickLink">
-        <!-- <i class="nc-icon nc-chart-pie-35"></i> -->
         <b-icon
           icon="pencil-square"
           style="width: 28px; height: 28px; margin-right: 15px"
@@ -105,7 +103,7 @@
     </side-bar>
     <div class="main-panel">
       <top-navbar :pageName="pageName" @logout="logout"></top-navbar>
-      <dashboard-content @click="toggleSidebar" @updateStartDate="setPeriod">
+      <dashboard-content @click="toggleSidebar" @updateStartDate="setPeriod" @getIncomeExpenditureDetail="getIncomeExpenditureDetail">
       </dashboard-content>
       <content-footer></content-footer>
     </div>
