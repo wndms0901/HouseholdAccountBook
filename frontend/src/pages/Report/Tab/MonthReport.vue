@@ -384,12 +384,33 @@ export default {
     },
     // 월 보고서 조회
     selectMonthReport(weekOfMonthList) {
+      let lastMonthStartDate = "";
+      let lastMonthEndDate = "";
+      if (this.user.userInfo.monthStartDate === "last") {
+        // 월시작일이 말일인 경우
+        lastMonthStartDate = this.$moment(this.period.from)
+          .subtract(1, "months")
+          .endOf("month")._d;
+        lastMonthEndDate = this.$moment(lastMonthStartDate)
+          .add(1, "months")
+          .endOf("month")
+          .subtract(1, "days")._d;
+      } else {
+        // 월시작일이 말일이 아닌 경우
+        lastMonthStartDate = this.$moment(this.period.from).subtract(
+          1,
+          "months"
+        )._d;
+        lastMonthEndDate = this.$moment(lastMonthStartDate)
+          .add(1, "months")
+          .subtract(1, "days")._d;
+      }
       const reportRequestDto = {
         email: this.user.userInfo.email,
         startDate: this.$moment(this.period.from).format("YYYYMMDD"),
         endDate: this.$moment(this.period.to).format("YYYYMMDD"),
-        lastMonthStartDate: this.$moment(this.period.from).format("YYYYMMDD"),
-        lastMonthEndDate: this.$moment(this.period.to).format("YYYYMMDD"),
+        lastMonthStartDate: this.$moment(lastMonthStartDate).format("YYYYMMDD"),
+        lastMonthEndDate: this.$moment(lastMonthEndDate).format("YYYYMMDD"),
         periodDtoList: weekOfMonthList,
       };
       this.$store
