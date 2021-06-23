@@ -97,11 +97,16 @@
             :user="user"
             :period="period"
             :monthStartDate="monthStartDate"
-           @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
+            @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
           ></expenditure
         ></b-tab>
         <b-tab title-item-class="defaultTab" title="수입" @click="onClickIncome"
-          ><income ref="incomeTab" :user="user" :period="period" @getIncomeExpenditureDetail="getIncomeExpenditureDetail"></income
+          ><income
+            ref="incomeTab"
+            :user="user"
+            :period="period"
+            @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
+          ></income
         ></b-tab>
       </b-tabs>
     </div>
@@ -190,7 +195,7 @@ export default {
         isGridUpdate = true;
       }
     }
-    if (isGridUpdate) {
+    if (isGridUpdate && to.name !== "Error") {
       if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
         next();
       }
@@ -453,7 +458,7 @@ export default {
         });
     },
     // 수입/지출 상세 조회
-      getIncomeExpenditureDetail(){
+    getIncomeExpenditureDetail() {
       this.$emit("getIncomeExpenditureDetail");
     },
   },
