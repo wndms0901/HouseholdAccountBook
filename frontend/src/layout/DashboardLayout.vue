@@ -1,26 +1,18 @@
 <template>
   <div class="wrapper">
     <side-bar>
-      <sidebar-link to="/mybook/write" :link="write" @onclickLink="onclickLink">
+      <sidebar-link to="/mybook/write">
         <b-icon
           icon="pencil-square"
           style="width: 28px; height: 28px; margin-right: 15px"
         ></b-icon>
         <p>쓰기</p>
       </sidebar-link>
-      <sidebar-link
-        to="/mybook/report"
-        :link="report"
-        @onclickLink="onclickLink"
-      >
+      <sidebar-link to="/mybook/report">
         <i class="nc-icon nc-notes"></i>
         <p>보고서</p>
       </sidebar-link>
-      <sidebar-link
-        to="/mybook/budget"
-        :link="budget"
-        @onclickLink="onclickLink"
-      >
+      <sidebar-link to="/mybook/budget">
         <i class="nc-icon nc-bullet-list-67"></i>
         <p>예산쓰기</p>
       </sidebar-link>
@@ -102,8 +94,13 @@
       </div>
     </side-bar>
     <div class="main-panel">
-      <top-navbar :pageName="pageName" @logout="logout"></top-navbar>
-      <dashboard-content @click="toggleSidebar" @updateStartDate="setPeriod" @getIncomeExpenditureDetail="getIncomeExpenditureDetail">
+      <top-navbar @logout="logout"></top-navbar>
+      <dashboard-content
+        @click="toggleSidebar"
+        @updateStartDate="setPeriod"
+        @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
+        @logout="logout"
+      >
       </dashboard-content>
       <content-footer></content-footer>
     </div>
@@ -131,16 +128,6 @@ export default {
         from: "",
         to: "",
       },
-      write: {
-        name: "쓰기",
-      },
-      report: {
-        name: "보고서",
-      },
-      budget: {
-        name: "예산쓰기",
-      },
-      pageName: "쓰기",
       incomeAmount: 0,
       balanceCarriedForward: 0,
       cash: 0,
@@ -201,10 +188,6 @@ export default {
     this.setPeriod();
   },
   methods: {
-    // 메뉴 click시 topNavbar 페이지명 변경
-    onclickLink(pageName) {
-      this.pageName = pageName;
-    },
     // 조회 기간 setting
     setPeriod() {
       let today = new Date();
@@ -344,10 +327,13 @@ export default {
         });
     },
     // 로그아웃 click
-    logout() {
+    logout(value) {
       this.isLogOut = true;
       this.$store.dispatch("userStore/logout");
-      this.$router.push("/user/login");
+      // 쓰기, 예산쓰기 페이지가 아닌 경우
+      if (value) {
+        this.$router.push("/user/login");
+      }
     },
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {

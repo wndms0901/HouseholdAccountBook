@@ -2,6 +2,7 @@
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <h4 class="m-0 font-weight-bold">{{ title }}</h4>
+      <!--{{ page.title }} -->
       <!-- <a class="navbar-brand" href="#">Dashboard</a> -->
       <!-- <button
         type="button"
@@ -57,22 +58,15 @@
               <!-- <b-button id="top_btn" variant="outline-primary" class="m-0"> -->
             </li>
             <li class="nav-item">
-              <router-link
-                class="text-decoration-none"
-                to="/mybook/myInfo"
-                @click.native="onClickMyInfo"
+              <router-link class="text-decoration-none" to="/mybook/myInfo"
                 ><i class="nc-icon nc-single-02 pr-1"></i
                 ><span>내정보</span></router-link
               >
-              <!-- <a class="nav-link" href="#" @click="onClickMyInfo"
-              ><i class="nc-icon nc-single-02 pr-1"></i>내정보</a
-            > -->
-              <!-- </b-button> -->
             </li>
             <li class="nav-item">
               <router-link
                 class="text-decoration-none"
-                to="/mybook/myInfo"
+                to="/user/login"
                 @click.native="logout"
                 ><i class="nc-icon nc-button-power pr-1"></i
                 ><span>로그아웃</span></router-link
@@ -86,7 +80,6 @@
               class="m-0"
               @click="logout"
             >
-
             </b-button>-->
               <!-- <a href="/user/login" class="nav-link"> Log out </a> -->
             </li>
@@ -98,9 +91,6 @@
 </template>
 <script>
 export default {
-  props: {
-    pageName: String,
-  },
   computed: {
     // routeName() {
     //   const { name } = this.$route;
@@ -108,23 +98,30 @@ export default {
     // },
   },
   watch: {
-    pageName() {
-      this.title = this.pageName;
+    $route(to, from) {
+      const pageInfo = to.matched;
+      this.title = pageInfo[pageInfo.length - 1].alias[0];
+      this.path = pageInfo[pageInfo.length - 1].name;
     },
   },
   data() {
     return {
-      title: "",
       activeNotifications: false,
+      title:
+        this.$router.currentRoute.matched[
+          this.$router.currentRoute.matched.length - 1
+        ].alias[0],
+      path: this.$router.currentRoute.name,
     };
   },
   mounted() {},
   methods: {
-    onClickMyInfo() {
-      this.title = "내정보";
-    },
     logout() {
-      this.$emit("logout");
+      // 쓰기, 예산쓰기 페이지가 아닌 경우
+      const pages = ["Write", "Budget"];
+      if (!pages.includes(this.path)) {
+        this.$emit("logout", true);
+      }
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);

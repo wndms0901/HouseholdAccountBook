@@ -1,6 +1,10 @@
 <template>
   <div class="content">
-    <router-view @updateStartDate="updateStartDate" @getIncomeExpenditureDetail="getIncomeExpenditureDetail"></router-view>
+    <router-view
+      @updateStartDate="updateStartDate"
+      @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
+      @logout="logout"
+    ></router-view>
     <div class="loader" v-show="$store.state.loadingStore.LoadingStatus">
       <fade-loader
         :loading="$store.state.loadingStore.LoadingStatus"
@@ -16,8 +20,11 @@ export default {
       this.$emit("updateStartDate");
     },
     // 수입/지출 상세 조회
-    getIncomeExpenditureDetail(){
+    getIncomeExpenditureDetail() {
       this.$emit("getIncomeExpenditureDetail");
+    },
+    logout() {
+      this.$emit("logout", false);
     },
   },
 };

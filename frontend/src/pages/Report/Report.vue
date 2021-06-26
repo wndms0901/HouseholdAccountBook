@@ -87,8 +87,8 @@ export default {
         to: "",
       },
       tabIndex: 0,
-      monthStartDate: this.$store.state.userStore.initialState.user.userInfo
-        .monthStartDate,
+      monthStartDate:
+        this.$store.state.userStore.initialState.user.userInfo.monthStartDate,
     };
   },
   computed: {},
@@ -103,9 +103,7 @@ export default {
   created() {
     this.setPeriod();
   },
-  mounted() {
-    //  this.user = this.$store.state.initialState.user;
-  },
+  mounted() {},
   methods: {
     // 조회 기간 setting
     setPeriod() {
