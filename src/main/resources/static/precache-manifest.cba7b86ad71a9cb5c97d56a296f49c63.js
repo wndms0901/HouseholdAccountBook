@@ -1,10 +1,10 @@
 self.__precacheManifest = [
   {
-    "revision": "913500f6520e981c8c06",
-    "url": "/css/app.a69b5d96.css"
+    "revision": "8bb364f36fe36c5d4fc1",
+    "url": "/css/app.2b7c5f48.css"
   },
   {
-    "revision": "913500f6520e981c8c06",
+    "revision": "8bb364f36fe36c5d4fc1",
     "url": "/js/app.js"
   },
   {
@@ -36,27 +36,23 @@ self.__precacheManifest = [
     "url": "/img/nucleo-icons.ae42fa52.svg"
   },
   {
-    "revision": "d0b050d5efc2fe8f22558056910682d5",
+    "revision": "b06a5b900f6fa7f66a95d3f4815420f5",
     "url": "/index.html"
-  },
-  {
-    "revision": "9fa6864053c36c4c36aae21114c0760c",
-    "url": "/img/favicon.png"
   },
   {
     "revision": "d41d8cd98f00b204e9800998ecf8427e",
     "url": "/.gitkeep"
   },
   {
-    "revision": "0a337c37f03c0462996b7b03758fa72b",
-    "url": "/img/loading-bubbles.svg"
+    "revision": "9fa6864053c36c4c36aae21114c0760c",
+    "url": "/img/favicon.png"
   },
   {
     "revision": "d27fbc90c2e644dfdc9765640dc713b9",
     "url": "/img/mask.png"
   },
   {
-    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
-    "url": "/robots.txt"
+    "revision": "0a337c37f03c0462996b7b03758fa72b",
+    "url": "/img/loading-bubbles.svg"
   }
 ];
