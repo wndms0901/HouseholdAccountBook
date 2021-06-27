@@ -78,6 +78,9 @@ export default {
       valueFormatter: (params) => {
         return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       },
+      tooltipValueGetter: (params) => {
+        return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      },
       cellStyle: (params) => {
         if (params.data.largeCategoryId === 0) {
           // 합계 row

@@ -347,6 +347,7 @@ export default {
         headerName: "사용내역",
         field: "expenditureDescription",
         cellEditor: "TextInputCellEditor",
+        tooltipField: "expenditureDescription",
       },
       {
         headerName: "현금",
@@ -421,7 +422,12 @@ export default {
           return params.value.smallCategoryName;
         },
       },
-      { headerName: "메모", field: "memo", cellEditor: "TextInputCellEditor" },
+      {
+        headerName: "메모",
+        field: "memo",
+        cellEditor: "TextInputCellEditor",
+        tooltipField: "memo",
+      },
     ];
 
     this.components = { datePicker: getDatePicker() };

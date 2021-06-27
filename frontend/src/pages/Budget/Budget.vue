@@ -173,6 +173,8 @@ export default {
           JSON.stringify(this.$refs.budgetWriteTab.originRowData)
         )
           return;
+      } else if (this.tabIndex === 1) {
+        return;
       }
       event.preventDefault();
       event.returnValue = "";

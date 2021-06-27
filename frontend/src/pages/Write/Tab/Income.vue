@@ -272,6 +272,7 @@ export default {
         headerName: "내역",
         field: "incomeDescription",
         cellEditor: "TextInputCellEditor",
+        tooltipField: "incomeDescription",
       },
       {
         headerName: "금액",
@@ -311,7 +312,12 @@ export default {
           return params.value.largeCategoryName;
         },
       },
-      { headerName: "메모", field: "memo", cellEditor: "TextInputCellEditor" },
+      {
+        headerName: "메모",
+        field: "memo",
+        cellEditor: "TextInputCellEditor",
+        tooltipField: "memo",
+      },
     ];
 
     this.components = { datePicker: getDatePicker() };
