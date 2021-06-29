@@ -20,16 +20,16 @@ self.__precacheManifest = [
     "url": "/js/chunk-vendors.387ab266.js"
   },
   {
+    "revision": "8224e0160e362e117cbe00495919e2af",
+    "url": "/fonts/nucleo-icons.8224e016.eot"
+  },
+  {
     "revision": "ff208b8d733e61a630992ee2b72c9c1c",
     "url": "/fonts/nucleo-icons.ff208b8d.woff2"
   },
   {
     "revision": "b0dc05d015e91e7d28d79cd0056fe555",
     "url": "/fonts/nucleo-icons.b0dc05d0.ttf"
-  },
-  {
-    "revision": "8224e0160e362e117cbe00495919e2af",
-    "url": "/fonts/nucleo-icons.8224e016.eot"
   },
   {
     "revision": "ae42fa524981a56f3f289447cff36eb1",
@@ -48,11 +48,11 @@ self.__precacheManifest = [
     "url": "/img/favicon.png"
   },
   {
-    "revision": "d27fbc90c2e644dfdc9765640dc713b9",
-    "url": "/img/mask.png"
-  },
-  {
     "revision": "0a337c37f03c0462996b7b03758fa72b",
     "url": "/img/loading-bubbles.svg"
+  },
+  {
+    "revision": "d27fbc90c2e644dfdc9765640dc713b9",
+    "url": "/img/mask.png"
   }
 ];
