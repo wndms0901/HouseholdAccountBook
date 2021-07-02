@@ -22,7 +22,6 @@ public class SmallCategory extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "largeCategoryId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private LargeCategory largeCategory;
 
     @Builder
