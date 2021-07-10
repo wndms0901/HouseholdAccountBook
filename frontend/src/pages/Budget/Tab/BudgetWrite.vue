@@ -56,10 +56,10 @@
 </template>
 <script>
 import { AllCommunityModules } from "@ag-grid-community/all-modules";
-import InputCellEditor from "src/components/CellEditor/InputCellEditor";
+import NumberInputCellEditor from "src/components/CellEditor/NumberInputCellEditor";
 export default {
   name: "BudgetWrite",
-  components: { AllCommunityModules, InputCellEditor },
+  components: { AllCommunityModules, NumberInputCellEditor },
   props: {
     user: Object,
     period: Object,
@@ -273,7 +273,7 @@ export default {
       {
         headerName: "예산",
         field: "budgetAmount",
-        cellEditor: "InputCellEditor",
+        cellEditor: "NumberInputCellEditor",
         type: "numericColumn",
         valueFormatter: (params) => {
           if (params.data.largeCategoryId === 1) {
@@ -329,7 +329,7 @@ export default {
       },
     ];
     this.frameworkComponents = {
-      InputCellEditor: InputCellEditor,
+      NumberInputCellEditor: NumberInputCellEditor,
     };
     this.getRowStyle = (params) => {
       if (params.node.rowPinned) {

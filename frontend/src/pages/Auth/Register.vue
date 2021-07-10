@@ -9,6 +9,7 @@
         v-model="user.email"
         type="email"
         placeholder="이메일"
+        maxlength="100"
         required
         @blur="emailCheck"
       ></b-form-input>
@@ -30,6 +31,7 @@
         v-model="user.name"
         type="text"
         placeholder="이름"
+        maxlength="100"
         required
         @blur="nameCheck"
       ></b-form-input>
@@ -48,6 +50,7 @@
         v-model="user.password"
         type="password"
         placeholder="비밀번호"
+        maxlength="20"
         required
         @blur="passwordCheck"
       ></b-form-input>
@@ -66,6 +69,7 @@
         v-model="user.passwordConfirm"
         type="password"
         placeholder="비밀번호 재확인"
+        maxlength="20"
         required
         @blur="passwordConfirmCheck"
       ></b-form-input>

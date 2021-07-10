@@ -144,11 +144,12 @@ window.lookupValue = function lookupValue(mappings, key) {
 //     params.node.setDataValue("smallCategory", { key: "", value: value });
 //   }
 // }
-import InputCellEditor from "src/components/CellEditor/InputCellEditor";
+import TextInputCellEditor from "src/components/CellEditor/TextInputCellEditor";
+import NumberInputCellEditor from "src/components/CellEditor/NumberInputCellEditor";
 import excelUploadModal from "src/components/Modal/ExcelUpload";
 export default {
   name: "Income",
-  components: { InputCellEditor, excelUploadModal },
+  components: { TextInputCellEditor, NumberInputCellEditor, excelUploadModal },
   props: {
     user: Object,
     period: Object,
@@ -267,12 +268,17 @@ export default {
         headerCheckboxSelection: true,
         //headerCheckboxSelectionFilteredOnly: true,
       },
-      { headerName: "내역", field: "incomeDescription" },
+      {
+        headerName: "내역",
+        field: "incomeDescription",
+        cellEditor: "TextInputCellEditor",
+        tooltipField: "incomeDescription",
+      },
       {
         headerName: "금액",
         field: "incomeAmount",
         type: "numericColumn",
-        cellEditor: "InputCellEditor",
+        cellEditor: "NumberInputCellEditor",
         valueFormatter: (params) => {
           return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
@@ -306,13 +312,19 @@ export default {
           return params.value.largeCategoryName;
         },
       },
-      { headerName: "메모", field: "memo" },
+      {
+        headerName: "메모",
+        field: "memo",
+        cellEditor: "TextInputCellEditor",
+        tooltipField: "memo",
+      },
     ];
 
     this.components = { datePicker: getDatePicker() };
 
     this.frameworkComponents = {
-      InputCellEditor: InputCellEditor,
+      TextInputCellEditor: TextInputCellEditor,
+      NumberInputCellEditor: NumberInputCellEditor,
     };
 
     this.isRowSelectable = (rowNode) => {

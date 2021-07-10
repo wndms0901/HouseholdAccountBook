@@ -213,12 +213,18 @@ const getDatePicker = () => {
 //     });
 //   }
 // }
-import InputCellEditor from "src/components/CellEditor/InputCellEditor";
+import TextInputCellEditor from "src/components/CellEditor/TextInputCellEditor";
+import NumberInputCellEditor from "src/components/CellEditor/NumberInputCellEditor";
 import calculateModal from "src/components/Modal/Calculate";
 import excelUploadModal from "src/components/Modal/ExcelUpload";
 export default {
   name: "Expenditure",
-  components: { InputCellEditor, calculateModal, excelUploadModal },
+  components: {
+    TextInputCellEditor,
+    NumberInputCellEditor,
+    calculateModal,
+    excelUploadModal,
+  },
   props: {
     user: Object,
     period: Object,
@@ -337,12 +343,17 @@ export default {
         headerCheckboxSelection: true,
         //headerCheckboxSelectionFilteredOnly: true,
       },
-      { headerName: "사용내역", field: "expenditureDescription" },
+      {
+        headerName: "사용내역",
+        field: "expenditureDescription",
+        cellEditor: "TextInputCellEditor",
+        tooltipField: "expenditureDescription",
+      },
       {
         headerName: "현금",
         field: "cash",
         type: "numericColumn",
-        cellEditor: "InputCellEditor",
+        cellEditor: "NumberInputCellEditor",
         valueFormatter: (params) => {
           return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
@@ -351,7 +362,7 @@ export default {
         headerName: "카드",
         field: "card",
         type: "numericColumn",
-        cellEditor: "InputCellEditor",
+        cellEditor: "NumberInputCellEditor",
         valueFormatter: (params) => {
           return String(params.value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
@@ -411,13 +422,19 @@ export default {
           return params.value.smallCategoryName;
         },
       },
-      { headerName: "메모", field: "memo" },
+      {
+        headerName: "메모",
+        field: "memo",
+        cellEditor: "TextInputCellEditor",
+        tooltipField: "memo",
+      },
     ];
 
     this.components = { datePicker: getDatePicker() };
 
     this.frameworkComponents = {
-      InputCellEditor: InputCellEditor,
+      TextInputCellEditor: TextInputCellEditor,
+      NumberInputCellEditor: NumberInputCellEditor,
     };
 
     this.isRowSelectable = (rowNode) => {

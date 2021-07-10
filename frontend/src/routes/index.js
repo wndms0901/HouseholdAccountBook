@@ -40,21 +40,25 @@ const routes = [
       {
         path: 'budget',
         name: 'Budget',
+        alias: '예산쓰기',
         component: Budget
       },
       {
         path: 'write',
         name: 'Write',
+        alias: '쓰기',
         component: Write
       },
       {
         path: 'report',
         name: 'Report',
+        alias: '보고서',
         component: Report
       },
       {
         path: 'myInfo',
         name: 'MyInfo',
+        alias: '내정보',
         component: MyInfo
       },
       {

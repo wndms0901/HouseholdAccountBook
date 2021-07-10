@@ -43,7 +43,6 @@ public class Expenditure extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_email")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Builder

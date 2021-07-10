@@ -97,11 +97,16 @@
             :user="user"
             :period="period"
             :monthStartDate="monthStartDate"
-           @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
+            @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
           ></expenditure
         ></b-tab>
         <b-tab title-item-class="defaultTab" title="수입" @click="onClickIncome"
-          ><income ref="incomeTab" :user="user" :period="period" @getIncomeExpenditureDetail="getIncomeExpenditureDetail"></income
+          ><income
+            ref="incomeTab"
+            :user="user"
+            :period="period"
+            @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
+          ></income
         ></b-tab>
       </b-tabs>
     </div>
@@ -190,12 +195,27 @@ export default {
         isGridUpdate = true;
       }
     }
-    if (isGridUpdate) {
-      if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+    // 로그아웃 click
+    if (to.name === "Login") {
+      if (isGridUpdate) {
+        if (confirm("저장하지 않은 내용이 있습니다. 로그아웃 하시겠습니까?")) {
+          // 로그아웃
+          this.$emit("logout");
+          next();
+        }
+      } else {
+        // 로그아웃
+        this.$emit("logout");
         next();
       }
-    } else {
-      next();
+    } else if (to.name !== "Error") {
+      if (isGridUpdate) {
+        if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+          next();
+        }
+      } else {
+        next();
+      }
     }
   },
   created() {
@@ -453,7 +473,7 @@ export default {
         });
     },
     // 수입/지출 상세 조회
-      getIncomeExpenditureDetail(){
+    getIncomeExpenditureDetail() {
       this.$emit("getIncomeExpenditureDetail");
     },
   },

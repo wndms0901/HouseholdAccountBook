@@ -93,8 +93,8 @@ export default {
         to: "",
       },
       tabIndex: 0,
-      monthStartDate: this.$store.state.userStore.initialState.user.userInfo
-        .monthStartDate,
+      monthStartDate:
+        this.$store.state.userStore.initialState.user.userInfo.monthStartDate,
     };
   },
   computed: {},
@@ -111,7 +111,8 @@ export default {
     if (this.tabIndex === 0) {
       // 예산쓰기 grid 변경사항 체크
       this.$refs.budgetWriteTab.gridApi.clearFocusedCell();
-      const currentRowData = this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData();
+      const currentRowData =
+        this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData();
       if (
         JSON.stringify(currentRowData) !==
         JSON.stringify(this.$refs.budgetWriteTab.originRowData)
@@ -119,13 +120,35 @@ export default {
         isGridUpdate = true;
       }
     }
-    if (isGridUpdate) {
-      if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+    // 로그아웃 click
+    if (to.name === "Login") {
+      if (isGridUpdate) {
+        if (confirm("저장하지 않은 내용이 있습니다. 로그아웃 하시겠습니까?")) {
+          // 로그아웃
+          this.$emit("logout");
+          next();
+        }
+      } else {
+        // 로그아웃
+        this.$emit("logout");
         next();
       }
-    } else {
-      next();
+    } else if (to.name !== "Error") {
+      if (isGridUpdate) {
+        if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+          next();
+        }
+      } else {
+        next();
+      }
     }
+    // if (isGridUpdate && to.name !== "Error") {
+    //   if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
+    //     next();
+    //   }
+    // } else {
+    //   next();
+    // }
   },
   created() {
     this.setPeriod();
@@ -143,12 +166,15 @@ export default {
       if (this.tabIndex === 0) {
         // 예산쓰기 grid 변경사항 체크
         this.$refs.budgetWriteTab.gridApi.clearFocusedCell();
-        const currentRowData = this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData();
+        const currentRowData =
+          this.$refs.budgetWriteTab.$refs.budgetGrid.getRowData();
         if (
           JSON.stringify(currentRowData) ===
           JSON.stringify(this.$refs.budgetWriteTab.originRowData)
         )
           return;
+      } else if (this.tabIndex === 1) {
+        return;
       }
       event.preventDefault();
       event.returnValue = "";
