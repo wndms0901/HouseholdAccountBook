@@ -1,6 +1,6 @@
 import axios from '../util/axios';
 
-const API_URL = window.location.protocol + '//' + window.location.host + '/budget/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/api/budget/';
 
 class BudgetService {
     /**
@@ -42,7 +42,5 @@ class BudgetService {
 
 
 }
-
-
 
 export default new BudgetService();

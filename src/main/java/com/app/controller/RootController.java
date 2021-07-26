@@ -4,17 +4,16 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
-
 @Controller
 public class RootController implements ErrorController {
-    @GetMapping("error")
+
+    @GetMapping("/error")
     public String error() {
         return "index.html";
     }
 
     @Override
     public String getErrorPath() {
-        return "error";
+        return "/error";
     }
 }

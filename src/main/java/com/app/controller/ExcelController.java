@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController()
-@RequestMapping("/excel")
+@RequestMapping("/api/excel")
 public class ExcelController {
     private final ExcelService excelService;
 

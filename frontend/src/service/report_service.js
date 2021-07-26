@@ -1,5 +1,5 @@
 import axios from '../util/axios';
-const API_URL = window.location.protocol + '//' + window.location.host + '/report/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/api/report/';
 
 class ReportService {
     /**

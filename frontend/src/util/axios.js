@@ -30,13 +30,16 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     error => {
-        console.log(error.response);
-        if (error.response.status === 403) {
-            store.dispatch("userStore/logout");
-        } else {
-            router.push({ path: '/error', query: { status: error.response.status, statusText: error.response.statusText } });
-        }
         store.commit('loadingStore/endSpinner');
+        if (error.response.data.code) {
+            if (!store.state.userStore.initialState.status.movePage) {
+                store.commit("userStore/movePage", true);
+                router.push({ path: '/user/login' });
+            }
+        }
+        else {
+            router.push({ name: "Error", params: { status: error.response.status, statusText: error.response.statusText } });
+        }
         return Promise.reject(error);
     }
 )

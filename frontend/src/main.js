@@ -30,7 +30,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import router from './routes/index'
 // Axios
 import axios from 'axios'
-Vue.prototype.$Axios = axios;
+Vue.prototype.$axios = axios;
 // Store
 import store from './store'
 
@@ -51,7 +51,6 @@ import VueMoment from 'vue-moment'
 import FadeLoader from 'vue-spinner/src/FadeLoader.vue'
 Vue.component('fade-loader', FadeLoader)
 
-import './registerServiceWorker'
 // plugin setup
 Vue.use(vClickOutside)
 Vue.use(VueCookies)
@@ -63,7 +62,7 @@ Vue.use(VueGoogleCharts)
 Vue.use(VueMoment)
 
 //set default config
-Vue.$cookies.config(60 * 60 * 2, '', '', '')
+Vue.$cookies.config(60 * 60 * 6, '', '', true)
 
 /* eslint-disable no-new */
 new Vue({

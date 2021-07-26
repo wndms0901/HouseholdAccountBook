@@ -1,5 +1,4 @@
 <template>
-  <!-- <div class="content"> -->
   <div class="container-fluid">
     <div class="row">
       <div class="date_wrap">
@@ -73,7 +72,6 @@
       </div>
     </div>
   </div>
-  <!-- </div> -->
 </template>
 
 <script>
@@ -107,7 +105,10 @@ export default {
   },
   // 다른 route로 이동할 경우 호출됨
   beforeRouteLeave(to, from, next) {
+    const userInfo = this.$cookies.get("user");
+    const movePage = this.$store.state.userStore.initialState.status.movePage;
     let isGridUpdate = false;
+
     if (this.tabIndex === 0) {
       // 예산쓰기 grid 변경사항 체크
       this.$refs.budgetWriteTab.gridApi.clearFocusedCell();
@@ -120,35 +121,47 @@ export default {
         isGridUpdate = true;
       }
     }
-    // 로그아웃 click
+
     if (to.name === "Login") {
-      if (isGridUpdate) {
-        if (confirm("저장하지 않은 내용이 있습니다. 로그아웃 하시겠습니까?")) {
-          // 로그아웃
-          this.$emit("logout");
+      if (movePage) {
+        // 계정 권한 만료 + 로그인 페이지 이동
+        this.$store.dispatch("userStore/logout");
+        next();
+      } else {
+        // 로그아웃 click
+        if (isGridUpdate) {
+          // 그리드 변경
+          if (
+            confirm("저장하지 않은 내용이 있습니다. 로그아웃 하시겠습니까?")
+          ) {
+            this.$store.commit("userStore/clickLogout", true);
+            next();
+          } else {
+            this.$store.commit("userStore/clickLogout", false);
+          }
+        } else {
+          // 그리드 변경x
+          this.$store.commit("userStore/clickLogout", true);
           next();
         }
-      } else {
-        // 로그아웃
-        this.$emit("logout");
-        next();
       }
     } else if (to.name !== "Error") {
+      if (!userInfo) {
+        // 쿠키 만료
+        this.$store.commit("userStore/movePage", true);
+      }
+      // 페이지 이동
       if (isGridUpdate) {
+        // 그리드 변경
         if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
           next();
         }
       } else {
         next();
       }
+    } else {
+      next();
     }
-    // if (isGridUpdate && to.name !== "Error") {
-    //   if (confirm("저장하지 않은 내용이 있습니다. 이동하겠습니까?")) {
-    //     next();
-    //   }
-    // } else {
-    //   next();
-    // }
   },
   created() {
     this.setPeriod();

@@ -20,5 +20,4 @@ public class BudgetRequestDto {
     private String lastMonthStartDate;
     private String lastMonthEndDate;
     private List<PeriodDto> periodDtoList;
-
 }

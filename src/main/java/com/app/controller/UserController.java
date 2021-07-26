@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController()
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
@@ -53,7 +53,7 @@ public class UserController {
      * 테스트 계정 로그인
      * @return ResponseEntity<?>
      */
-    @GetMapping("login/test-id")
+    @PostMapping("login/test-id")
     public ResponseEntity<?> testIdLogin() {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         String email = "test@test.com";

@@ -31,41 +31,6 @@ export default Vue.extend({
           newValue = String(newValue).replace(/[^0-9]/g, "");
           this.value = newValue.replace("0", "");
         }
-
-        // if (parseInt(newValue) >= 10000000000) {
-        //   alert(1);
-        //   this.value = oldData;
-        // }
-        // const newValue = String(newData).replace(/,/g, "");
-        // // 한자릿수 0만 입력/ 빈값일 때 0으로 치환
-        // if (parseInt(newValue) === 0 || newValue === "") {
-        //   this.value = "0";
-        // } else if (newValue.length > 1 && parseInt(newValue) < 10) {
-        //   // 문자열의 맨 앞 0 제거
-        //   this.value = newValue.replace("0", "");
-        // } // 값 체크
-        // else if (parseInt(newValue) >= 10000000000) {
-        //   this.value = oldData;
-        // }
-        // const newValue = String(newData).replace(/,/g, "");
-        // // const newValue = newData.replace(/,/g, "");
-        // // 숫자만 입력
-        // this.value = newValue.replace(/[^0-9]/g, "");
-
-        // // 한자릿수 0만 입력/ 빈값일 때 0으로 치환
-        // if (parseInt(newValue) === 0 || newValue === "") {
-        //   this.value = "0";
-        // } else if (newValue.length > 1 && parseInt(newValue) < 10) {
-        //   // 문자열의 맨 앞 0 제거
-        //   this.value = newValue.replace("0", "");
-        // }
-        // // 값 체크
-        // else if (parseInt(newValue) >= 10000000000) {
-        //   this.value = oldData;
-        // }
-        // else {
-        //   this.value = this.setComma(newData);
-        // }
       },
     },
   },

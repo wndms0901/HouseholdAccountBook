@@ -279,8 +279,6 @@ export default {
           bodyClass: "p-3 text-center registerModalBody",
           footerClass: "p-2 border-top registerModalFooter", //border-top-0
           noCloseOnBackdrop: true,
-          // hideBackdrop: true,
-          //centered: true,
         })
         .then(() => {
           this.$router.push("/user/login");

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 @RequiredArgsConstructor
 @RestController()
-@RequestMapping("/write")
+@RequestMapping("/api/write")
 public class WriteController {
     private final WriteService writeService;
 
@@ -108,8 +108,4 @@ public class WriteController {
         writeService.saveIncomeList(incomeSaveDto);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
-
-
-
-
 }

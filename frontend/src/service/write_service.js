@@ -1,6 +1,6 @@
 import axios from '../util/axios';
 
-const API_URL = window.location.protocol + '//' + window.location.host + '/write/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/api/write/';
 
 class WriteService {
     /**
@@ -102,7 +102,5 @@ class WriteService {
     }
 
 }
-
-
 
 export default new WriteService();

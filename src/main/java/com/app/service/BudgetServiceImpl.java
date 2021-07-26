@@ -15,7 +15,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class BudgetServiceImpl implements BudgetService {
-    //private final IncomeBudgetRepository incomeBudgetRepository;
     private final BudgetRepository budgetRepository;
     private final BudgetMapper budgetMapper;
 
@@ -52,16 +51,6 @@ public class BudgetServiceImpl implements BudgetService {
     @Transactional
     @Override
     public void saveBudgetList(BudgetDto budgetDto) {
-        // 수입 예산 조회
-//        Optional<IncomeBudget> incomeBudget = incomeBudgetRepository.findByUserEmailAndIncomeBudgetDate(budgetDto.getUserDto().getEmail(), budgetDto.getIncomeBudgetDate());
-//        if (incomeBudget.isPresent()) {
-//            // 수입 예산 수정
-//            incomeBudget.get().update(Integer.parseInt(budgetDto.getIncomeBudgetAmount()));
-//        } else if (!"-".equals(budgetDto.getIncomeBudgetAmount())) {
-//            // 수입 예산 등록
-//            incomeBudgetRepository.save(budgetDto.saveIncomeBudget());
-//        }
-
         // 지출 예산 조회
         for (BudgetListDto dto : budgetDto.getBudgetListDtoList()) {
             Optional<Budget> budget = budgetRepository.findByUserEmailAndBudgetDateAndLargeCategoryId(
@@ -76,7 +65,6 @@ public class BudgetServiceImpl implements BudgetService {
                 // 지출 예산 등록
                 dto.setBudgetDate(budgetDto.getBudgetDate());
                 budgetRepository.save(dto.saveExpenditureBudget(budgetDto.getUserDto()));
-
             }
         }
     }

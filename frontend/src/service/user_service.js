@@ -1,7 +1,7 @@
 import axios from '../util/axios'
 import cookies from 'vue-cookies'
 
-const API_URL = window.location.protocol + '//' + window.location.host + '/user/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/api/user/';
 
 class UserService {
     /**
@@ -37,7 +37,7 @@ class UserService {
      */
     testIdLogin() {
         return axios
-            .get(API_URL + 'login/test-id')
+            .post(API_URL + 'login/test-id')
             .then(response => {
                 if (response.data.token) {
                     cookies.set("user", response.data);

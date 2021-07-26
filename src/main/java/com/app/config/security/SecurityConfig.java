@@ -41,16 +41,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 X
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
-                .antMatchers("/**", "/css/**", "/images/**", "/js/**", "/img/**", "/font/**", "/profile", "/user/login/**", "/user/login", "/user/register/**", "/user/send/**", "/profile").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers( "/", "/*.json", "/css/**", "/images/**", "/js/**", "/img/**", "/fonts/**", "/api/profile"
+                        , "/mybook/**", "/user/**", "/errorPage"
+                        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
+                ).permitAll()
                 .anyRequest().authenticated() // 나머지 요청은 권한 필요
-                //.anyRequest().permitAll() // 나머지 요청은 권한 필요x
                 .and()
                 // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter에서 인증 및 권한처리
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 // 인증 오류 발생 시 처리를 위한 핸들러 추가
-                //.exceptionHandling()
+                .exceptionHandling()
                 // 인증 실패시 처리
-                //.authenticationEntryPoint(authenticationEntryPoint);
+                .authenticationEntryPoint(authenticationEntryPoint);
     }
 }

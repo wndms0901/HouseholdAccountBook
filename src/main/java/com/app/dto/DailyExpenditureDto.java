@@ -12,5 +12,4 @@ public class DailyExpenditureDto {
     private int expenditureMonth;
     private int expenditureDay;
     private Long dailyExpenditure;
-
 }

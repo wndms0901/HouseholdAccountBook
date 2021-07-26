@@ -36,19 +36,11 @@ export default {
   padding: 20px;
   height: 60px;
   bottom: 0;
-  /* position: relative; */
-  /* width: 100%;
-  height: 10%; */
-  /* position: absolute;
-  bottom: 0; */
   text-align: center;
   vertical-align: bottom;
   opacity: 0.75;
   background: #000;
   color: #fff;
-  /* background: lightgrey; */
-  /* border-top: 1px solid #262b35;
-  background: #31323a; */
 }
 
 .login_footer img {

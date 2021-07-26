@@ -16,44 +16,6 @@
         <i class="nc-icon nc-bullet-list-67"></i>
         <p>예산쓰기</p>
       </sidebar-link>
-      <!-- <sidebar-link to="/mybook/typography">
-        <i class="nc-icon nc-paper-2"></i>
-        <p>Typography</p>
-      </sidebar-link> -->
-      <!-- <sidebar-link to="/mybook/overview">
-        <i class="nc-icon nc-chart-pie-35"></i>
-        <p>Dashboard</p>
-      </sidebar-link>
-      <sidebar-link to="/mybook/user">
-        <i class="nc-icon nc-circle-09"></i>
-        <p>User Profile</p>
-      </sidebar-link>
-      <sidebar-link to="/mybook/table-list">
-        <i class="nc-icon nc-notes"></i>
-        <p>Table list</p>
-      </sidebar-link>
-      <sidebar-link to="/mybook/typography">
-        <i class="nc-icon nc-paper-2"></i>
-        <p>Typography</p>
-      </sidebar-link>
-      <sidebar-link to="/mybook/icons">
-        <i class="nc-icon nc-atom"></i>
-        <p>Icons</p>
-      </sidebar-link>
-      <sidebar-link to="/mybook/maps">
-        <i class="nc-icon nc-pin-3"></i>
-        <p>Maps</p>
-      </sidebar-link>
-      <sidebar-link to="/mybook/notifications">
-        <i class="nc-icon nc-bell-55"></i>
-        <p>Notifications</p>
-      </sidebar-link> -->
-      <!-- <template slot="bottom-links">
-        <sidebar-link class="active" to="/mybook/upgrade">
-          <i class="nc-icon nc-alien-33"></i>
-          <p>Upgrade to PRO</p>
-        </sidebar-link>
-      </template> -->
       <div class="nav_month">
         <p>이달의 가계</p>
         <p>{{ this.period.from }} ~ {{ this.period.to }}</p>
@@ -94,12 +56,11 @@
       </div>
     </side-bar>
     <div class="main-panel">
-      <top-navbar @logout="logout"></top-navbar>
+      <top-navbar></top-navbar>
       <dashboard-content
         @click="toggleSidebar"
         @updateStartDate="setPeriod"
         @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
-        @logout="logout"
       >
       </dashboard-content>
       <content-footer></content-footer>
@@ -112,14 +73,12 @@
 import TopNavbar from "./TopNavbar.vue";
 import ContentFooter from "./ContentFooter.vue";
 import DashboardContent from "./Content.vue";
-import MobileMenu from "./MobileMenu.vue";
 
 export default {
   components: {
     TopNavbar,
     ContentFooter,
     DashboardContent,
-    MobileMenu,
   },
   data() {
     return {
@@ -132,12 +91,14 @@ export default {
       balanceCarriedForward: 0,
       cash: 0,
       card: 0,
-      isLogOut: false,
     };
   },
   computed: {
     loggedIn() {
       return this.$store.state.userStore.initialState.status.loggedIn;
+    },
+    clickLogout() {
+      return this.$store.state.userStore.initialState.status.clickLogout;
     },
     monthStartDate() {
       return this.$store.state.userStore.initialState.user.userInfo
@@ -177,9 +138,8 @@ export default {
   watch: {
     loggedIn: {
       handler(newData) {
-        if (!newData && !this.isLogOut) {
+        if (!newData && !this.clickLogout) {
           alert("계정 권한이 유효하지 않습니다.\n다시 로그인 해주세요.");
-          this.$router.replace("/user");
         }
       },
     },
@@ -325,15 +285,6 @@ export default {
         .catch((Error) => {
           console.log(Error);
         });
-    },
-    // 로그아웃 click
-    logout(value) {
-      this.isLogOut = true;
-      this.$store.dispatch("userStore/logout");
-      // 쓰기, 예산쓰기 페이지가 아닌 경우
-      if (value) {
-        this.$router.push("/user/login");
-      }
     },
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {

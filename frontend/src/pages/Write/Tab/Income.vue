@@ -25,7 +25,7 @@
       @selection-changed="onSelectionChanged"
     >
     </grid>
-    <div class="pt-3">
+    <div class="pt-3" style="height: 80px">
       <div class="left_btn">
         <button
           class="basicBtn"
@@ -118,32 +118,13 @@ const getDatePicker = () => {
 };
 
 window.extractValues = function extractValues(mappings) {
-  //var value = Object.keys(mappings);
   return Object.keys(mappings).sort();
-  //return ["English", "Spanish", "French", "Portuguese", "(other)"];
 };
 
 window.lookupValue = function lookupValue(mappings, key) {
   return mappings[key];
 };
-// window.lookupKey = function lookupKey(mappings, name) {
-//   var keys = Object.keys(mappings);
-//   for (var i = 0; i < keys.length; i++) {
-//     var key = keys[i];
-//     if (mappings[key] === name) {
-//       return key;
-//     }
-//   }
-// };
 
-// function onCellValueChanged(params) {
-//   const colId = params.column.getId();
-//   if (colId === "largeCategory") {
-//     let value = params.value == "" ? "미분류" : "선택";
-//     console.log("node", params.node);
-//     params.node.setDataValue("smallCategory", { key: "", value: value });
-//   }
-// }
 import TextInputCellEditor from "src/components/CellEditor/TextInputCellEditor";
 import NumberInputCellEditor from "src/components/CellEditor/NumberInputCellEditor";
 import excelUploadModal from "src/components/Modal/ExcelUpload";
@@ -224,24 +205,10 @@ export default {
   created() {
     // 카테고리 목록 조회
     this.getCategoryList();
-    // // 입금통장 카테고리 목록 조회
-    // this.getAccountCategoryList();
-    // // 대분류 카테고리 목록 조회
-    // this.getLargeCategoryList();
   },
   beforeMount() {
     this.gridOptions = {
       onCellValueChanged: this.onCellValueChanged,
-      //enableColResize: true,
-      // enableSorting: true,
-      // enableFilter: true,
-      // animateRows: false,
-      // onGridReady: function (event) {
-      //   event.api.sizeColumnsToFit();
-      //   console.log("event", event);
-      //   this.gridApi = event.api;
-      //   this.columnApi = event.columnApi;
-      // },
     };
     this.defaultColDef = {
       editable: (params) => {
@@ -263,10 +230,8 @@ export default {
         field: "incomeDate",
         cellEditor: "datePicker",
         width: 95,
-        //cellRenderer: "datePicker",
         checkboxSelection: true,
         headerCheckboxSelection: true,
-        //headerCheckboxSelectionFilteredOnly: true,
       },
       {
         headerName: "내역",
@@ -287,7 +252,6 @@ export default {
         headerName: "입금통장",
         field: "accountCategory",
         cellEditor: "agSelectCellEditor",
-        //cellEditorParams: this.getAccountCategoryList.bind(this),
         cellEditorParams: (params) => {
           return {
             values: this.accountCategory,
@@ -449,23 +413,7 @@ export default {
         const columnData = this.gridApi.getFocusedCell();
         const rowData = this.$refs.incomeGrid.getRowData();
         const defaultRow = _.cloneDeep(this.defaultRow);
-        // const today = new Date();
-        // const incomeDate =
-        //   String(today.getFullYear()) +
-        //   "." +
-        //   ("0" + (today.getMonth() + 1)).slice(-2) +
-        //   "." +
-        //   ("0" + today.getDate()).slice(-2);
-        // const row = [
-        //   {
-        //     incomeDate: incomeDate,
-        //     incomeDescription: "",
-        //     incomeAmount: "0",
-        //     accountCategoryId: "",
-        //     largeCategoryId: "",
-        //     memo: "",
-        //   },
-        // ];
+
         this.gridApi.applyTransaction({
           add: defaultRow,
           addIndex: rowData.length - 1,
@@ -689,5 +637,3 @@ export default {
   },
 };
 </script>
-      
-    

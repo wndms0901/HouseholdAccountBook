@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController()
-@RequestMapping("/budget")
+@RequestMapping("/api/budget")
 public class BudgetController {
     private final BudgetService budgetService;
 

@@ -1,20 +1,22 @@
 <template>
   <div class="error_wrapper">
     <div class="error_status">
-      <span>{{ status[0] }}</span
-      ><span>{{ status[1] }}</span
-      ><span>{{ status[2] }}</span>
+      <div v-if="status !== 'Error'">
+        <span>{{ status[0] }}</span
+        ><span>{{ status[1] }}</span
+        ><span>{{ status[2] }}</span>
+      </div>
+      <div v-if="status === 'Error'">
+        <span>{{ status }}</span>
+      </div>
     </div>
     <div class="error_msg">
-      <!-- <p>{{ statusText }}</p> -->
       <pre>{{ statusText }}</pre>
       <pre>{{ msg }}</pre>
-      <b-button
-        class="btn-fill"
-        variant="primary"
-        size="lg"
-        block
-        @click="goBack"
+      <b-button class="btn-fill" variant="primary" size="lg" @click="goMain"
+        >메인페이지</b-button
+      >&ensp;
+      <b-button variant="primary" size="lg" @click="goBack"
         >이전페이지</b-button
       >
     </div>
@@ -34,8 +36,14 @@ export default {
     loggedIn() {
       return this.$store.state.userStore.initialState.status.loggedIn;
     },
+    errorStatus() {
+      return this.$route.params.status;
+    },
   },
   methods: {
+    goMain() {
+      this.$router.push({ path: "/mybook/write" });
+    },
     goBack() {
       if (!this.loggedIn) {
         this.$router.push({ path: "/user/login" });
@@ -45,8 +53,8 @@ export default {
     },
   },
   mounted() {
-    this.status = this.$route.query.status;
-    this.statusText = this.$route.query.statusText;
+    this.status = this.errorStatus ? String(this.errorStatus) : "Error";
+    this.statusText = this.$route.params.statusText;
     this.msg =
       "요청하신 페이지를 처리 중에 오류가 발생했습니다.\n입력하신 주소가 정확한지 확인 후 다시 시도해 주시기 바랍니다.";
   },
@@ -84,8 +92,8 @@ export default {
   top: -50px;
 }
 .error_msg button {
-  width: 530px;
-  margin-top: 50px;
+  width: 270px;
+  margin-top: 30px;
   margin-left: auto;
   margin-right: auto;
 }

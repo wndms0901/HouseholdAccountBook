@@ -857,7 +857,6 @@ public class ExcelServiceImpl implements ExcelService{
     @Override
     public void excelUploadExpenditureList(ExcelRequestDto excelRequestDto, MultipartFile file) throws Exception {
         List<ExpenditureDto> expenditureDtoList = new ArrayList<>();
-        System.out.println("시작>");
         Workbook workbook = null;
         if ("xlsx".equals(excelRequestDto.getFileNameExtension())) {
             workbook = new XSSFWorkbook(file.getInputStream());
@@ -865,30 +864,20 @@ public class ExcelServiceImpl implements ExcelService{
             workbook = new HSSFWorkbook(file.getInputStream());
         }
         Sheet worksheet = workbook.getSheetAt(0);
-        System.out.println("row>>" + worksheet.getLastRowNum());
-        System.out.println("row>>" + worksheet.getPhysicalNumberOfRows());
         for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
             Row row = worksheet.getRow(i);
             Date inputDate = row.getCell(0).getDateCellValue();
             SimpleDateFormat transFormat = new SimpleDateFormat("yyyyMMdd");
             String expenditureDate = transFormat.format(inputDate);
-            System.out.println("확인>>" + expenditureDate);
             String expenditureDescription = row.getCell(1).getStringCellValue();
-            System.out.println("확인>" + expenditureDescription);
             Long cash = Double.valueOf(row.getCell(2).getNumericCellValue()).longValue();
-            System.out.println("확인>>" + cash);
             Long card = Double.valueOf(row.getCell(3).getNumericCellValue()).longValue();
-            System.out.println("확인>>" + card);
             String accountCategoryName = row.getCell(4).getStringCellValue();
-            System.out.println("확인>>" + accountCategoryName);
             String largeCategoryName = row.getCell(5).getStringCellValue();
             largeCategoryName = largeCategoryName.replace('_', '/');
-            System.out.println("확인>>" + largeCategoryName);
             String smallCategoryName = row.getCell(6).getStringCellValue();
             smallCategoryName = smallCategoryName.replace('_', '/');
-            System.out.println("확인>>" + smallCategoryName);
             String memo = row.getCell(7).getStringCellValue();
-            System.out.println("확인>>" + memo);
             ExpenditureDto dto = ExpenditureDto.builder()
                     .expenditureDate(expenditureDate)
                     .expenditureDescription(expenditureDescription)
@@ -924,7 +913,6 @@ public class ExcelServiceImpl implements ExcelService{
     @Override
     public void excelUploadIncomeList(ExcelRequestDto excelRequestDto, MultipartFile file) throws  Exception {
         List<IncomeDto> incomeDtoList = new ArrayList<>();
-        System.out.println("시작>");
         Workbook workbook = null;
         if ("xlsx".equals(excelRequestDto.getFileNameExtension())) {
             workbook = new XSSFWorkbook(file.getInputStream());
@@ -932,24 +920,16 @@ public class ExcelServiceImpl implements ExcelService{
             workbook = new HSSFWorkbook(file.getInputStream());
         }
         Sheet worksheet = workbook.getSheetAt(0);
-        System.out.println("row>>" + worksheet.getLastRowNum());
-        System.out.println("row>>" + worksheet.getPhysicalNumberOfRows());
         for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
             Row row = worksheet.getRow(i);
             Date inputDate = row.getCell(0).getDateCellValue();
             SimpleDateFormat transFormat = new SimpleDateFormat("yyyyMMdd");
             String incomeDate = transFormat.format(inputDate);
-            System.out.println("확인>>" + incomeDate);
             String incomeDescription = row.getCell(1).getStringCellValue();
-            System.out.println("확인>" + incomeDescription);
             Long incomeAmount = Double.valueOf( row.getCell(2).getNumericCellValue()).longValue();
-            System.out.println("확인>>" + incomeAmount);
             String accountCategoryName = row.getCell(3).getStringCellValue();
-            System.out.println("확인>>" + accountCategoryName);
             String largeCategoryName = row.getCell(4).getStringCellValue();
-            System.out.println("확인>>" + largeCategoryName);
             String memo = row.getCell(5).getStringCellValue();
-            System.out.println("확인>>" + memo);
             IncomeDto dto = IncomeDto.builder()
                     .incomeDate(incomeDate)
                     .incomeDescription(incomeDescription)

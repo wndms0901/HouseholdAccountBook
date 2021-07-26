@@ -48,7 +48,6 @@
       :frameworkComponents="frameworkComponents"
       @grid-ready="onGridReady"
     ></grid>
-    <!-- </div> -->
     <div class="right_btn mt-3">
       <button class="saveBtn" @click="onSave">저장</button>
     </div>
@@ -238,31 +237,11 @@ export default {
           this.totalIncomeNumber - newData[0].budgetAmount;
       },
     },
-    // incomeBudgetAmount() {
-    //   // 숫자만 입력
-    //   this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/[^0-9]/g, "");
-    //   // 한자릿수 0만 입력
-    //   if (
-    //     parseInt(this.incomeBudgetAmount) === 0 ||
-    //     this.incomeBudgetAmount === ""
-    //   ) {
-    //     this.incomeBudgetAmount = "0";
-    //   }
-    //   // 문자열의 맨 앞 0 제거
-    //   if (this.incomeBudgetAmount.length > 1) {
-    //     this.incomeBudgetAmount = this.incomeBudgetAmount.replace(/(^0+)/, "");
-    //   }
-    //   return this.incomeBudgetAmount;
-    // },
   },
   created() {},
   beforeMount() {
     this.gridOptions = {};
-    this.defaultColDef = {
-      // sortable: true,
-      // resizable: true,
-      // filter: true,
-    };
+    this.defaultColDef = {};
     // grid columns
     this.columnDefs = [
       { field: "largeCategoryId", hide: true },

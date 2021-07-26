@@ -5,22 +5,11 @@ import cookies from 'vue-cookies'
 
 import DashboardLayout from '../layout/DashboardLayout.vue'
 import LoginLayout from '../layout/LoginLayout.vue'
-// GeneralViews
 import ErrorPage from '../pages/ErrorPage.vue'
-
-// Admin pages
 import Write from 'src/pages/Write/Write.vue'
 import Report from 'src/pages/Report/Report.vue'
 import Budget from 'src/pages/Budget/Budget.vue'
 import MyInfo from 'src/pages/User/MyInfo.vue'
-import Overview from 'src/pages/Overview.vue'
-import UserProfile from 'src/pages/UserProfile.vue'
-import TableList from 'src/pages/TableList.vue'
-import Typography from 'src/pages/Typography.vue'
-import Icons from 'src/pages/Icons.vue'
-import Notifications from 'src/pages/Notifications.vue'
-import Upgrade from 'src/pages/Upgrade.vue'
-
 import Login from 'src/pages/Auth/Login.vue'
 import Register from 'src/pages/Auth/Register.vue'
 
@@ -61,41 +50,6 @@ const routes = [
         alias: '내정보',
         component: MyInfo
       },
-      {
-        path: 'Overview',
-        name: 'Overview',
-        component: Overview
-      },
-      {
-        path: 'user',
-        name: 'User',
-        component: UserProfile
-      },
-      {
-        path: 'table-list',
-        name: 'Table List',
-        component: TableList
-      },
-      {
-        path: 'typography',
-        name: 'Typography',
-        component: Typography
-      },
-      {
-        path: 'icons',
-        name: 'Icons',
-        component: Icons
-      },
-      {
-        path: 'notifications',
-        name: 'Notifications',
-        component: Notifications
-      },
-      {
-        path: 'upgrade',
-        name: 'Upgrade to PRO',
-        component: Upgrade
-      }
     ]
   },
 
@@ -107,7 +61,8 @@ const routes = [
     children: [{ path: 'login', name: 'Login', component: Login },
     { path: 'register', name: 'Register', component: Register }]
   },
-  { path: '*', name: 'Error', component: ErrorPage }
+  { path: '/errorPage', name: 'Error', component: ErrorPage },
+  { path: '*', redirect: '/errorPage' }
 ]
 
 // configure router
@@ -134,16 +89,11 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['Login', 'Register'];
   const authRequired = !publicPages.includes(to.name);
   const loginCheck = cookies.get("user");
-  console.log('from', from);
-  console.log('to', to);
-  console.log('authRequired', authRequired);
-  console.log('loginCheck', loginCheck);
   setTimeout(() => {
     if (authRequired && !loginCheck && to.name !== "Error") {
-      console.log('>>LOGIN');
+      store.dispatch("userStore/logout");
       router.push({ path: '/user/login' });
     } else {
-      console.log('>>MAIN');
       store.commit('loadingStore/startSpinner');
       next();
     }

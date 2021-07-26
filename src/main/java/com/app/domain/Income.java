@@ -5,9 +5,6 @@ import com.app.dto.IncomeDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
 
 @Getter
@@ -58,5 +55,4 @@ public class Income extends BaseTimeEntity {
         this.largeCategoryId = incomeDto.getLargeCategoryId();
         this.memo = incomeDto.getMemo();
     }
-
 }

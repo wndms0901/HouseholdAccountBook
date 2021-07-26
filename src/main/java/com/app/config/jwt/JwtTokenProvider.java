@@ -25,8 +25,8 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
-    // 토큰 유효시간 1시간
-    private long tokenValidTime = 60 * 60 * 1000L;
+    // 토큰 유효시간 6시간
+    private long tokenValidTime = 60 * 60 * 6 * 1000L;
 
     private final SecurityUserDetailsService securityUserDetailsService;
 
@@ -82,29 +82,21 @@ public class JwtTokenProvider {
     }
 
     // 토큰의 유효성 + 만료일자 확인
-    public boolean isTokenValid(String token) {
+    public boolean isTokenValid(HttpServletRequest request, String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            logger.info("만료된 JWT 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            logger.info("지원되지 않는 JWT 토큰입니다.");
-        } catch (IllegalStateException e) {
-            logger.info("JWT 토큰이 잘못되었습니다.");
+        } catch(ExpiredJwtException e){
+            e.printStackTrace();
+            request.setAttribute("exception", JwtErrorCode.EXPIRED_TOKEN.getCode());
+        } catch (JwtException e){
+            e.printStackTrace();
+            request.setAttribute("exception", JwtErrorCode.INVALID_TOKEN.getCode());
         }
         return false;
-//        try {
-//            Jws<Claims> claims = getClaimsFromJwtToken(token);
-//            return !claims.getBody().getExpiration().before(new Date());
-//        } catch (Exception e) {
-//            return false;
-//        }
     }
     private Jws<Claims> getClaimsFromJwtToken(String token) throws JwtException{
         return Jwts.parserBuilder()

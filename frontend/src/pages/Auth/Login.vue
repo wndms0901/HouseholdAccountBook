@@ -158,8 +158,6 @@ export default {
           (error) => {}
         );
       }
-      //event.preventDefault();
-      //alert(JSON.stringify(this.form));
     },
     // 회원가입 click
     onclickRegister() {
@@ -255,26 +253,6 @@ li {
   display: inline;
 }
 li a {
-  /*  */
   padding: 20px;
 }
-#naver_logo {
-  width: 50px;
-  height: 50px;
-}
-#google_logo {
-  width: 60px;
-  height: 60px;
-}
-/* .container {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background-color: gray;
-  text-align: center;
-  margin-left: -200px;
-  margin-top: -200px;
-  left: 50%;
-  top: 50%;
-} */
 </style>

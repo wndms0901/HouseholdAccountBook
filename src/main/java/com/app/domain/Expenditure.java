@@ -68,5 +68,4 @@ public class Expenditure extends BaseTimeEntity {
         this.smallCategoryId = expenditureDto.getSmallCategoryId();
         this.memo = expenditureDto.getMemo();
     }
-
 }

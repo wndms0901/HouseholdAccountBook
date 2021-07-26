@@ -65,10 +65,6 @@
         >
           정산
         </button>
-        <!-- <b-tooltip target="calculate-button" class="calculate-button-tooltip"
-          >전월이월을 원하는 시점에 생성할 수 있습니다.<br />
-          정산은 한달치만 가능하며, 전월의 잔액을 이달의 시작일로 생성합니다.
-        </b-tooltip> -->
       </div>
       <!-- 월시작일 설정 Modal -->
       <calculateModal v-if="showCalculateModal">
@@ -91,7 +87,6 @@
           <div class="modalFooterBtn-box">
             <button class="primaryBtn" @click="onSaveCalculation">정산</button>
             <button class="basicBtn" @click="closeCalculateModal">닫기</button>
-            <!-- <button class="basicBtn" @click="onSaveStartDate">확인</button> -->
           </div>
         </template>
         <!-- /footer -->
@@ -203,16 +198,6 @@ const getDatePicker = () => {
   return Datepicker;
 };
 
-// function onCellValueChanged(params) {
-//   const colId = params.column.getId();
-//   console.log("onCellValueChanged", params);
-//   if (colId === "largeCategoryId") {
-//     params.api.startEditingCell({
-//       rowIndex: params.rowIndex,
-//       colKey: "smallCategory",
-//     });
-//   }
-// }
 import TextInputCellEditor from "src/components/CellEditor/TextInputCellEditor";
 import NumberInputCellEditor from "src/components/CellEditor/NumberInputCellEditor";
 import calculateModal from "src/components/Modal/Calculate";
@@ -308,16 +293,6 @@ export default {
   beforeMount() {
     this.gridOptions = {
       onCellValueChanged: this.onCellValueChanged,
-      //enableColResize: true,
-      // enableSorting: true,
-      // enableFilter: true,
-      // animateRows: false,
-      // onGridReady: function (event) {
-      //   event.api.sizeColumnsToFit();
-      //   console.log("event", event);
-      //   this.gridApi = event.api;
-      //   this.columnApi = event.columnApi;
-      // },
     };
     this.defaultColDef = {
       editable: (params) => {
@@ -341,7 +316,6 @@ export default {
         width: 135,
         checkboxSelection: true,
         headerCheckboxSelection: true,
-        //headerCheckboxSelectionFilteredOnly: true,
       },
       {
         headerName: "사용내역",
@@ -375,16 +349,10 @@ export default {
           return {
             values: this.accountCategory,
           };
-          //return {
-          // values: Object.keys(this.accountCategory).sort(function (a, b) {
-          //   return a - b;
-          // }),
-          //};
         },
         // convert code to value
         valueFormatter: (params) => {
           return params.value.accountCategoryName;
-          //return this.accountCategory[params.value];
         },
       },
       {
@@ -395,16 +363,10 @@ export default {
           return {
             values: this.largeCategory,
           };
-          // return {
-          //   values: Object.keys(this.largeCategory).sort(function (a, b) {
-          //     return a - b;
-          //   }),
-          //};
         },
         // convert code to value
         valueFormatter: (params) => {
           return params.value.largeCategoryName;
-          //return this.largeCategory[params.value];
         },
       },
       {
@@ -470,36 +432,13 @@ export default {
         .then((res) => {
           // 출금통장 카테고리 목록
           this.accountCategory = res.data.accountCategoryDtoList;
-          // let arry = [];
-          // _.forEach(res.data.accountCategoryDtoList, function (obj) {
-          //   const tmp = {
-          //     accountCategoryId: obj.accountCategoryId,
-          //     accountCategoryName: obj.accountCategoryName,
-          //   };
-          //   arry.push(tmp);
-          // });
-          // this.accountCategory = arry;
-
-          ////
-          // 출금통장 카테고리 목록
-          // {id:name} 형식으로 만들기
-          // let tmp = {};
-          // _.forEach(res.data.accountCategoryDtoList, function (obj) {
-          //   let accountCategoryId = String(obj.accountCategoryId);
-          //   tmp[accountCategoryId] = obj.accountCategoryName;
-          // });
-          // this.accountCategory = tmp;
 
           // 대분류 카테고리 목록
           this.largeCategory = res.data.largeCategoryDtoList;
 
           // 소분류 카테고리 목록
-          // {largeCategoryId:largeCategoryName} 형식으로 만들기
-          //let largeCategoryObj = {};
           let smallCategoryObj = {};
           _.forEach(res.data.largeCategoryDtoList, function (obj) {
-            // let largeCategoryId = String(obj.largeCategoryId);
-            // largeCategoryObj[largeCategoryId] = obj.largeCategoryName;
             const filterList = _.filter(res.data.smallCategoryDtoList, {
               largeCategoryId: obj.largeCategoryId,
             });
@@ -514,7 +453,6 @@ export default {
             });
             smallCategoryObj[obj.largeCategoryId] = lst;
           });
-          // this.largeCategory = largeCategoryObj;
           this.smallCategory = smallCategoryObj;
         })
         .catch((Error) => {
@@ -556,12 +494,6 @@ export default {
               largeCategoryId: row.largeCategoryId,
               largeCategoryName: row.largeCategoryName,
             };
-            // accountCategoryId
-            // res.data[index].accountCategoryId =
-            //   row.accountCategoryId === null ? "" : row.accountCategoryId;
-            // largeCategoryId
-            // res.data[index].largeCategoryId =
-            //   row.largeCategoryId === null ? "" : row.largeCategoryId;
             // smallCategory setting
             res.data[index].smallCategory = {
               smallCategoryId: row.smallCategoryId,
@@ -645,35 +577,7 @@ export default {
         this.gridApi.clearFocusedCell();
         const rowData = this.$refs.expenditureGrid.getRowData();
         const defaultRow = _.cloneDeep(this.defaultRow);
-        // const today = new Date();
-        // const expenditureDate =
-        //   String(today.getFullYear()) +
-        //   "." +
-        //   ("0" + (today.getMonth() + 1)).slice(-2) +
-        //   "." +
-        //   ("0" + today.getDate()).slice(-2);
 
-        // const row = [
-        //   {
-        //     expenditureId: "",
-        //     expenditureDate: expenditureDate,
-        //     expenditureDescription: "",
-        //     cash: "0",
-        //     card: "0",
-        //     accountCategory: {
-        //       accountCategoryId: 1,
-        //       accountCategoryName: "선택없음",
-        //     },
-        //     largeCategory: {
-        //       largeCategoryId: 1,
-        //       largeCategoryName: "미분류",
-        //     },
-        //     // accountCategoryId: 1,
-        //     // largeCategoryId: 1,
-        //     smallCategory: { smallCategoryId: 1, smallCategoryName: "미분류" },
-        //     memo: "",
-        //   },
-        // ];
         this.gridApi.applyTransaction({
           add: defaultRow,
           addIndex: rowData.length - 1,

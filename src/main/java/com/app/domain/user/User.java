@@ -96,5 +96,4 @@ public class User extends BaseTimeEntity {
         this.password = passwordEncoder.encode(newPassword);
         return this;
     }
-
 }

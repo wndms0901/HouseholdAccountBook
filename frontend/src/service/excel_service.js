@@ -1,5 +1,5 @@
 import axios from '../util/axios';
-const API_URL = window.location.protocol + '//' + window.location.host + '/excel/';
+const API_URL = window.location.protocol + '//' + window.location.host + '/api/excel/';
 
 class ExcelService {
     /**
@@ -49,6 +49,5 @@ class ExcelService {
     }
 
 }
-
 
 export default new ExcelService();

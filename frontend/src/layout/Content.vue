@@ -3,7 +3,6 @@
     <router-view
       @updateStartDate="updateStartDate"
       @getIncomeExpenditureDetail="getIncomeExpenditureDetail"
-      @logout="logout"
     ></router-view>
     <div class="loader" v-show="$store.state.loadingStore.LoadingStatus">
       <fade-loader
@@ -22,9 +21,6 @@ export default {
     // 수입/지출 상세 조회
     getIncomeExpenditureDetail() {
       this.$emit("getIncomeExpenditureDetail");
-    },
-    logout() {
-      this.$emit("logout", false);
     },
   },
 };

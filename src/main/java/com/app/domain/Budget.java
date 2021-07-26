@@ -24,16 +24,12 @@ public class Budget extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "char(6)")
     private String budgetDate;
 
-//    @Column(nullable = false)
-//    private String email;
-
     @Column(nullable = false)
     private Long largeCategoryId;
 
     @ManyToOne
     @JoinColumn(name = "user_email")
     private User user;
-
 
     @Builder
     public Budget(Long budgetAmount, String budgetDate, User user, Long largeCategoryId) {
@@ -47,5 +43,4 @@ public class Budget extends BaseTimeEntity {
         this.budgetAmount = budgetAmount;
         return this;
     }
-
 }

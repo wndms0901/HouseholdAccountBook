@@ -20,17 +20,9 @@
   &.modal-overlay {
     left: 1000px;
     top: 123px;
-    // transform-origin: 374px -4px;
     display: block;
-    // align-items: center;
-    // justify-content: center;
     position: fixed;
     z-index: 30;
-    // top: 0;
-    // left: 0;
-    // width: 100%;
-    // height: 100%;
-    // background: rgba(0, 0, 0, 0.5);
     width: 375px;
     height: 160px;
     border-radius: 5px;

@@ -21,7 +21,6 @@ public class WriteServiceImpl implements WriteService{
     private final IncomeRepository incomeRepository;
     private final ExpenditureRepository expenditureRepository;
     private final WriteMapper writeMapper;
-    //    private final UserRepository userRepository;
 
     /**
      * 수입/지출 상세 조회
@@ -102,20 +101,6 @@ public class WriteServiceImpl implements WriteService{
                 .map(o -> o.toEntity())
                 .collect(Collectors.toList());
         incomeRepository.saveAll(insertIncomeDtoList);
-//        if(incomeDtoList.size()>0){
-//            List<Income> insertIncomeDtoList = incomeDtoList.stream().map(o -> o.toEntity(writeRequestDto.getUserDto())).collect(Collectors.toList());
-//            incomeRepository.saveAll(insertIncomeDtoList);
-//        }else{
-//            String str = "지갑속현금 ";
-//            incomeRepository.save(Income.builder()
-//                    .user(writeRequestDto.getUserDto().toEntity())
-//                    .incomeDate(writeRequestDto.getIncomeDate())
-//                    .incomeDescription(str.concat(writeRequestDto.getLastMonth()).concat("월 전월이월 잔액"))
-//                    .incomeAmount(0)
-//                    .accountCategoryId(7L)
-//                    .largeCategoryId(25L)
-//                    .build());
-//        }
     }
 
     /**

@@ -136,10 +136,6 @@ export default {
       updatePieChartData: [],
       pieChartOptions: {
         chartArea: { top: 0, height: "70%" },
-        // chart: {
-        //   title: "Company Performance",
-        //   subtitle: "Sales, Expenses, and Profit: 2014-2017",
-        // },
         legend: {
           position: "bottom",
           alignment: "center",
@@ -161,14 +157,9 @@ export default {
         },
         hAxis: {
           format: "MM/dd",
-          // minValue: new Date(2021, 3, 1),
-          // maxValue: new Date(2021, 3, 31),
         },
         vAxis: {
           format: "#,###",
-          // viewWindow: {
-          //   min: -0,
-          // },
         },
       },
     };
@@ -576,34 +567,7 @@ export default {
   width: 400px;
   margin-left: auto;
   margin-right: auto;
-  /* height: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  border-collapse: collapse;
-  border: 1px solid black;
-  overflow: auto; */
 }
-/* .monthReport_left_content > table {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  width: 400px;
-  height: 200px;
-  border-collapse: collapse;
-  border: 1px solid blue;
-}
-
-.monthReport_left_content > table td {
-  border: 1px solid #000;
-  border-top: 0;
-  width: 200px;
-}
-.monthReport_left_content > table tbody {
-  display: block;
-  height: 200px;
-  overflow: auto;
-} */
-
 .monthReport_center {
   width: 33%;
   height: 550px;

@@ -3,9 +3,9 @@ import cookies from 'vue-cookies'
 
 const user = cookies.get('user');
 const initialState = user
-    ? { initialState: { status: { loggedIn: true }, user } }
+    ? { initialState: { status: { loggedIn: true, clickLogout: false, movePage: false, }, user } }
     : {
-        initialState: { status: { loggedIn: false }, user: null }
+        initialState: { status: { loggedIn: false, clickLogout: false, movePage: false, }, user: null }
     };
 
 const userStore = {
@@ -14,15 +14,25 @@ const userStore = {
     mutations: {
         loginSuccess(state, user) {
             state.initialState.status.loggedIn = true;
+            state.initialState.status.clickLogout = false;
+            state.initialState.status.movePage = false;
             state.initialState.user = user;
         },
         loginFailure(state) {
             state.initialState.status.loggedIn = false;
+            state.initialState.status.clickLogout = false;
+            state.initialState.status.movePage = false;
             state.initialState.user = null;
         },
         logout(state) {
             state.initialState.status.loggedIn = false;
             state.initialState.user = null;
+        },
+        clickLogout(state, value) {
+            state.initialState.status.clickLogout = value;
+        },
+        movePage(state, value) {
+            state.initialState.status.movePage = value;
         },
         registerSuccess(state) {
             state.initialState.status.loggedIn = false;
