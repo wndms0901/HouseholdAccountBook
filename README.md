@@ -1,7 +1,7 @@
 # :memo:HouseholdAccountBook
 Spring Boot(Back-end) + Vue(Front-end)를 이용한 프로젝트로 지출, 수입, 예산을 작성하고 관리하는 가계부 웹 사이트 입니다.
 ## 프로젝트 구조
-<img src="https://user-images.githubusercontent.com/53942595/125481144-1293b4a4-d71f-4633-b258-1120f6c6da11.JPG"><br>
+<img src="https://user-images.githubusercontent.com/53942595/126181622-22ee8dc5-e9cf-40c0-9a7e-7226224ebb31.JPG"><br>
 ## 개발 환경
 ### OS
 * Windows 10
