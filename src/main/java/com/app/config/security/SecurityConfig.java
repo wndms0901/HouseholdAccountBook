@@ -40,11 +40,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 X
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
-                .antMatchers( "/", "/*.json", "/css/**", "/images/**", "/js/**", "/img/**", "/fonts/**", "/api/profile"
-                        , "/mybook/**", "/user/**", "/errorPage"
-                        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
-                ).permitAll()
-                .anyRequest().authenticated() // 나머지 요청은 권한 필요
+                .antMatchers("/api/write/**", "/api/report/**",  "/api/budget/**",  "/api/excel/**"
+                , "/api/user/update/**").authenticated()
+                .anyRequest().permitAll()
+//                .antMatchers( "/", "/*.json", "/css/**", "/images/**", "/js/**", "/img/**", "/fonts/**", "/api/profile"
+//                        , "/mybook/**", "/user/**", "/errorPage"
+//                        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
+//                ).permitAll()
+//                .anyRequest().authenticated() // 나머지 요청은 권한 필요
                 .and()
                //.requiresChannel().anyRequest().requiresSecure() // http를 https로 redirect
                 //.and()
