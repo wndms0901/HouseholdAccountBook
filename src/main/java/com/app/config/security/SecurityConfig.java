@@ -31,7 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -45,10 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         , "/mybook/**", "/user/**", "/errorPage"
                         , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
                 ).permitAll()
+               // .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // 나머지 요청은 권한 필요
+                //.anyRequest().permitAll() // 나머지 요청은 권한 필요x
                 .and()
-                .requiresChannel().anyRequest().requiresSecure() // http를 https로 redirect
-                .and()
+               //.requiresChannel().anyRequest().requiresSecure() // http를 https로 redirect
+                //.and()
                 // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter에서 인증 및 권한처리
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 // 인증 오류 발생 시 처리를 위한 핸들러 추가
