@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //        , "/mybook/**", "/user/**", "/errorPage"
                 //        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
                 //).permitAll()
-                .anyRequest().authenticated() // 나머지 요청은 권한 필요
+                //.anyRequest().authenticated() // 나머지 요청은 권한 필요
                 .anyRequest().permitAll() // 나머지 요청은 권한 필요x
                 .and()
                //.requiresChannel().anyRequest().requiresSecure() // http를 https로 redirect
