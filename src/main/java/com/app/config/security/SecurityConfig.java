@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers( "/", "/*.json", "/css/**", "/images/**", "/js/**", "/img/**", "/fonts/**", "/api/profile"
                         , "/mybook/**", "/user/**", "/errorPage"
-                        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset" , "/**"
+                        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
                 ).permitAll()
                 .anyRequest().authenticated() // 나머지 요청은 권한 필요
                 .and()
