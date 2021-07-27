@@ -18,13 +18,13 @@ module.exports = {
     resolve: {
       alias: {
         src: resolveSrc('src'),
-        'chart.js': 'chart.js/dist/Chart.js'
+        //  'chart.js': 'chart.js/dist/Chart.js'
       }
     },
     plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
-        maxChunks: 6
-      })
+      // new webpack.optimize.LimitChunkCountPlugin({
+      //   maxChunks: 6
+      //    })
     ]
   },
   pwa: {
@@ -38,7 +38,11 @@ module.exports = {
     // Enable CSS source maps.
     sourceMap: process.env.NODE_ENV !== 'production'
   },
-  chainWebpack(config) { //빌드 시 빌드되어 나오는 js파일을 js폴더 아래로 묶어 빌드한다
-    config.output.filename("js/[name].js");
-  },
+  //chainWebpack(config) {
+  ///config.output.filename("js/[name].js");
+  //빌드 시 빌드되어 나오는 js파일을 js폴더 아래로 묶어 빌드한다
+  // const svgRule = config.module.rule("svg");
+  // svgRule.uses.clear();
+  // svgRule.use("vue-svg-loader").loader("vue-svg-loader");
+  //},
 };
