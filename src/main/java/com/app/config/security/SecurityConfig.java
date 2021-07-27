@@ -47,6 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ).permitAll()
                 .anyRequest().authenticated() // 나머지 요청은 권한 필요
                 .and()
+                .requiresChannel().anyRequest().requiresSecure() // http를 https로 redirect
+                .and()
                 // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter에서 인증 및 권한처리
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 // 인증 오류 발생 시 처리를 위한 핸들러 추가
