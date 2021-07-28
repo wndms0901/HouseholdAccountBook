@@ -43,14 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/write/**", "/api/report/**",  "/api/budget/**",  "/api/excel/**"
                 , "/api/user/update/**").authenticated()
                 .anyRequest().permitAll()
-//                .antMatchers( "/", "/*.json", "/css/**", "/images/**", "/js/**", "/img/**", "/fonts/**", "/api/profile"
-//                        , "/mybook/**", "/user/**", "/errorPage"
-//                        , "/api/user/login/**", "/api/user/register/**", "/api/user/send/password-reset"
-//                ).permitAll()
-//                .anyRequest().authenticated() // 나머지 요청은 권한 필요
                 .and()
-               //.requiresChannel().anyRequest().requiresSecure() // http를 https로 redirect
-                //.and()
                 // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter에서 인증 및 권한처리
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 // 인증 오류 발생 시 처리를 위한 핸들러 추가
