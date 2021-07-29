@@ -50,7 +50,7 @@ Spring Boot(Back-end) + Vue(Front-end)를 이용한 프로젝트로 지출, 수�
 * 예산 목록과 예산 대비 지출 목록을 엑셀 다운로드할 수 있습니다.
 ## SPA(Single Page Application)
 SPA(Single Page Application)란 단일 페이지로 구성된 웹 애플리케이션이다.   
-페이지 요청 시 새로운 페이지를 불러오는 것이 아니라 하나의 페이지에 필요한 데이터를 서버로부터 전달받아 동적으로 렌더링한다.
+페이지 요청 시 새로운 페이지를 불러오는 것이 아니라 하나의 페이지에 필요한 데이터를 서버로부터 전달받아 동적으로 렌더링한다.   
 <img src="https://user-images.githubusercontent.com/53942595/125581210-a0e0a853-98b4-4c21-9b22-c31929dbd5d1.JPG">
 * ### **SPA 장점**
   * 페이지 반응성이 빠름
