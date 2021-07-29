@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-SERVICE_URL = $(cat /etc/nginx/conf.d/service-url.inc)
-
 # bash는 return value가 안되니 *제일 마지막줄에 echo로 해서 결과 출력*후, 클라이언트에서 값을 사용한다
 
 function service_url() {
-    SERVICE_URL=$(curl -L -s ${SERVICE_URL: 18:21}/api/profile)
+    SERVICE_URL=$(cat /etc/nginx/conf.d/service-url.inc)
     echo "${SERVICE_URL}"
 }
 
@@ -13,7 +11,7 @@ function service_url() {
 function find_idle_profile()
 {
      SERVICE_URL=$(service_url)
-     CURRENT_PROFILE=$(curl -L -s ${SERVICE_URL}/api/profile)
+     CURRENT_PROFILE=$(curl -L -s ${SERVICE_URL: 18:21}/api/profile)
 #    RESPONSE_CODE=$(curl -L -s -o /dev/null -w "%{http_code}" http://localhost/api/profile)
 #
 #    if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
@@ -30,7 +28,6 @@ function find_idle_profile()
       IDLE_PROFILE=real1
     fi
 
-    echo "> RESPONSE_CODE: ${RESPONSE_CODE}"
     echo ">SERVICE_URL: ${SERVICE_URL}"
     #echo "${IDLE_PROFILE}"
 }
