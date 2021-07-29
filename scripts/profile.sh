@@ -28,7 +28,7 @@ function find_idle_profile()
       IDLE_PROFILE=real1
     fi
 
-    echo ">CURRENT_PROFILE: ${CURRENT_PROFILE}"
+    echo ">SERVICE_URL: ${SERVICE_URL: 18:21}"
     #echo "${IDLE_PROFILE}"
 }
 
