@@ -11,7 +11,7 @@ function service_url() {
 function find_idle_profile()
 {
      SERVICE_URL=$(service_url)
-     CURRENT_PROFILE=$(curl -L -s ${SERVICE_URL: 18:21}/api/profile)
+     CURRENT_PROFILE=$(curl -L -s ${SERVICE_URL: 17:21}/api/profile)
 #    RESPONSE_CODE=$(curl -L -s -o /dev/null -w "%{http_code}" http://localhost/api/profile)
 #
 #    if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
