@@ -23,7 +23,6 @@ function find_idle_profile()
     fi
 
     echo "> CURRENT_PROFILE: ${CURRENT_PROFILE}"
-    echo "> IDLE_PROFILE: ${IDLE_PROFILE}"
     #echo "${IDLE_PROFILE}"
 }
 
