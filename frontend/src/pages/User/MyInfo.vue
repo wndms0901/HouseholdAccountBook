@@ -60,6 +60,28 @@ export default {
       newPasswordCheck: "",
     };
   },
+  // 다른 route로 이동할 경우 호출됨
+  beforeRouteLeave(to, from, next) {
+    const userInfo = this.$cookies.get("user");
+    const movePage = this.$store.state.userStore.initialState.status.movePage;
+    if (to.name === "Login") {
+      if (movePage) {
+        // 계정 권한 만료 + 로그인 페이지 이동
+        this.$store.dispatch("userStore/logout");
+        next();
+      } else {
+        this.$store.commit("userStore/clickLogout", true);
+        next();
+      }
+    } else if (to.name !== "Error") {
+      if (!userInfo) {
+        this.$store.commit("userStore/movePage", true);
+      }
+      next();
+    } else {
+      next();
+    }
+  },
   methods: {
     updateMyInfo() {
       if (this.validationCheck()) {
@@ -170,9 +192,6 @@ export default {
   margin-bottom: 70px;
   width: 530px;
   border-collapse: collapse;
-}
-.myInfoBox table tr {
-  /* border: 1px solid black; */
 }
 .myInfoBox table tr td {
   padding: 15px;
