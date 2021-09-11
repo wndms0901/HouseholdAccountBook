@@ -33,14 +33,14 @@ Spring Boot(Back-end) + Vue(Front-end)를 이용한 프로젝트로 지출, 수�
 * 테스트 계정으로 로그인 가능합니다.
 ### 2. 쓰기
 <img src="https://user-images.githubusercontent.com/53942595/125483170-7fcf3060-014f-47ff-b84b-4a5c50973024.png" width="49%" height="49%" >&nbsp;<img src="https://user-images.githubusercontent.com/53942595/125483164-031ac825-5bf5-490b-9de1-4568972dff26.png" width="49%" height="49%"><br>
-* 자바스크립트 기반의 오픈 소스 그리드인 AG Grid를 사용하여 지출/수입 CRUD 기능을 구현하였습니다.
-* 마이크로소프트 오피스 파일 포맷을 순수 자바 언어로서 읽고 쓰는 기능을 제공하는 아파치 POI(Apache POI)를 사용하여 엑셀 다운로드/업로드 기능을 구현하였습니다.
+* 자바스크립트 기반의 오픈 소스 그리드인 **AG Grid**를 사용하여 지출/수입 CRUD 기능을 구현하였습니다.
+* 마이크로소프트 오피스 파일 포맷을 순수 자바 언어로서 읽고 쓰는 기능을 제공하는 **아파치 POI**(Apache POI)를 사용하여 엑셀 다운로드/업로드 기능을 구현하였습니다.
 * 지출/수입 목록은 최대 6개월까지 조회가 가능합니다.
 * 지출 페이지에서 월시작일 변경이 가능합니다.
 * 지출 페이지에서 전월의 잔액을 이달의 시작일로 생성하여 정산할 수 있습니다.
 ### 3. 보고서
 <img src="https://user-images.githubusercontent.com/53942595/125483369-fad1a3f9-30d7-4a50-ac1f-00e572f887a6.png" width="49%" height="49%" >&nbsp;<img src="https://user-images.githubusercontent.com/53942595/125483367-8f6885ab-e4bd-4365-876e-afba4f1b1a41.JPG" width="49%" height="49%"><br>
-* 월보고서 페이지에서 월단위로 주간지출내역 조회와 Google chart를 사용하여 대분류별 수입/지출 금액과 지난달 일평균, 한달동안 일지출을 차트로 확인할 수 있습니다.
+* 월보고서 페이지에서 월단위로 주간지출내역 조회와 **Google chart**를 사용하여 대분류별 수입/지출 금액과 지난달 일평균, 한달동안 일지출을 차트로 확인할 수 있습니다.
 * 연간보고서 페이지에서 연단위로 대분류별 수입/지출 금액과 합계를 조회할 수 있습니다.
 * 연간보고서 내역을 엑셀 다운로드할 수 있습니다.
 ### 4. 예산
